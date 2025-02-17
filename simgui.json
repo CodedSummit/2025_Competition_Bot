@@ -1,0 +1,17 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Intake/Cancel Intake": "Command",
+      "/Shuffleboard/Intake/Start Intake": "Command",
+      "/Shuffleboard/Intake/feed note": "Command",
+      "/Shuffleboard/Swerve/Field": "Field2d",
+      "/Shuffleboard/Swerve/Set Wheel Offsets": "Command",
+      "/Shuffleboard/Swerve/ZeroOdometry": "Command",
+      "/SmartDashboard/Alerts": "Alerts"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}
