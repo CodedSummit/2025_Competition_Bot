@@ -43,7 +43,6 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   PhotonPoseEstimator m_leftCamPhotonPoseEstimator = null;
   PhotonPoseEstimator m_rightCamPhotonPoseEstimator = null;
   private boolean m_visionEnabled = true;
-  AddressableLedSubsystem m_led;
   SwerveSubsystem m_SwerveSubsystem;
    private IntegerLogEntry m_rightLog;
    private IntegerLogEntry m_leftLog;
@@ -52,9 +51,9 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   private long m_lastLogTime = 0;
 
   /** Creates a new VisionPoseEstimationSubsystem. */
-  public VisionPoseEstimationSubsystem(AddressableLedSubsystem led) {
+  public VisionPoseEstimationSubsystem() {
 
-    m_led = led;
+ 
 
     // Construct PhotonPoseEstimators
      m_backCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 

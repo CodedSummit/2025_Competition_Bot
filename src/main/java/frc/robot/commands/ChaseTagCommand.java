@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.subsystems.AddressableLedSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -74,7 +73,6 @@ private static final Map<FieldGoals,Integer> RED_GOALS;
 
   private final VisionSubsystem m_VisionSubsystem;
   private final SwerveSubsystem m_drivetrainSubsystem;
-  private final AddressableLedSubsystem m_LedSubsystem;
   
 
   private Pose2d m_goalPose = new Pose2d();
@@ -91,12 +89,10 @@ private static final Map<FieldGoals,Integer> RED_GOALS;
 
   public ChaseTagCommand(
         VisionSubsystem visionSubsystem, 
-        SwerveSubsystem drivetrainSubsystem,
-        AddressableLedSubsystem LEDSubsystem) {
+        SwerveSubsystem drivetrainSubsystem) {
     this.m_VisionSubsystem = visionSubsystem;
     this.m_drivetrainSubsystem = drivetrainSubsystem;
     
-    this.m_LedSubsystem = LEDSubsystem;
    
     addRequirements(visionSubsystem);
     setupShuffleboard();
@@ -147,7 +143,6 @@ private static final Map<FieldGoals,Integer> RED_GOALS;
          // restart our timer on fresh target data (start() method is no-op if alredy running)
         m_TargetLastSeen.start();
         m_TargetLastSeen.reset();
-        m_LedSubsystem.setEndsYellow();
       }
       
       if (target != null && targetDataSignificantlyDifferent(target, m_lastTarget)) {
@@ -206,14 +201,12 @@ private static final Map<FieldGoals,Integer> RED_GOALS;
 public boolean isFinished(){
 
     if (m_driveToPoseCmd.isFinished()){
-      m_LedSubsystem.setEndsGreen();
       return true;  // we got to where we're going
     } 
 
     if (m_TargetLastSeen.hasElapsed(STALE_TARGET_TIME)){
       // If we haven't gotten new target data in a while we may have lost sight of it and should stop
       System.out.println("Have not seen the target lately - STOPPING");
-      m_LedSubsystem.setEndsRed();
       return true;
     }
     return false;

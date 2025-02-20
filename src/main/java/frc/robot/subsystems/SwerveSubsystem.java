@@ -288,12 +288,13 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command followPathCommand(String pathName) {
         PathPlannerPath path = null;
         Command command = null;
+        RobotConfig config = null;
         try {
             path = PathPlannerPath.fromPathFile(pathName);
         } catch (Exception e) {
             DriverStation.reportError("Failed to load PathPlanner file:" + pathName, e.getStackTrace());
         }
-        RobotConfig config = null;
+
         try {
             config = RobotConfig.fromGUISettings();
         } catch (Exception e) {

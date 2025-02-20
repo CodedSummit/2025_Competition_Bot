@@ -5,9 +5,9 @@
 package frc.robot;
 
 import frc.robot.commands.ChaseTagCommand;
-import frc.robot.commands.NothingCommand;
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.subsystems.AddressableLedSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -16,24 +16,20 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 //import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -49,11 +45,12 @@ import com.pathplanner.lib.path.PathPlannerPath;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final AddressableLedSubsystem m_led = new AddressableLedSubsystem(30,9);
-  private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem(m_led);
+  private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
+  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  private final ArmSubsystem armSubsystem = new ArmSubsystem();
 
-  //private final PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
+  private final PowerDistribution pdp = new PowerDistribution(0,ModuleType.kCTRE);
 
   private SwerveJoystickCmd swerveJoystickCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
@@ -96,7 +93,7 @@ public class RobotContainer {
 
     // make the chasetag command
 
-    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led);
+    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem);
     
     configureBindings();
 
@@ -114,6 +111,8 @@ public class RobotContainer {
     
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putData("poseestimator", m_visionPoseEstimationSubsystem);
+    SmartDashboard.putData("Power", pdp);
+    SmartDashboard.putData("Arm", armSubsystem);
 
   }
 
@@ -140,14 +139,12 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
 
-    m_drivPs5Controller.triangle().onTrue(new InstantCommand(() -> //swerveSubsystem.zeroHeading()
-    System.out.println("Button Pressed! :)")));
+    m_drivPs5Controller.triangle().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
+    m_drivPs5Controller.cross().onTrue(new InstantCommand(()->elevatorSubsystem.elevatorUp()));
+    m_drivPs5Controller.square().onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown()));
+    m_drivPs5Controller.circle().onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
     
-    //  .onTrue(new InstantCommand(() ->m_ClimbSubsystem.climb()))
-    //  .onFalse(new InstantCommand(() -> m_ClimbSubsystem.stop()));
-
-
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
 
@@ -185,8 +182,14 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
+      m_drivPs5Controller.povUp().onTrue(new InstantCommand(()-> armSubsystem.elbowUp()));
+      m_drivPs5Controller.povDown().onTrue(new InstantCommand(()-> armSubsystem.elbowDown()));
+      m_drivPs5Controller.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
 
-//REMEMBER: YOU NEED 3 USB PORTS TO RUN THIS BUILD!
+      m_drivPs5Controller.button(7).onTrue(new InstantCommand(()-> armSubsystem.wristLeft()));
+      m_drivPs5Controller.button(8).onTrue(new InstantCommand(()-> armSubsystem.wristRight()));
+      m_drivPs5Controller.povRight().onTrue(new InstantCommand(()-> armSubsystem.stopWrist()));
+//REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 2 + " on Reef Buttons pressed")));
