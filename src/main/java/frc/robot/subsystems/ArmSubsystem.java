@@ -113,9 +113,19 @@ public class ArmSubsystem extends SubsystemBase {
 
   // move the arm to a horizontal position
   public void setArmHorizontal() {
-    m_elbowDesiredAngleDeg = 0.0;
-    m_elbowPIDController.setSetpoint(m_elbowDesiredAngleDeg);
+    setArmAngle(0.0);
   }
+
+  // use PID positioning to bump arm up/down
+  public void bumpArmUp() {
+    setArmAngle(m_elbowDesiredAngleDeg + ArmConstants.kArmBumpIncrementDeg);
+  }
+
+   public void bumpArmDown() {
+    setArmAngle(m_elbowDesiredAngleDeg - ArmConstants.kArmBumpIncrementDeg);
+  }
+
+
 
   public void elbowMove(){
       m_elbow.set(getElbowSpeed());
@@ -172,6 +182,11 @@ public class ArmSubsystem extends SubsystemBase {
         .getEntry();
 
   
+  }
+
+  private void setArmAngle(double desiredAngle) {
+    m_elbowDesiredAngleDeg = desiredAngle;
+    m_elbowPIDController.setSetpoint(desiredAngle);
   }
 
   public double getElbowSpeed() {

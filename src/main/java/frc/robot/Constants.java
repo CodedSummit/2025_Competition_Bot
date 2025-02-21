@@ -186,7 +186,7 @@ public static final class ArmConstants {
   public static double kGVolts = 1.36;
   public static double kVVoltSecondPerRad = 1.95;
   
-  public static double kArmBumpIncrementRad = (Math.toRadians(1.0));
+  public static double kArmBumpIncrementDeg = 1.0;
   public static double kHandlerDefaultSpeed = 0.1; // -1.0 to 1.0
   public static String kArmHandlerSpeedPrefKey = "Arm.handlerSpeed";
   public static double kArmMassGrams = 2270.0; // not used in code, but her for ducumentation
