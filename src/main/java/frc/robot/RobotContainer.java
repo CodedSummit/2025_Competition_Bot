@@ -56,8 +56,8 @@ public class RobotContainer {
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandPS5Controller m_drivPs5Controller = 
-    new CommandPS5Controller(0);
+  private final CommandXboxController m_driveXboxController = 
+    new CommandXboxController(0);
 //  private final Joystick m_buttonBoard = new Joystick(1);
 //  private final Trigger m_button1 = new Trigger(() ->m_buttonBoard.getRawButton(1));
   //private final CommandXboxController m_driverController =
@@ -82,7 +82,7 @@ public class RobotContainer {
 
     swerveJoystickCmd = new SwerveJoystickCmd(
       swerveSubsystem,
-      m_drivPs5Controller);
+      m_driveXboxController);
     swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
     //Named commands for Autos
@@ -139,11 +139,11 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
 
-    m_drivPs5Controller.triangle().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+    m_driveXboxController.button(4).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-    m_drivPs5Controller.cross().onTrue(new InstantCommand(()->elevatorSubsystem.elevatorUp()));
-    m_drivPs5Controller.square().onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown()));
-    m_drivPs5Controller.circle().onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
+    m_driveXboxController.button(2).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorUp()));
+    m_driveXboxController.button(1).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown()));
+    m_driveXboxController.button(3).onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
     
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
@@ -152,12 +152,12 @@ public class RobotContainer {
 
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
-    m_drivPs5Controller.button(5)
+    m_driveXboxController.button(5)
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setFieldOriented(false)))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setFieldOriented(true)));
 
       //reverse robot orientation mode
-      m_drivPs5Controller.axisGreaterThan(3, 0.5).and(m_drivPs5Controller.button(5).negate())
+      m_driveXboxController.axisGreaterThan(3, 0.5).and(m_driveXboxController.button(5).negate())
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setReverseFieldOriented(true)))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setReverseFieldOriented(false)));
 
@@ -173,22 +173,22 @@ public class RobotContainer {
         Fix below may work (also applied above) that allows consideration of other button states when applying the commands.
      */
 
-    m_drivPs5Controller.button(6)
+    m_driveXboxController.button(6)
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getDampenedSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
     //includes logic to not activate if dampen is pressed.
-      m_drivPs5Controller.axisGreaterThan(4, 0.5).and(m_drivPs5Controller.button(6).negate())
+      m_driveXboxController.axisGreaterThan(4, 0.5).and(m_driveXboxController.button(6).negate())
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-      m_drivPs5Controller.povUp().onTrue(new InstantCommand(()-> armSubsystem.elbowUp()));
-      m_drivPs5Controller.povDown().onTrue(new InstantCommand(()-> armSubsystem.elbowDown()));
-      m_drivPs5Controller.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
+      m_driveXboxController.povUp().onTrue(new InstantCommand(()-> armSubsystem.elbowUp()));
+      m_driveXboxController.povDown().onTrue(new InstantCommand(()-> armSubsystem.elbowDown()));
+      m_driveXboxController.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
 
-      m_drivPs5Controller.button(7).onTrue(new InstantCommand(()-> armSubsystem.wristLeft()));
-      m_drivPs5Controller.button(8).onTrue(new InstantCommand(()-> armSubsystem.wristRight()));
-      m_drivPs5Controller.povRight().onTrue(new InstantCommand(()-> armSubsystem.stopWrist()));
+      m_driveXboxController.button(7).onTrue(new InstantCommand(()-> armSubsystem.wristLeft()));
+      m_driveXboxController.button(8).onTrue(new InstantCommand(()-> armSubsystem.wristRight()));
+      m_driveXboxController.povRight().onTrue(new InstantCommand(()-> armSubsystem.stopWrist()));
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));

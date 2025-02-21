@@ -195,6 +195,9 @@ public static String kArmHandlerSpeedPrefKey = "Arm.handlerSpeed";
   public static final int kArmMotorCANbusID = 9;  // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5;  // TODO - USE REAL ID
 
+  public static final double kElbowOffset = 81.4; //In Degrees
+  public static final double kMaxElbowAngle = 76.2; //Actual value: 81.2
+  public static final double kMinElbowAngle = -72.5;  //Actual value: -77.5
 }
 
 public static final class ShooterConstants {

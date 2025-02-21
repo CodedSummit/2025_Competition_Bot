@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -28,6 +29,8 @@ public class ArmSubsystem extends SubsystemBase {
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   private final SparkMax m_intake = new SparkMax(8, MotorType.kBrushless);
+  private boolean maxLimitReached = false;
+  private boolean minLimitReached = false;
 
  //private final Encoder m_encoder = new Encoder(ArmConstants.kEncoderPorts[0], ArmConstants.kEncoderPorts[1]);
   private final ArmFeedforward m_feedforward = new ArmFeedforward(
@@ -36,14 +39,14 @@ public class ArmSubsystem extends SubsystemBase {
   private double m_handlerSpeed = ArmConstants.kHandlerDefaultSpeed;
   private GenericEntry nt_handlerSpeed;
 
-  private ProfiledPIDController elbowPIDController = new ProfiledPIDController(ArmConstants.kP,
+ /*  private ProfiledPIDController elbowPIDController = new ProfiledPIDController(ArmConstants.kP,
   0,
   0,
   new TrapezoidProfile.Constraints(
       ArmConstants.kMaxVelocityRadPerSecond,
       ArmConstants.kMaxAccelerationRadPerSecSquared),
       0);
-
+*/
 
 
 
@@ -55,8 +58,26 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    //TODO - check that the angle is NOT in the danger zone.   if it is, pull the plug on the motor 
+    double degrees = this.getAngleDegrees();
+    if (degrees > Constants.ArmConstants.kMaxElbowAngle){
+      maxLimitReached = true;
+      if(m_elbow.get() < 0){
+        m_elbow.stopMotor();
+      }
+    }else{
+      maxLimitReached = false;
+    }
+
+    if (degrees<Constants.ArmConstants.kMinElbowAngle){
+      minLimitReached = true;
+      if(m_elbow.get() > 0){
+        m_elbow.stopMotor();
+      }
+    }else{
+      minLimitReached = false;
+    }
+
+
   }
 
   public void setElbowOutput() {
@@ -77,11 +98,11 @@ public class ArmSubsystem extends SubsystemBase {
 
 
   public void elbowUp(){
-    m_elbow.set(-0.1);
+    m_elbow.set(-0.8);
   }
 
   public void elbowDown(){
-    m_elbow.set(0.1);
+    m_elbow.set(0.8);
   }
 
   public void wristLeft(){
@@ -120,7 +141,8 @@ public class ArmSubsystem extends SubsystemBase {
   double degrees;
   double percentage;
   percentage = absEncoder.get();
-  degrees = percentage*360;
+  degrees = percentage*360-Constants.ArmConstants.kElbowOffset;
+  
   return degrees;
   }
 
