@@ -172,34 +172,38 @@ public static final class VisionConstants {
 
 public static final class ArmConstants {
   // Various constants for the Arm
-  
+
   //
   public static final double kMaxArmAngleDeg = 0.0;
   public static final double kMinArmAngleDeg = 0.0;
   public static double kMaxVelocityRadPerSecond = 0.0;;
   public static double kMaxAccelerationRadPerSecSquared = 0.0;
-  public static double kP = 0.0;
-  public static int[] kEncoderPorts = new int[] {28, 29};;
+  // elbow PID constants:
+  public static double kP = 2.0;
+  public static int[] kEncoderPorts = new int[] { 28, 29 };;
+  // feedforward constants:
   public static double kSVolts = 0.0;
-  public static double kGVolts = 0.0;
-  public static double kVVoltSecondPerRad =0.0;
-  public static double kAVoltSecondSquaredPerRad = 0.0;
-  public static double kArmBumpIncrementRad = (Math.toRadians(1.0));
+  public static double kGVolts = 1.36;
+  public static double kVVoltSecondPerRad = 1.95;
+  
+  public static double kArmBumpIncrementDeg = 1.0;
   public static double kHandlerDefaultSpeed = 0.1; // -1.0 to 1.0
-public static String kArmHandlerSpeedPrefKey = "Arm.handlerSpeed";
+  public static String kArmHandlerSpeedPrefKey = "Arm.handlerSpeed";
+  public static double kArmMassGrams = 2270.0; // not used in code, but her for ducumentation
+  public static double kCoralMassGrams = 607.0; // ditto
 
- 
   // The offset of the arm from the horizontal in its neutral position,
   // measured from the horizontal
   public static final double kArmOffsetRads = 0.5;
-  public static final int kArmMotorCANbusID = 9;  // TODO - USE REAL ID
-  public static final int kArmHandlerMotorCANbusID = 5;  // TODO - USE REAL ID
+  public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
+  public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = 81.4; //In Degrees
-  public static final double kMaxElbowAngle = 76.2; //Actual value: 81.2
-  public static final double kMinElbowAngle = -72.5;  //Actual value: -77.5
+  public static final double kElbowOffset = 81.4; // In Degrees
+  public static final double kMaxElbowAngle = 76.2; // Actual value: 81.2
+  public static final double kMinElbowAngle = -72.5; // Actual value: -77.5
   public static final double kElbowSpeed = 0.2;
   public static String kElbowSpeedPrefKey = "Arm.ElbowSpeed";
+  public static final double kElbowAngleToleranceDeg = 2.0;  // "close enough" to desired angle
 }
 
 public static final class ShooterConstants {
