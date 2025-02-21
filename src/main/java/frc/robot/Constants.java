@@ -63,15 +63,6 @@ public static final class DriveConstants {
   // absolute encoders for each wheel. These numbers need to match the CAN IDs set on each motor.
   // The TurningMotor and DriveMotor IDs match as they run on different CAN busses, so are set the same for convenience.
   public static final class FrontLeft {
-    public static final int DriveMotor = 3;
-    public static final int TurningMotor = 3;
-    public static final int TurningAbsoluteEncoder = 3;
-    public static final boolean TurningEncoderReversed = true;
-    public static final boolean DriveEncoderReversed = true;
-    public static final boolean DriveAbsoluteEncoderReversed = false;
-  }
-
-  public static final class FrontRight {
     public static final int DriveMotor = 4;
     public static final int TurningMotor = 4;
     public static final int TurningAbsoluteEncoder = 4;
@@ -80,19 +71,28 @@ public static final class DriveConstants {
     public static final boolean DriveAbsoluteEncoderReversed = false;
   }
 
+  public static final class FrontRight {
+    public static final int DriveMotor = 3;
+    public static final int TurningMotor = 3;
+    public static final int TurningAbsoluteEncoder = 3;
+    public static final boolean TurningEncoderReversed = true;
+    public static final boolean DriveEncoderReversed = true;
+    public static final boolean DriveAbsoluteEncoderReversed = false;
+  }
+
   public static final class BackLeft {
-    public static final int DriveMotor = 2;
-    public static final int TurningMotor = 2;
-    public static final int TurningAbsoluteEncoder = 2;
+    public static final int DriveMotor = 1;
+    public static final int TurningMotor = 1;
+    public static final int TurningAbsoluteEncoder = 1;
     public static final boolean TurningEncoderReversed = true;
     public static final boolean DriveEncoderReversed = true;
     public static final boolean DriveAbsoluteEncoderReversed = false;
   }
 
   public static final class BackRight {
-    public static final int DriveMotor = 1;
-    public static final int TurningMotor = 1;
-    public static final int TurningAbsoluteEncoder = 1;
+    public static final int DriveMotor = 2;
+    public static final int TurningMotor = 2;
+    public static final int TurningAbsoluteEncoder = 2;
     public static final boolean TurningEncoderReversed = true;
     public static final boolean DriveEncoderReversed = true;
     public static final boolean DriveAbsoluteEncoderReversed = false;
@@ -198,6 +198,8 @@ public static String kArmHandlerSpeedPrefKey = "Arm.handlerSpeed";
   public static final double kElbowOffset = 81.4; //In Degrees
   public static final double kMaxElbowAngle = 76.2; //Actual value: 81.2
   public static final double kMinElbowAngle = -72.5;  //Actual value: -77.5
+  public static final double kElbowSpeed = 0.2;
+  public static String kElbowSpeedPrefKey = "Arm.ElbowSpeed";
 }
 
 public static final class ShooterConstants {

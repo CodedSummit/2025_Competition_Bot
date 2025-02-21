@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -16,6 +18,10 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -31,13 +37,15 @@ public class ArmSubsystem extends SubsystemBase {
   private final SparkMax m_intake = new SparkMax(8, MotorType.kBrushless);
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
+  private double m_elbowSpeed = 0.2;
 
  //private final Encoder m_encoder = new Encoder(ArmConstants.kEncoderPorts[0], ArmConstants.kEncoderPorts[1]);
   private final ArmFeedforward m_feedforward = new ArmFeedforward(
       ArmConstants.kSVolts, ArmConstants.kGVolts,
       ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
   private double m_handlerSpeed = ArmConstants.kHandlerDefaultSpeed;
-  private GenericEntry nt_handlerSpeed;
+  private GenericEntry nt_elbowSpeed;
+
 
  /*  private ProfiledPIDController elbowPIDController = new ProfiledPIDController(ArmConstants.kP,
   0,
@@ -54,6 +62,7 @@ public class ArmSubsystem extends SubsystemBase {
   public ArmSubsystem() {
 
     config.apply(config);
+    setupShuffleboard();
   }
 
   @Override
@@ -68,7 +77,7 @@ public class ArmSubsystem extends SubsystemBase {
       maxLimitReached = false;
     }
 
-    if (degrees<Constants.ArmConstants.kMinElbowAngle){
+    if (degrees<Constants.ArmConstants.kMinElbowAngle-20){
       minLimitReached = true;
       if(m_elbow.get() > 0){
         m_elbow.stopMotor();
@@ -76,7 +85,7 @@ public class ArmSubsystem extends SubsystemBase {
     }else{
       minLimitReached = false;
     }
-
+    
 
   }
 
@@ -97,12 +106,8 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
 
-  public void elbowUp(){
-    m_elbow.set(-0.8);
-  }
-
-  public void elbowDown(){
-    m_elbow.set(0.8);
+  public void elbowMove(){
+      m_elbow.set(getElbowSpeed());
   }
 
   public void wristLeft(){
@@ -145,6 +150,28 @@ public class ArmSubsystem extends SubsystemBase {
   
   return degrees;
   }
+  private void setupShuffleboard() {
+
+    ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
+
+    nt_elbowSpeed = armTab.addPersistent("Elbow speed", m_elbowSpeed)
+        .withSize(3, 1)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", -1, "max", 1))
+        .getEntry();
+
+  
+  }
+
+  public double getElbowSpeed() {
+
+    if (m_elbowSpeed != nt_elbowSpeed.getDouble(Constants.ArmConstants.kElbowSpeed)) {
+      // get the value from the Shuffleboard slider.  If it changed salt it away for future reboots
+      m_elbowSpeed = nt_elbowSpeed.getDouble(Constants.ArmConstants.kElbowSpeed);
+      Preferences.setDouble(Constants.ArmConstants.kElbowSpeedPrefKey, m_elbowSpeed);
+    }
+    return m_elbowSpeed;
+  } 
 
   public void initSendable(SendableBuilder builder){
     builder.addDoubleProperty("Arm Angle", ()->getAngleDegrees(), null);
