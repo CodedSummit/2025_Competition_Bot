@@ -12,8 +12,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -38,23 +37,17 @@ public class ArmSubsystem extends SubsystemBase {
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
   private double m_elbowSpeed = 0.2;
+  private double m_elbowDesiredAngleDeg = 0.0;  // Angle we want the arm.  0.0 is horizontal, 90 straight up
 
  //private final Encoder m_encoder = new Encoder(ArmConstants.kEncoderPorts[0], ArmConstants.kEncoderPorts[1]);
-  private final ArmFeedforward m_feedforward = new ArmFeedforward(
+  private  ArmFeedforward m_elbowFeedforward = new ArmFeedforward(
       ArmConstants.kSVolts, ArmConstants.kGVolts,
-      ArmConstants.kVVoltSecondPerRad, ArmConstants.kAVoltSecondSquaredPerRad);
+      ArmConstants.kVVoltSecondPerRad);
+  private PIDController m_elbowPIDController = new PIDController(ArmConstants.kP,0,0);
   private double m_handlerSpeed = ArmConstants.kHandlerDefaultSpeed;
   private GenericEntry nt_elbowSpeed;
 
 
- /*  private ProfiledPIDController elbowPIDController = new ProfiledPIDController(ArmConstants.kP,
-  0,
-  0,
-  new TrapezoidProfile.Constraints(
-      ArmConstants.kMaxVelocityRadPerSecond,
-      ArmConstants.kMaxAccelerationRadPerSecSquared),
-      0);
-*/
 
 
 
@@ -63,11 +56,21 @@ public class ArmSubsystem extends SubsystemBase {
 
     config.apply(config);
     setupShuffleboard();
+    m_elbowPIDController.setTolerance(ArmConstants.kElbowAngleToleranceDeg);
   }
 
   @Override
   public void periodic() {
-    double degrees = this.getAngleDegrees();
+    moveArmToDesiredAngle();
+    checkElbowSoftLimits();
+  }
+
+  /*
+   *  Check if the elbow is exceeding angle limits.  If so, stop the motor before doing any damage
+   */
+  private void checkElbowSoftLimits() {
+    // TODO  - log some messages if limits are exceeded
+    double degrees = this.getElbowAngleDegrees();
     if (degrees > Constants.ArmConstants.kMaxElbowAngle){
       maxLimitReached = true;
       if(m_elbow.get() < 0){
@@ -77,7 +80,7 @@ public class ArmSubsystem extends SubsystemBase {
       maxLimitReached = false;
     }
 
-    if (degrees<Constants.ArmConstants.kMinElbowAngle-20){
+    if (degrees<Constants.ArmConstants.kMinElbowAngle-20){  // TODO - what is the subtraction of 20 for????
       minLimitReached = true;
       if(m_elbow.get() > 0){
         m_elbow.stopMotor();
@@ -85,26 +88,34 @@ public class ArmSubsystem extends SubsystemBase {
     }else{
       minLimitReached = false;
     }
-    
-
   }
 
-  public void setElbowOutput() {
-    // TODO - implement.
-    // Calculate the feedforward from the sepoint
-    /*
-    double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-    double pidOutput = elbowPIDController.calculate(double output, TrapezoidProfile.State setpoint)
+  /*
+   * either moves the elbow/arm to the desired angle, or hold it there if at angle
+   */
+  public void moveArmToDesiredAngle() {
+       
+    double feedforward = m_elbowFeedforward.calculate(m_elbowDesiredAngleDeg,0.0);
+    double pidOutput = 0.0;
+    if (!m_elbowPIDController.atSetpoint()) {
+      pidOutput = m_elbowPIDController.calculate(getElbowAngleDegrees());
+    }
+     
     // Add the feedforward to the PID output to get the motor output
     double target_voltage = pidOutput + feedforward;
     
     //limit max voltage at point of applying to motor.
-    target_voltage = Math.min(target_voltage, 0.2);
+    target_voltage = Math.min(target_voltage, 0.8);
 
-    m_armMotor.setVoltage(target_voltage);
-    */
+    m_elbow.setVoltage(target_voltage);
+    
   }
 
+  // move the arm to a horizontal position
+  public void setArmHorizontal() {
+    m_elbowDesiredAngleDeg = 0.0;
+    m_elbowPIDController.setSetpoint(m_elbowDesiredAngleDeg);
+  }
 
   public void elbowMove(){
       m_elbow.set(getElbowSpeed());
@@ -142,13 +153,13 @@ public class ArmSubsystem extends SubsystemBase {
     m_intake.set(0);
   }
 
-  public double getAngleDegrees(){
-  double degrees;
-  double percentage;
-  percentage = absEncoder.get();
-  degrees = percentage*360-Constants.ArmConstants.kElbowOffset;
-  
-  return degrees;
+  public double getElbowAngleDegrees() {
+    double degrees;
+    double percentage;
+    percentage = absEncoder.get();
+    degrees = percentage * 360 - Constants.ArmConstants.kElbowOffset;
+
+    return degrees;
   }
   private void setupShuffleboard() {
 
@@ -174,7 +185,7 @@ public class ArmSubsystem extends SubsystemBase {
   } 
 
   public void initSendable(SendableBuilder builder){
-    builder.addDoubleProperty("Arm Angle", ()->getAngleDegrees(), null);
+    builder.addDoubleProperty("Arm Angle", ()->getElbowAngleDegrees(), null);
     builder.addDoubleProperty("Raw Encoder",()-> absEncoder.get(), null);
   }
 }
