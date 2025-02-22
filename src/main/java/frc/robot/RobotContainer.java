@@ -182,9 +182,10 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-      m_driveXboxController.povUp().onTrue(new InstantCommand(()-> armSubsystem.elbowMove()));
-      m_driveXboxController.povDown().onTrue(new InstantCommand(()-> armSubsystem.elbowMove()));
+      m_driveXboxController.povUp().onTrue(new InstantCommand(()-> armSubsystem.elbowUp()));
+      m_driveXboxController.povDown().onTrue(new InstantCommand(()-> armSubsystem.elbowDown()));
       m_driveXboxController.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
+      m_driveXboxController.povRight().onTrue(new InstantCommand(()-> armSubsystem.setArmHorizontal()));
 
       m_driveXboxController.button(7).onTrue(new InstantCommand(()-> armSubsystem.wristLeft()));
       m_driveXboxController.button(8).onTrue(new InstantCommand(()-> armSubsystem.wristRight()));
