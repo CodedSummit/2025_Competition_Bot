@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.FileBackend;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -27,6 +28,9 @@ public class Robot extends TimedRobot {
 
 
   public Robot(){
+    Epilogue.configure(config -> {
+      config.root = "Telemetry";
+    });
     Epilogue.bind(this);
   }
   /**
@@ -37,8 +41,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
     DataLogManager.start();
+    m_robotContainer = new RobotContainer();
   }
 
   /**

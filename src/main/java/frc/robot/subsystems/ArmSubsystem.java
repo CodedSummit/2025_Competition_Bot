@@ -89,7 +89,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     if (degrees<Constants.ArmConstants.kMinElbowAngle){
       minLimitReached = true;
-      System.out.println("lower limit exceed:"+degrees);
+      //System.out.println("lower limit exceed:"+degrees);
 
       if(m_elbow.get() < 0){
         m_elbow.stopMotor();
