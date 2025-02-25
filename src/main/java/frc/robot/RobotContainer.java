@@ -141,12 +141,15 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
 
-    m_driveXboxController.button(4).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+    //m_driveXboxController.button(4).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
-    m_driveXboxController.button(2).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorUp()));
-    m_driveXboxController.button(1).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown()));
-    m_driveXboxController.button(3).onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
+    //m_driveXboxController.button(4).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorUp())).onFalse(new InstantCommand(()->elevatorSubsystem.stopElevator()));
+    //m_driveXboxController.button(1).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown())).onFalse(new InstantCommand(()->elevatorSubsystem.stopElevator()));
+    //m_driveXboxController.button(3).onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
     
+    m_driveXboxController.y().whileTrue(elevatorSubsystem.elevatorUp());
+    m_driveXboxController.a().whileTrue(elevatorSubsystem.elevatorDown());
+
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
 
