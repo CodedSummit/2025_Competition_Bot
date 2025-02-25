@@ -35,7 +35,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(input);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
-  private final SparkMax m_intake = new SparkMax(8, MotorType.kBrushless);
+  private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
   private double m_elbowSpeed = 0.2;
@@ -65,10 +65,13 @@ public class ArmSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    /*
     if(m_autoElbowEnabled){
       moveArmToDesiredAngle();
     };
+    */
     checkElbowSoftLimits();
+    
   }
 
   /*
@@ -103,7 +106,7 @@ public class ArmSubsystem extends SubsystemBase {
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
    */
   public void moveArmToDesiredAngle() {
-       
+ //   m_elbowSpeed = nt_elbowSpeed.getDouble(0);   
     feedforward = m_elbowFeedforward.calculate(m_elbowDesiredAngleDeg,0.0);
     // convert feedforward from nominal voltage to %, based on current voltage. 
     // hopefully this compensates for battery depletion to still supply the correct voltage to maintain position
@@ -117,7 +120,7 @@ public class ArmSubsystem extends SubsystemBase {
     target_speed = pidOutput + feedforward;
     
     //limit max speed at point of applying to motor.
-    target_speed = Math.min(target_speed, 0.8);
+    target_speed = Math.min(target_speed, 0.05);
 
     setElbowSpeed(target_speed);
     
@@ -145,23 +148,26 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void elbowUp() {
     if (!maxLimitReached) {
+     // m_elbow.set(0.8);
       setElbowSpeed(0.8);
-      m_autoElbowEnabled = false;
+    //  m_autoElbowEnabled = false;
     }
   }
 
   public void elbowDown() {
     if (!minLimitReached) {
-      setElbowSpeed(-0.2);
-      m_autoElbowEnabled = false;
+      //m_elbow.set(-0.8);
+      setElbowSpeed(-0.08);
+   //   m_autoElbowEnabled = false;
     }  
   }
 
   public void stopElbow() {
     m_elbow.set(0);
     setArmAngle(getElbowAngleDegrees()); // hold that position
-    m_autoElbowEnabled = true;
+ //   m_autoElbowEnabled = true;
   }
+  
   public void wristLeft(){
     m_wrist.set(0.1);
   }
@@ -171,15 +177,15 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void intakeCoral(){
-    m_intake.set(0.1);
+    m_hand.set(0.1);
     new WaitCommand(2);
-    m_intake.set(0);
+    m_hand.set(0);
   }
 
   public void placeCoral(){
-    m_intake.set(-0.1);
+    m_hand.set(-0.1);
     new WaitCommand(2);
-    m_intake.set(0);
+    m_hand.set(0);
   }
 
 
@@ -189,7 +195,7 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void stopIntake(){
-    m_intake.set(0);
+    m_hand.set(0);
   }
 
   public double getElbowAngleDegrees() {
@@ -206,7 +212,7 @@ public class ArmSubsystem extends SubsystemBase {
     nt_elbowSpeed = armTab.addPersistent("Elbow speed", m_elbowSpeed)
         .withSize(3, 1)
         .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -1, "max", 1))
+        .withProperties(Map.of("min", 0, "max", 2))
         .getEntry();
 
   

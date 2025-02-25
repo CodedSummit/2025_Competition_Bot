@@ -183,7 +183,7 @@ public static final class ArmConstants {
   public static int[] kEncoderPorts = new int[] { 28, 29 };;
   // feedforward constants:
   public static double kSVolts = 0.0;
-  public static double kGVolts = 1.36;
+  public static double kGVolts = 0.18;
   public static double kVVoltSecondPerRad = 1.95;
   
   public static double kArmBumpIncrementDeg = 1.0;
