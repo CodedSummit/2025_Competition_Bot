@@ -69,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.BackRight.DriveAbsoluteEncoderReversed);
 
     //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-    Pigeon2 gyro = new Pigeon2(10); // Pigeon is on CAN Bus with device ID 0
+    Pigeon2 gyro = new Pigeon2(20); // Pigeon is on CAN Bus with device ID 0
 
     private final SwerveDrivePoseEstimator odometer = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             new Rotation2d(0), getModulePositions(), new Pose2d());
