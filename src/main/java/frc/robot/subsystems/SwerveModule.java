@@ -41,7 +41,7 @@ public class SwerveModule implements Sendable {
 
         // we load the absolute encoder offsets from config, allowing easier calibration.
         encoderOffsetKey = "absoluteEndcoderOffsetRadWheel"+driveid;
-        Preferences.initDouble(encoderOffsetKey, 0);
+        Preferences.initDouble(encoderOffsetKey, 6.283185307179586);
 
         this.absoluteEncoderReversed = absoluteEncoderReversed;
 
@@ -70,6 +70,7 @@ public class SwerveModule implements Sendable {
     }
 
     public void lockEncoderOffset(){
+        System.out.println(encoderOffsetKey + " changed to " + getRawAbsoluteEncoderRad());
         Preferences.setDouble(encoderOffsetKey, getRawAbsoluteEncoderRad());
         loadPreferences(); //to read it back out via round trip.
     }

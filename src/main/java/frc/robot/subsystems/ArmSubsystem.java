@@ -87,7 +87,7 @@ public class ArmSubsystem extends SubsystemBase {
     double degrees = this.getElbowAngleDegrees();
     if (degrees > Constants.ArmConstants.kMaxElbowAngle){
       maxLimitReached = true;
-      System.out.println("upper limit exceed:"+degrees);
+  //    System.out.println("upper limit exceed:"+degrees);
       if(m_elbow.get() > 0){
         m_elbow.stopMotor();
       }

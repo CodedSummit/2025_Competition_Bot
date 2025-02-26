@@ -25,7 +25,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.SetWheelAlignment;
 import frc.robot.commands.ZeroOdometry;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -69,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
             DriveConstants.BackRight.DriveAbsoluteEncoderReversed);
 
     //private final ADIS16470_IMU gyro = new ADIS16470_IMU();
-    PigeonIMU gyro = new PigeonIMU(10); // Pigeon is on CAN Bus with device ID 0
+    Pigeon2 gyro = new Pigeon2(10); // Pigeon is on CAN Bus with device ID 0
 
     private final SwerveDrivePoseEstimator odometer = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             new Rotation2d(0), getModulePositions(), new Pose2d());
@@ -124,7 +124,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 .withProperties(Map.of("min", 0, "max", 1)) // specify widget properties here
                 .getEntry();
 
-        swerveTab.addDouble("Gyro data", () -> gyro.getYaw());
+        swerveTab.addDouble("Gyro data", () -> gyro.getYaw().getValueAsDouble());
 
         swerveTab.add("Field", m_field);
 
@@ -197,7 +197,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public double getHeading() {
         //return Math.IEEEremainder(gyro.getAngle(gyro.getYawAxis()), 360); 
-        return Math.IEEEremainder(gyro.getYaw(), 360);   
+        return Math.IEEEremainder(gyro.getYaw().getValueAsDouble(), 360.0);   
     }
 
     public Rotation2d getRotation2d() {
@@ -212,7 +212,7 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        odometer.resetPosition(Rotation2d.fromDegrees(gyro.getYaw()), getModulePositions(), pose);
+        odometer.resetPosition(Rotation2d.fromDegrees(gyro.getYaw().getValueAsDouble()), getModulePositions(), pose);
         //gyro.setGyroAngleZ(pose.getRotation().getDegrees());
         //gyro.setYaw(pose.getRotation().getDegrees());
     }

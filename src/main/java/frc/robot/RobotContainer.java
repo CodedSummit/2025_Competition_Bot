@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.ChaseTagCommand;
+import frc.robot.commands.SetWheelAlignment;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -149,6 +150,7 @@ public class RobotContainer {
     
     m_driveXboxController.y().whileTrue(elevatorSubsystem.elevatorUp());
     m_driveXboxController.a().whileTrue(elevatorSubsystem.elevatorDown());
+    m_driveXboxController.x().onTrue(new SetWheelAlignment(swerveSubsystem));
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
