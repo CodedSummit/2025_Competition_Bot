@@ -203,7 +203,7 @@ public static final class ArmConstants {
   public static final double kMinElbowAngle = -47; // Actual value:
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
-  public static final double kElbowDownSpeed = 0.05;
+  public static final double kElbowDownSpeed = 0.1;
   public static final double kElbowHoldSpeed = 0.015;  // hold the current position
   public static String kElbowSpeedPrefKey = "Arm.ElbowSpeed";
   public static String kElbowUpSpeedPrefKey = "Arm.ElbowUpSpeed";

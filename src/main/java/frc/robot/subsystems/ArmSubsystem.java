@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -38,9 +39,9 @@ public class ArmSubsystem extends SubsystemBase {
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
-  private double m_elbowSpeed = 0.2;
-  private double m_elbowUpSpeed = Constants.ArmConstants.kElbowUpSpeed;
-  private double m_elbowDownSpeed = Constants.ArmConstants.kElbowDownSpeed;  // make vars to allow tuning
+  //private double m_elbowSpeed = 0.2;
+  //private double m_elbowUpSpeed = Constd;
+  //private double m_elbowDownSpeed = Constants.ArmConstants.kElbowDownSpeed;  // make vars to allow tuning
   
   private double m_elbowDesiredAngleDeg = 0.0;  // Angle we want the arm.  0.0 is horizontal, 90 straight up
 
@@ -53,6 +54,7 @@ public class ArmSubsystem extends SubsystemBase {
   private GenericEntry nt_elbowSpeed;
   private GenericEntry nt_elbowUPSpeed;
   private GenericEntry nt_elbowDOWNSpeed;
+  private GenericEntry nt_wristSpeed;
   private double m_percentage;
   private double m_degrees;
   private boolean m_autoElbowEnabled = false;
@@ -71,9 +73,9 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     
-    if(m_autoElbowEnabled){
+    /*if(m_autoElbowEnabled){
       moveArmToDesiredAngle();
-    };
+    };*/
     
     checkElbowSoftLimits();
     
@@ -107,6 +109,47 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
+  public Command manualElbowUp(){
+    return this.startEnd(
+      // Command Start
+      () -> elbowUp(),
+      // Command End
+      () -> elbowHold()
+    );
+  }
+
+  public Command manualElbowDown(){
+    return this.startEnd(
+      // Command Start
+      () -> elbowDown(),
+      // Command End
+      () -> elbowHold()
+    );
+  }
+
+  private double getWristSpeed(){
+    return nt_wristSpeed.getDouble(0.1);
+  }
+
+  public Command manualWristCW(){
+    return this.startEnd(
+      // Command Start
+      () -> m_wrist.set(getWristSpeed()),
+      // Command End
+      () -> m_wrist.stopMotor()
+    );
+  }
+  
+  public Command manualWristCCW(){
+    return this.startEnd(
+      // Command Start
+      () -> m_wrist.set(-getWristSpeed()),
+      // Command End
+      () -> m_wrist.stopMotor()
+    );
+  }
+
+
   /*
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
    */
@@ -132,6 +175,7 @@ public class ArmSubsystem extends SubsystemBase {
     // see if we're "close enough" to the target desired angle
     if (Math.abs(getElbowAngleDegrees() - m_elbowDesiredAngleDeg) <= Constants.ArmConstants.kElbowAngleToleranceDeg) {
       // close enough
+      System.out.println(" At requested elbow angle:"+getElbowAngleDegrees());
       return true;
     }
     return false;
@@ -178,15 +222,17 @@ public class ArmSubsystem extends SubsystemBase {
  */
 
   public void elbowUp() {
-    if (!maxLimitReached) {
-      setElbowSpeed(m_elbowUpSpeed);
-    }
+      setElbowSpeed(getElbowUPSpeed());
+   
   }
 
   public void elbowDown() {
-    if (!minLimitReached) {
-      setElbowSpeed(m_elbowDownSpeed);
-    }  
+      setElbowSpeed(getElbowDOWNSpeed());
+  }
+
+  private void elbowHold(){
+    // I've bypassed the setElbowSpeed method to avoid all the calculations there. This can use that method if we test it to work.
+    m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed);
   }
 
   public void stopElbow() {
@@ -234,22 +280,22 @@ public class ArmSubsystem extends SubsystemBase {
 
     ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
 
-    nt_elbowSpeed = armTab.addPersistent("Elbow speed", m_elbowSpeed)
+    nt_elbowUPSpeed = armTab.addPersistent("Elbow UP speed", Constants.ArmConstants.kElbowUpSpeed)
         .withSize(3, 1)
         .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 2))
+        .withProperties(Map.of("min", 0, "max", 1))
         .getEntry();
 
-    nt_elbowUPSpeed = armTab.addPersistent("Elbow UP speed", m_elbowUpSpeed)
+    nt_elbowDOWNSpeed = armTab.addPersistent("Elbow DOWN speed", Constants.ArmConstants.kElbowDownSpeed)
         .withSize(3, 1)
         .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 2))
+        .withProperties(Map.of("min", 0, "max", 1))
         .getEntry();
 
-    nt_elbowDOWNSpeed = armTab.addPersistent("Elbow DOWN speed", m_elbowDownSpeed)
+    nt_wristSpeed = armTab.addPersistent("Wrist speed", 0.1)
         .withSize(3, 1)
         .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", -2, "max", 0))
+        .withProperties(Map.of("min", 0, "max", 1))
         .getEntry();
 
   }
@@ -288,32 +334,23 @@ public class ArmSubsystem extends SubsystemBase {
     }
   }
 
-  public double getElbowSpeed() {
-
-    if (m_elbowSpeed != nt_elbowSpeed.getDouble(Constants.ArmConstants.kElbowSpeed)) {
-      // get the value from the Shuffleboard slider.  If it changed salt it away for future reboots
-      m_elbowSpeed = nt_elbowSpeed.getDouble(Constants.ArmConstants.kElbowSpeed);
-      Preferences.setDouble(Constants.ArmConstants.kElbowSpeedPrefKey, m_elbowSpeed);
-    }
-    return m_elbowSpeed;
-  } 
   public double getElbowUPSpeed() {
 
-    if (m_elbowUpSpeed != nt_elbowUPSpeed.getDouble(Constants.ArmConstants.kElbowUpSpeed)) {
+  //  if (m_elbowUpSpeed != nt_elbowUPSpeed.getDouble(Constants.ArmConstants.kElbowUpSpeed)) {
       // get the value from the Shuffleboard slider.  If it changed salt it away for future reboots
-      m_elbowSpeed = nt_elbowUPSpeed.getDouble(Constants.ArmConstants.kElbowUpSpeed);
-      Preferences.setDouble(Constants.ArmConstants.kElbowUpSpeedPrefKey, m_elbowUpSpeed);
-    }
-    return m_elbowUpSpeed;
+      double elbowUpSpeed = nt_elbowUPSpeed.getDouble(Constants.ArmConstants.kElbowUpSpeed);
+    //  Preferences.setDouble(Constants.ArmConstants.kElbowUpSpeedPrefKey, m_elbowUpSpeed);
+    //}
+    return elbowUpSpeed;
   } 
   public double getElbowDOWNSpeed() {
 
-    if (m_elbowDownSpeed != nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed)) {
+ //   if (m_elbowDownSpeed != nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed)) {
       // get the value from the Shuffleboard slider.  If it changed salt it away for future reboots
-      m_elbowDownSpeed = nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed);
-      Preferences.setDouble(Constants.ArmConstants.kElbowDownSpeedPrefKey, m_elbowDownSpeed);
-    }
-    return m_elbowDownSpeed;
+      double elbowDownSpeed = nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed);
+   //   Preferences.setDouble(Constants.ArmConstants.kElbowDownSpeedPrefKey, m_elbowDownSpeed);
+   // }
+    return -elbowDownSpeed;
   } 
   public void initSendable(SendableBuilder builder){
     builder.addDoubleProperty("Raw Absolute Encoder", ()-> m_percentage, null);
