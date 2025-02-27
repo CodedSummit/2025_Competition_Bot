@@ -114,10 +114,9 @@ public class ArmSubsystem extends SubsystemBase {
  
     if (elbowAtDesiredAngle()) {
       // we've reached the goal angle, hold now
-      setElbowSpeed(Constants.ArmConstants.kElbowHoldSpeed);
+      m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed);
     }
-
-    if (getElbowAngleDegrees() < m_elbowDesiredAngleDeg ) {
+    else if (getElbowAngleDegrees() < m_elbowDesiredAngleDeg ) {
       // need to move up to desired angle
       setElbowSpeed(getElbowUPSpeed());
     }
@@ -178,15 +177,15 @@ public class ArmSubsystem extends SubsystemBase {
  */
 
   public void elbowUp() {
-    if (!maxLimitReached) {
+    
       setElbowSpeed(m_elbowUpSpeed);
-    }
+    
   }
 
   public void elbowDown() {
-    if (!minLimitReached) {
+   
       setElbowSpeed(m_elbowDownSpeed);
-    }  
+   
   }
 
   public void stopElbow() {
