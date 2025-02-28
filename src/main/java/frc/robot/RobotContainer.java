@@ -191,6 +191,7 @@ public class RobotContainer {
 
       m_driveXboxController.povDown().whileTrue(armSubsystem.manualElbowUp());
       m_driveXboxController.povUp().whileTrue(armSubsystem.manualElbowDown());
+      m_driveXboxController.b().onTrue(armSubsystem.cmdArmHorizontal());
       //m_driveXboxController.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
       //m_driveXboxController.povRight().onTrue(new InstantCommand(()-> armSubsystem.setArmHorizontal()));
 

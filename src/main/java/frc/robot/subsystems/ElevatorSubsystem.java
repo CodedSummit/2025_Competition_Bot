@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import java.util.Map;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig;
@@ -24,17 +26,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ElevatorSubsystem extends SubsystemBase {
 
   private final SparkFlexConfig config = new SparkFlexConfig();
-  private final AbsoluteEncoderConfig encoderConfig = new AbsoluteEncoderConfig();
   private final LimitSwitchConfig limitConfig = new LimitSwitchConfig();
   private final SparkFlex m_elevator = new SparkFlex(5, MotorType.kBrushless);
+  private final RelativeEncoder m_encoder = m_elevator.getEncoder();
+  
   
 private GenericEntry elevator_speed_entry;
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {
 
-    config.apply(encoderConfig);
     config.apply(limitConfig);
+ //   initialize();
 
     //shuffleboard setup w/dashboard editing
     ShuffleboardTab elevatorTab = Shuffleboard.getTab("Elevator");
@@ -46,6 +49,8 @@ private GenericEntry elevator_speed_entry;
       .withWidget(BuiltInWidgets.kNumberSlider)
       .withProperties(Map.of("min", 0, "max", 1))
       .getEntry();
+
+
   }
 
   @Override
@@ -75,6 +80,10 @@ private GenericEntry elevator_speed_entry;
     return elevator_speed_entry.getDouble(0.25);
   }
 
+  public double getHeight(){
+    return m_encoder.getPosition();
+  }
+
   public Command elevatorUp(){
     return this.startEnd(
       // Start a flywheel spinning at 50% power
@@ -97,5 +106,14 @@ private GenericEntry elevator_speed_entry;
 
   public void stopElevator(){
     m_elevator.set(0);
+  }
+
+  protected void initialize(){
+    SparkLimitSwitch bottomSwitch = m_elevator.getReverseLimitSwitch();
+    while(!bottomSwitch.isPressed()){
+      elevatorDown();
+    }
+    stopElevator();
+    m_encoder.setPosition(0.0);
   }
 }

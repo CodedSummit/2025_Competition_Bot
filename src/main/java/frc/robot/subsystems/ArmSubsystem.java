@@ -175,6 +175,12 @@ public class ArmSubsystem extends SubsystemBase {
       ()-> m_hand.set(0));
   }
 
+  public Command cmdArmHorizontal() {
+    return this.startRun(
+      ()->setArmAngle(0.0),
+      ()->moveArmToDesiredAngle());
+    } 
+  
 
   /*
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
@@ -229,7 +235,7 @@ public class ArmSubsystem extends SubsystemBase {
   // move the arm to a horizontal position
   public void setArmHorizontal() {
     setArmAngle(0.0);
-    m_autoElbowEnabled = true;
+   // m_autoElbowEnabled = true;
   }
 
   // use PID positioning to bump arm up/down
@@ -332,7 +338,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private void setArmAngle(double desiredAngle) {
     m_elbowDesiredAngleDeg = desiredAngle;
-    m_elbowPIDController.setSetpoint(desiredAngle);
+   // m_elbowPIDController.setSetpoint(desiredAngle);
   }
 
   /*
