@@ -44,6 +44,7 @@ public final class Constants {
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
     public static final double kPTurning = 0.1;
+    public static final double kMaybeGearOffset = 6.283185307179586;
 }
 
 public static final class DriveConstants {
@@ -198,9 +199,9 @@ public static final class ArmConstants {
   public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = 81.1; // In Degrees
-  public static final double kMaxElbowAngle = 74.5; // Actual value: 
-  public static final double kMinElbowAngle = -47; // Actual value:
+  public static final double kElbowOffset = -40.1; // In Degrees
+  public static final double kMaxElbowAngle = 72.8; // Actual value: 
+  public static final double kMinElbowAngle = -40.6; // Actual value:
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
   public static final double kElbowDownSpeed = 0.1;

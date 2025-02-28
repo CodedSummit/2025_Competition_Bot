@@ -18,7 +18,6 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -33,7 +32,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private SparkMaxConfig config= new SparkMaxConfig();
   private final DigitalInput input = new DigitalInput(7);
-  private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(input);
+  private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(input, -1.0, -Constants.ArmConstants.kElbowOffset);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
@@ -68,6 +67,8 @@ public class ArmSubsystem extends SubsystemBase {
     config.apply(config);
     setupShuffleboard();
     m_elbowPIDController.setTolerance(ArmConstants.kElbowAngleToleranceDeg);
+    absEncoder.setInverted(true);
+    absEncoder.setDutyCycleRange(-180, 180);
   }
 
   @Override
@@ -85,29 +86,42 @@ public class ArmSubsystem extends SubsystemBase {
    *  Check if the elbow is exceeding angle limits.  If so and it's going the wrong direction, stop the motor before doing any damage
    */
   private void checkElbowSoftLimits() {
-    // TODO  - log some messages if limits are exceeded
-    double degrees = this.getElbowAngleDegrees();
-    if (degrees > Constants.ArmConstants.kMaxElbowAngle){
-      maxLimitReached = true;
-  //    System.out.println("upper limit exceed:"+degrees);
-      if(m_elbow.get() > 0){
-        m_elbow.stopMotor();
-      }
-    }else{
-      maxLimitReached = false;
+    if(goingUp() && maximumLimitReached()){
+      m_elbow.stopMotor();
     }
 
-    if (degrees<Constants.ArmConstants.kMinElbowAngle){
-      minLimitReached = true;
+    if(goingDown() && minimumLimitReached()){
+      m_elbow.stopMotor();
+    }
+  };
+
+  public boolean maximumLimitReached(){
+    double degrees = this.getArmAngle();
+    boolean limitHit = true;
+    if (degrees < Constants.ArmConstants.kMaxElbowAngle){
+      limitHit = false;
       //System.out.println("lower limit exceed:"+degrees);
-
-      if(m_elbow.get() < 0){
-        m_elbow.stopMotor();
-      }
-    }else{
-      minLimitReached = false;
     }
+    return limitHit;
   }
+
+  public boolean minimumLimitReached(){
+    double degrees = this.getArmAngle();
+    boolean limitHit = true;
+    if (degrees > Constants.ArmConstants.kMinElbowAngle){
+      limitHit = false;
+      //System.out.println("lower limit exceed:"+degrees);
+    }
+    return limitHit;
+  }
+
+    public boolean goingUp(){
+      return m_elbow.get() > Constants.ArmConstants.kElbowHoldSpeed;
+    }  
+
+    public boolean goingDown(){
+      return m_elbow.get() < 0;
+    }  
 
   public Command manualElbowUp(){
     return this.startEnd(
@@ -149,6 +163,18 @@ public class ArmSubsystem extends SubsystemBase {
     );
   }
 
+  public Command manualIntakeCoral(){
+    return this.startEnd(
+      ()-> m_hand.set(-1), 
+      ()-> m_hand.set(0));
+  }
+
+  public Command manualReleaseCoral(){
+    return this.startEnd(
+      ()-> m_hand.set(1), 
+      ()-> m_hand.set(0));
+  }
+
 
   /*
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
@@ -159,11 +185,11 @@ public class ArmSubsystem extends SubsystemBase {
       // we've reached the goal angle, hold now
       m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed);
     }
-    else if (getElbowAngleDegrees() < m_elbowDesiredAngleDeg ) {
+    else if (getArmAngle() < m_elbowDesiredAngleDeg ) {
       // need to move up to desired angle
       setElbowSpeed(getElbowUPSpeed());
     }
-    else if (getElbowAngleDegrees() > m_elbowDesiredAngleDeg) {
+    else if (getArmAngle() > m_elbowDesiredAngleDeg) {
       // move down to desired angle
       setElbowSpeed(getElbowDOWNSpeed());
     }
@@ -172,9 +198,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   protected boolean elbowAtDesiredAngle() {
     // see if we're "close enough" to the target desired angle
-    if (Math.abs(getElbowAngleDegrees() - m_elbowDesiredAngleDeg) <= Constants.ArmConstants.kElbowAngleToleranceDeg) {
+    if (Math.abs(getArmAngle() - m_elbowDesiredAngleDeg) <= Constants.ArmConstants.kElbowAngleToleranceDeg) {
       // close enough
-      System.out.println(" At requested elbow angle:"+getElbowAngleDegrees());
+  //    System.out.println(" At requested elbow angle:"+getElbowAngleDegrees());
       return true;
     }
     return false;
@@ -188,7 +214,7 @@ public class ArmSubsystem extends SubsystemBase {
     // hopefully this compensates for battery depletion to still supply the correct voltage to maintain position
     feedforward = feedforward / m_elbow.getBusVoltage();
     pidOutput = 0.0;
-      pidOutput = m_elbowPIDController.calculate(getElbowAngleDegrees());
+      pidOutput = m_elbowPIDController.calculate(getArmAngle());
      
     // Add the feedforward to the PID output to get the motor output
     target_speed = pidOutput + feedforward;
@@ -236,7 +262,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void stopElbow() {
     m_elbow.set(0);
-    setArmAngle(getElbowAngleDegrees()); // hold that position
+    setArmAngle(getArmAngle()); // hold that position
   }
   
   public void wristLeft(){
@@ -247,11 +273,6 @@ public class ArmSubsystem extends SubsystemBase {
     m_wrist.set(-0.1);
   }
 
-  public void intakeCoral(){
-    m_hand.set(0.1);
-    new WaitCommand(2);
-    m_hand.set(0);
-  }
 
   public void placeCoral(){
     m_hand.set(-0.1);
@@ -269,12 +290,22 @@ public class ArmSubsystem extends SubsystemBase {
     m_hand.set(0);
   }
 
-  public double getElbowAngleDegrees() {
+  public double getRawElbowAngleDegrees() {
 
     m_percentage = absEncoder.get();
-    m_degrees = m_percentage * 360 - Constants.ArmConstants.kElbowOffset;
+    m_degrees = m_percentage * 360;
     return m_degrees;
   }
+
+  public double getArmAngle(){
+    double d = getRawElbowAngleDegrees();
+    if(d < -180){
+      d = d + 360;
+      return d;
+    }
+    return d;
+  }
+
   private void setupShuffleboard() {
 
     ShuffleboardTab armTab = Shuffleboard.getTab("Arm");
@@ -309,13 +340,21 @@ public class ArmSubsystem extends SubsystemBase {
    * Else make no change to the motor speed
    */
   protected void setElbowSpeed(double setspeed) {
+    if (setspeed > 0 && maximumLimitReached()){
+      return;
+    }
+
+    if (setspeed < 0 && minimumLimitReached()){
+      return;
+    }
+/* 
     m_autoElbowEnabled = true; // we've requested arm movement, enable it 
     double dampenedSpeed = setspeed;
     // dial down the requested speed if we are close to the target angle
-    if (Math.abs(getElbowAngleDegrees() - m_elbowDesiredAngleDeg) <= (3.0*Constants.ArmConstants.kElbowAngleToleranceDeg)) {
+    if (Math.abs(getArmAngle() - m_elbowDesiredAngleDeg) <= (3.0*Constants.ArmConstants.kElbowAngleToleranceDeg)) {
       dampenedSpeed = 0.5*setspeed;
     }
-    double degrees = this.getElbowAngleDegrees();
+    double degrees = this.getArmAngle();
     if ((degrees < Constants.ArmConstants.kMaxElbowAngle) &&
         (degrees > Constants.ArmConstants.kMinElbowAngle)) {
       // This is ok - not in limit so set the speed regardless of direction
@@ -331,6 +370,8 @@ public class ArmSubsystem extends SubsystemBase {
       // away from the limit
       m_elbow.set(dampenedSpeed);
     }
+      */
+      m_elbow.set(setspeed);
   }
 
   public double getElbowUPSpeed() {

@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -18,6 +19,8 @@ import frc.robot.Constants.ModuleConstants;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+
+@Logged
 public class SwerveModule implements Sendable {
     private final TalonFX driveTalonFX;
     private final SparkMax turningMotor;
@@ -41,7 +44,7 @@ public class SwerveModule implements Sendable {
 
         // we load the absolute encoder offsets from config, allowing easier calibration.
         encoderOffsetKey = "absoluteEndcoderOffsetRadWheel"+driveid;
-        Preferences.initDouble(encoderOffsetKey, 6.283185307179586);
+        Preferences.initDouble(encoderOffsetKey, 0.0);
 
         this.absoluteEncoderReversed = absoluteEncoderReversed;
 
@@ -70,7 +73,7 @@ public class SwerveModule implements Sendable {
     }
 
     public void lockEncoderOffset(){
-        System.out.println(encoderOffsetKey + " changed to " + getRawAbsoluteEncoderRad());
+  //      System.out.println(encoderOffsetKey + " changed to " + getRawAbsoluteEncoderRad());
         Preferences.setDouble(encoderOffsetKey, getRawAbsoluteEncoderRad());
         loadPreferences(); //to read it back out via round trip.
     }

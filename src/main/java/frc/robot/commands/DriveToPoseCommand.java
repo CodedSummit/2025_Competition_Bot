@@ -99,8 +99,8 @@ public class DriveToPoseCommand extends Command {
    *  Update the goal to the provided pose (in Robot centered coordinates)
    */
   public void updateGoal(Pose2d newGoal){
-    System.out.println(" Updating goal in DriveCommand to X:"+newGoal.getX()+" Y:"+newGoal.getY()
-    +" rotation:"+newGoal.getRotation().getRadians());
+//    System.out.println(" Updating goal in DriveCommand to X:"+newGoal.getX()+" Y:"+newGoal.getY()
+ //   +" rotation:"+newGoal.getRotation().getRadians();
   
     m_goalPose = newGoal;
     if (m_goalPose != null) {
@@ -140,10 +140,10 @@ public class DriveToPoseCommand extends Command {
 
     if (m_xController.atGoal() && m_yController.atGoal() && m_omegaController.atGoal()) {
       // if we're at the goal in all dimensions, we're done
-      System.out.println("Reached the Vision target goal - STOPPING");
+ //     System.out.println("Reached the Vision target goal - STOPPING");
       return true;
     }
-    System.out.println("xgoal:"+m_xController.atGoal()+" ygoal:"+m_yController.atGoal()+ " ogoal:"+m_omegaController.atGoal());
+//    System.out.println("xgoal:"+m_xController.atGoal()+" ygoal:"+m_yController.atGoal()+ " ogoal:"+m_omegaController.atGoal());
     return false;
   }
   @Override

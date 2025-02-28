@@ -302,7 +302,7 @@ public class SwerveSubsystem extends SubsystemBase {
         } catch (Exception e) {
             DriverStation.reportError("Failed to load RobotConfig settings from GUI", null);
         }
-        System.out.println("  Generating path for file:" + pathName);
+  //      System.out.println("  Generating path for file:" + pathName);
         command = new FollowPathCommand(
                 path,
                 this::getPose, // Robot pose supplier

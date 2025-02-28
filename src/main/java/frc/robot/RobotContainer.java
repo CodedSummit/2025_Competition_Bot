@@ -73,14 +73,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
+ /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
 
     UsbCamera riocam_shooter = CameraServer.startAutomaticCapture();
     riocam_shooter.setFPS(5);
     riocam_shooter.setResolution(160, 120);
-    
+  */  
     // Configure the trigger bindings
 
     swerveJoystickCmd = new SwerveJoystickCmd(
@@ -189,13 +189,16 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-      m_driveXboxController.povUp().whileTrue(armSubsystem.manualElbowUp());
-      m_driveXboxController.povDown().whileTrue(armSubsystem.manualElbowDown());
+      m_driveXboxController.povDown().whileTrue(armSubsystem.manualElbowUp());
+      m_driveXboxController.povUp().whileTrue(armSubsystem.manualElbowDown());
       //m_driveXboxController.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
       //m_driveXboxController.povRight().onTrue(new InstantCommand(()-> armSubsystem.setArmHorizontal()));
 
       m_driveXboxController.povRight().whileTrue(armSubsystem.manualWristCW());
       m_driveXboxController.povLeft().whileTrue(armSubsystem.manualWristCCW());
+
+      m_driveXboxController.button(7).whileTrue(armSubsystem.manualIntakeCoral());
+      m_driveXboxController.button(8).whileTrue(armSubsystem.manualReleaseCoral());
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));
