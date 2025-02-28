@@ -150,7 +150,7 @@ public class RobotContainer {
     
     m_driveXboxController.y().whileTrue(elevatorSubsystem.elevatorUp());
     m_driveXboxController.a().whileTrue(elevatorSubsystem.elevatorDown());
-    m_driveXboxController.x().onTrue(new SetWheelAlignment(swerveSubsystem));
+    m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
