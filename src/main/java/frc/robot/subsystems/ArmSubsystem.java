@@ -37,9 +37,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   private SparkMaxConfig config= new SparkMaxConfig();
   private final DigitalInput inputElbow = new DigitalInput(7);
-  private final DigitalInput inputWrist = new DigitalInput(10);
+  private final DigitalInput inputWrist = new DigitalInput(8);
   private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
-  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
+  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputWrist, -1.0, -Constants.ArmConstants.kElbowOffset);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
@@ -52,7 +52,7 @@ public class ArmSubsystem extends SubsystemBase {
   //private double m_elbowDownSpeed = Constants.ArmConstants.kElbowDownSpeed;  // make vars to allow tuning
   
   private double m_elbowDesiredAngleDeg = 0.0;  // Angle we want the arm.  0.0 is horizontal, 90 straight up
-  private double wristDesiredAngleDeg = 0.0;
+  public double wristDesiredAngleDeg = 90.0;
 
  //private final Encoder m_encoder = new Encoder(ArmConstants.kEncoderPorts[0], ArmConstants.kEncoderPorts[1]);
   private  ArmFeedforward m_elbowFeedforward = new ArmFeedforward(
@@ -79,6 +79,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_elbowPIDController.setTolerance(ArmConstants.kElbowAngleToleranceDeg);
     absEncoder.setInverted(true);
     absEncoder.setDutyCycleRange(-180, 180);
+    wristEncoder.setInverted(true);
   }
 
   @Override
@@ -89,7 +90,7 @@ public class ArmSubsystem extends SubsystemBase {
     };*/
     
     checkElbowSoftLimits();
-    
+    checkWristSoftLimits();
   }
 
   /*
@@ -102,6 +103,16 @@ public class ArmSubsystem extends SubsystemBase {
 
     if(goingDown() && minimumLimitReached()){
       m_elbow.stopMotor();
+    }
+  };
+
+  private void checkWristSoftLimits() {
+    if(goingLeft() && leftLimitReached()){
+      setWristSpeed(0);
+    }
+
+    if(goingRight() && rightLimitReached()){
+      setWristSpeed(0);;
     }
   };
 
@@ -125,6 +136,25 @@ public class ArmSubsystem extends SubsystemBase {
     return limitHit;
   }
 
+  public boolean leftLimitReached(){
+    double degrees = this.getWristAngle();
+    boolean limitHit = true;
+    if (degrees > Constants.ArmConstants.kWristLeftLimit){
+      limitHit = false;
+      //System.out.println("lower limit exceed:"+degrees);
+    }
+    return limitHit;
+  }
+
+  public boolean rightLimitReached(){
+    double degrees = this.getWristAngle();
+    boolean limitHit = true;
+    if (degrees < Constants.ArmConstants.kWristRightLimit){
+      limitHit = false;
+      //System.out.println("lower limit exceed:"+degrees);
+    }
+    return limitHit;
+  }
     public boolean goingUp(){
       return m_elbow.get() > Constants.ArmConstants.kElbowHoldSpeed;
     }  
@@ -132,6 +162,14 @@ public class ArmSubsystem extends SubsystemBase {
     public boolean goingDown(){
       return m_elbow.get() < 0;
     }  
+
+    public boolean goingLeft(){
+      return m_wrist.get() > 0;
+    }
+
+    public boolean goingRight(){
+      return m_wrist.get() < 0;
+    }
 
   public Command manualElbowUp(){
     return this.startEnd(
@@ -151,51 +189,54 @@ public class ArmSubsystem extends SubsystemBase {
     );
   }
 
-  private double getWristSpeed(){
-    return nt_wristSpeed.getDouble(0.1);
-  }
-
+  
   public Command manualWristCW(){
     return this.startEnd(
       // Command Start
       () -> setWristSpeed(getWristSpeed()),
       // Command End
       () -> m_wrist.stopMotor()
-    );
+      );
   }
-  
+    
   public Command manualWristCCW(){
     return this.startEnd(
       // Command Start
-      () -> setWristSpeed(-getWristSpeed()),
-      // Command End
-      () -> m_wrist.stopMotor()
-    );
+       () -> setWristSpeed(-getWristSpeed()),
+       // Command End
+       () -> m_wrist.stopMotor()
+       );
+    }
+      
+    public Command moveWristLeft(){
+      setWristDesiredAngle(-90);
+      return new InstantCommand(()-> moveWristToDesiredAngle());
+    }
+      
+    public Command moveWristCenter(){
+      setWristDesiredAngle(0);
+      return new InstantCommand(()-> moveWristToDesiredAngle());
+    }
+      
+    public Command moveWristRight(){
+      setWristDesiredAngle(90);
+      return new InstantCommand(()-> moveWristToDesiredAngle());
+      }
+      
+    public double getWristAngle(){
+      double angle = wristEncoder.get();
+      angle = angle * -1;
+      angle = angle * 360 - Constants.ArmConstants.kWristAngleOffset;
+      return angle;
+    }
+      
+    private double getWristSpeed(){
+      return nt_wristSpeed.getDouble(0.1);
+    }
+
+  public void setWristDesiredAngle(double angle){
+    wristDesiredAngleDeg = angle;
   }
-
-  public Command moveWristLeft(){
-    wristDesiredAngleDeg = -90;
-    return new InstantCommand(()-> moveWristToDesiredAngle());
-  }
-
-  public Command moveWristCenter(){
-    wristDesiredAngleDeg = 0;
-    return new InstantCommand(()-> moveWristToDesiredAngle());
-  }
-
-  public Command moveWristRight(){
-    wristDesiredAngleDeg = 90;
-    return new InstantCommand(()-> moveWristToDesiredAngle());
-  }
-
-  private double getWristAngle(){
-    double angle = wristEncoder.get();
-    angle = angle * 360;
-    return angle;
-  }
-
-
-
 
   public boolean hasCoral(){
     return !coralLimitSwitch.get();
@@ -280,16 +321,16 @@ public class ArmSubsystem extends SubsystemBase {
   public void moveWristToDesiredAngle() {
  
     if (wristAtDesiredAngle()) {
-      // we've reached the goal angle, hold now
-      m_wrist.set(0.0);
+      // we've reached the goal angle, stop
+     setWristSpeed(0);
     }
     else if (getWristAngle() < wristDesiredAngleDeg ) {
-      // need to move up to desired angle
-      setWristSpeed(1);
+      // need to move left to desired angle
+      setWristSpeed(-0.4);
     }
     else if (getWristAngle() > wristDesiredAngleDeg) {
-      // move down to desired angle
-      setElbowSpeed(-1);
+      // move right to desired angle
+      setWristSpeed(0.4);
     }
     
   }
@@ -374,12 +415,6 @@ public class ArmSubsystem extends SubsystemBase {
 
   public void stopIntake(){
     m_hand.set(0);
-  }
-
-  public void stopIntakeAtLimit(){
-    if(checkHandLimit()){
-      stopIntake();
-    }
   }
 
   public double getRawElbowAngleDegrees() {
@@ -485,9 +520,6 @@ public class ArmSubsystem extends SubsystemBase {
     return -elbowDownSpeed;
   } 
 
-  public boolean checkHandLimit(){
-    return handLimit.isPressed();
-  }
 
   public void initSendable(SendableBuilder builder){
     builder.addDoubleProperty("Raw Absolute Encoder", ()-> m_percentage, null);
