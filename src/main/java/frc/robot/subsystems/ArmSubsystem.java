@@ -22,8 +22,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 
@@ -38,6 +43,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
+  private DigitalInput coralLimitSwitch = new DigitalInput(6);
   //private double m_elbowSpeed = 0.2;
   //private double m_elbowUpSpeed = Constd;
   //private double m_elbowDownSpeed = Constants.ArmConstants.kElbowDownSpeed;  // make vars to allow tuning
@@ -163,6 +169,29 @@ public class ArmSubsystem extends SubsystemBase {
     );
   }
 
+
+  public boolean hasCoral(){
+    return !coralLimitSwitch.get();
+  }
+
+  public Command smartIntakeCoral(){
+    return new ConditionalCommand(
+      new SequentialCommandGroup( //if has coral
+        new InstantCommand(() -> m_hand.set(1)),
+        new WaitCommand(2),
+        new InstantCommand(() -> m_hand.set(0))
+      ),
+     new SequentialCommandGroup( //if no coral
+        new InstantCommand(() -> m_hand.set(-1)),
+        new WaitUntilCommand(() -> hasCoral()),
+        new WaitCommand(1),
+        new InstantCommand(() -> m_hand.set(0))
+    ),
+    () -> hasCoral());
+  }
+
+
+
   public Command manualIntakeCoral(){
     return this.startEnd(
       ()-> m_hand.set(-1), 
@@ -278,6 +307,10 @@ public class ArmSubsystem extends SubsystemBase {
   public void wristRight(){
     m_wrist.set(-0.1);
   }
+
+
+
+
 
 
   public void placeCoral(){

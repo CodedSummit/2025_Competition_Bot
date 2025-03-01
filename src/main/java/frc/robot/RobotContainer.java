@@ -197,8 +197,9 @@ public class RobotContainer {
       m_driveXboxController.b().whileTrue(armSubsystem.manualWristCW());
       m_driveXboxController.x().whileTrue(armSubsystem.manualWristCCW());
 
-      m_driveXboxController.button(7).whileTrue(armSubsystem.manualIntakeCoral());
-      m_driveXboxController.button(8).whileTrue(armSubsystem.manualReleaseCoral());
+      m_driveXboxController.button(7).onTrue(armSubsystem.smartIntakeCoral());
+      //m_driveXboxController.button(7).and(() ->armSubsystem.hasCoral()).whileTrue(armSubsystem.manualReleaseCoral());
+
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));
