@@ -22,9 +22,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 
@@ -40,6 +44,7 @@ public class ArmSubsystem extends SubsystemBase {
   public final SparkLimitSwitch handLimit = m_hand.getReverseLimitSwitch();
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
+  private DigitalInput coralLimitSwitch = new DigitalInput(6);
   //private double m_elbowSpeed = 0.2;
   //private double m_elbowUpSpeed = Constd;
   //private double m_elbowDownSpeed = Constants.ArmConstants.kElbowDownSpeed;  // make vars to allow tuning
@@ -165,6 +170,29 @@ public class ArmSubsystem extends SubsystemBase {
     );
   }
 
+
+  public boolean hasCoral(){
+    return !coralLimitSwitch.get();
+  }
+
+  public Command smartIntakeCoral(){
+    return new ConditionalCommand(
+      new SequentialCommandGroup( //if has coral
+        new InstantCommand(() -> m_hand.set(1)),
+        new WaitCommand(2),
+        new InstantCommand(() -> m_hand.set(0))
+      ),
+     new SequentialCommandGroup( //if no coral
+        new InstantCommand(() -> m_hand.set(-1)),
+        new WaitUntilCommand(() -> hasCoral()),
+        new WaitCommand(1),
+        new InstantCommand(() -> m_hand.set(0))
+    ),
+    () -> hasCoral());
+  }
+
+
+
   public Command manualIntakeCoral(){
     return this.startEnd(
       ()-> setHandSpeed(-1), 
@@ -180,6 +208,18 @@ public class ArmSubsystem extends SubsystemBase {
   public void setHandSpeed(double speed){
     m_hand.set(speed);
   }
+  public Command cmdArmHorizontal() {
+    return this.startRun(
+      ()->setArmAngle(0.0),
+      ()->moveArmToDesiredAngle());
+  } 
+  
+  public Command cmdArmPIDHorizontal() {
+    return this.startRun(
+      ()->setArmAngle(0.0),
+      ()->moveArmWithPIDFF());
+    }
+
   /*
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
    */
@@ -213,27 +253,22 @@ public class ArmSubsystem extends SubsystemBase {
   protected void moveArmWithPIDFF() {
     // calculate movement with fancy-pants PID and feedforward
     //  As of 2/25 UNUSED
-    feedforward = m_elbowFeedforward.calculate(m_elbowDesiredAngleDeg,0.0);
+    //feedforward = m_elbowFeedforward.calculate(m_elbowDesiredAngleDeg,0.0);
     // convert feedforward from nominal voltage to %, based on current voltage. 
     // hopefully this compensates for battery depletion to still supply the correct voltage to maintain position
-    feedforward = feedforward / m_elbow.getBusVoltage();
+    //feedforward = feedforward / m_elbow.getBusVoltage();
+    if (elbowAtDesiredAngle()) return;
+
     pidOutput = 0.0;
       pidOutput = m_elbowPIDController.calculate(getArmAngle());
      
-    // Add the feedforward to the PID output to get the motor output
-    target_speed = pidOutput + feedforward;
+    if (target_speed > 0.0) target_speed = getElbowUPSpeed();
+    if (target_speed < 0.0) target_speed = getElbowDOWNSpeed();
     
     //limit max speed at point of applying to motor.
-    target_speed = Math.min(target_speed, 0.05);
+    target_speed = Math.min(target_speed,pidOutput);
 
     setElbowSpeed(target_speed);
-  }
-
-
-  // move the arm to a horizontal position
-  public void setArmHorizontal() {
-    setArmAngle(0.0);
-    m_autoElbowEnabled = true;
   }
 
   // use PID positioning to bump arm up/down

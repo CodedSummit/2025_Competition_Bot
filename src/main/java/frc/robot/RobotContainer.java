@@ -148,9 +148,10 @@ public class RobotContainer {
     //m_driveXboxController.button(1).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown())).onFalse(new InstantCommand(()->elevatorSubsystem.stopElevator()));
     //m_driveXboxController.button(3).onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
     
-    m_driveXboxController.y().whileTrue(elevatorSubsystem.elevatorUp());
-    m_driveXboxController.a().whileTrue(elevatorSubsystem.elevatorDown());
-    m_driveXboxController.x().onTrue(new SetWheelAlignment(swerveSubsystem));
+    m_driveXboxController.leftBumper().whileTrue(elevatorSubsystem.elevatorUp());
+    m_driveXboxController.leftTrigger().whileTrue(elevatorSubsystem.elevatorDown());
+    
+    m_driveXboxController.povUp().onTrue(swerveSubsystem.zeroHeadingCommand());
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
@@ -189,16 +190,16 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
-      m_driveXboxController.povDown().whileTrue(armSubsystem.manualElbowUp());
-      m_driveXboxController.povUp().whileTrue(armSubsystem.manualElbowDown());
-      //m_driveXboxController.povLeft().onTrue(new InstantCommand(()-> armSubsystem.stopElbow()));
-      //m_driveXboxController.povRight().onTrue(new InstantCommand(()-> armSubsystem.setArmHorizontal()));
+      m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
+      m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
+      m_driveXboxController.povRight().onTrue(armSubsystem.cmdArmHorizontal());
 
-      m_driveXboxController.povRight().whileTrue(armSubsystem.manualWristCW());
-      m_driveXboxController.povLeft().whileTrue(armSubsystem.manualWristCCW());
+      m_driveXboxController.b().whileTrue(armSubsystem.manualWristCW());
+      m_driveXboxController.x().whileTrue(armSubsystem.manualWristCCW());
 
-      m_driveXboxController.button(7).whileTrue(armSubsystem.manualIntakeCoral());
-      m_driveXboxController.button(8).whileTrue(armSubsystem.manualReleaseCoral());
+      m_driveXboxController.button(7).onTrue(armSubsystem.smartIntakeCoral());
+      //m_driveXboxController.button(7).and(() ->armSubsystem.hasCoral()).whileTrue(armSubsystem.manualReleaseCoral());
+
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));

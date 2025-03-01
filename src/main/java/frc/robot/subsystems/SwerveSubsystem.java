@@ -187,6 +187,10 @@ public class SwerveSubsystem extends SubsystemBase {
         backRight.loadPreferences();
     }
 
+    public Command zeroHeadingCommand(){
+        return this.runOnce(() -> zeroHeading());
+    }
+
     public void zeroHeading() {
         //gyro.reset();
         gyro.setYaw(0);
