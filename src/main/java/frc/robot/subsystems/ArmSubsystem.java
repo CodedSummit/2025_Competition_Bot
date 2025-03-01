@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
+import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.epilogue.Logged;
@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
@@ -36,6 +37,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
+  public final SparkLimitSwitch handLimit = m_hand.getReverseLimitSwitch();
   private boolean maxLimitReached = false;
   private boolean minLimitReached = false;
   //private double m_elbowSpeed = 0.2;
@@ -165,17 +167,19 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Command manualIntakeCoral(){
     return this.startEnd(
-      ()-> m_hand.set(-1), 
-      ()-> m_hand.set(0));
+      ()-> setHandSpeed(-1), 
+      ()-> setHandSpeed(0));
   }
 
   public Command manualReleaseCoral(){
     return this.startEnd(
-      ()-> m_hand.set(1), 
-      ()-> m_hand.set(0));
+      ()-> setHandSpeed(1), 
+      ()-> setHandSpeed(0));
   }
 
-
+  public void setHandSpeed(double speed){
+    m_hand.set(speed);
+  }
   /*
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
    */
@@ -273,21 +277,18 @@ public class ArmSubsystem extends SubsystemBase {
     m_wrist.set(-0.1);
   }
 
-
-  public void placeCoral(){
-    m_hand.set(-0.1);
-    new WaitCommand(2);
-    m_hand.set(0);
-  }
-
-
-
   public void stopWrist(){
     m_wrist.set(0);
   }
 
   public void stopIntake(){
     m_hand.set(0);
+  }
+
+  public void stopIntakeAtLimit(){
+    if(checkHandLimit()){
+      stopIntake();
+    }
   }
 
   public double getRawElbowAngleDegrees() {
@@ -392,6 +393,11 @@ public class ArmSubsystem extends SubsystemBase {
    // }
     return -elbowDownSpeed;
   } 
+
+  public boolean checkHandLimit(){
+    return handLimit.isPressed();
+  }
+
   public void initSendable(SendableBuilder builder){
     builder.addDoubleProperty("Raw Absolute Encoder", ()-> m_percentage, null);
     builder.addDoubleProperty("Absolute Encoder Degrees", ()-> m_degrees, null); 
