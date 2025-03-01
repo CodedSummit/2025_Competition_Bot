@@ -179,8 +179,13 @@ public class ArmSubsystem extends SubsystemBase {
     return this.startRun(
       ()->setArmAngle(0.0),
       ()->moveArmToDesiredAngle());
-    } 
+  } 
   
+  public Command cmdArmPIDHorizontal() {
+    return this.startRun(
+      ()->setArmAngle(0.0),
+      ()->moveArmWithPIDFF());
+    }
 
   /*
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
@@ -215,27 +220,22 @@ public class ArmSubsystem extends SubsystemBase {
   protected void moveArmWithPIDFF() {
     // calculate movement with fancy-pants PID and feedforward
     //  As of 2/25 UNUSED
-    feedforward = m_elbowFeedforward.calculate(m_elbowDesiredAngleDeg,0.0);
+    //feedforward = m_elbowFeedforward.calculate(m_elbowDesiredAngleDeg,0.0);
     // convert feedforward from nominal voltage to %, based on current voltage. 
     // hopefully this compensates for battery depletion to still supply the correct voltage to maintain position
-    feedforward = feedforward / m_elbow.getBusVoltage();
+    //feedforward = feedforward / m_elbow.getBusVoltage();
+    if (elbowAtDesiredAngle()) return;
+
     pidOutput = 0.0;
       pidOutput = m_elbowPIDController.calculate(getArmAngle());
      
-    // Add the feedforward to the PID output to get the motor output
-    target_speed = pidOutput + feedforward;
+    if (target_speed > 0.0) target_speed = getElbowUPSpeed();
+    if (target_speed < 0.0) target_speed = getElbowDOWNSpeed();
     
     //limit max speed at point of applying to motor.
-    target_speed = Math.min(target_speed, 0.05);
+    target_speed = Math.min(target_speed,pidOutput);
 
     setElbowSpeed(target_speed);
-  }
-
-
-  // move the arm to a horizontal position
-  public void setArmHorizontal() {
-    setArmAngle(0.0);
-   // m_autoElbowEnabled = true;
   }
 
   // use PID positioning to bump arm up/down
@@ -338,7 +338,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private void setArmAngle(double desiredAngle) {
     m_elbowDesiredAngleDeg = desiredAngle;
-   // m_elbowPIDController.setSetpoint(desiredAngle);
+    m_elbowPIDController.setSetpoint(desiredAngle);
   }
 
   /*
