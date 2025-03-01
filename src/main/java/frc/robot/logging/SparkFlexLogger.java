@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.logging;
 
 import com.revrobotics.spark.SparkFlex;
 

@@ -36,8 +36,10 @@ import frc.robot.Constants.ArmConstants;
 public class ArmSubsystem extends SubsystemBase {
 
   private SparkMaxConfig config= new SparkMaxConfig();
-  private final DigitalInput input = new DigitalInput(7);
-  private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(input, -1.0, -Constants.ArmConstants.kElbowOffset);
+  private final DigitalInput inputElbow = new DigitalInput(7);
+  private final DigitalInput inputWrist = new DigitalInput(10);
+  private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
+  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
@@ -50,6 +52,7 @@ public class ArmSubsystem extends SubsystemBase {
   //private double m_elbowDownSpeed = Constants.ArmConstants.kElbowDownSpeed;  // make vars to allow tuning
   
   private double m_elbowDesiredAngleDeg = 0.0;  // Angle we want the arm.  0.0 is horizontal, 90 straight up
+  private double wristDesiredAngleDeg = 0.0;
 
  //private final Encoder m_encoder = new Encoder(ArmConstants.kEncoderPorts[0], ArmConstants.kEncoderPorts[1]);
   private  ArmFeedforward m_elbowFeedforward = new ArmFeedforward(
@@ -155,7 +158,7 @@ public class ArmSubsystem extends SubsystemBase {
   public Command manualWristCW(){
     return this.startEnd(
       // Command Start
-      () -> m_wrist.set(getWristSpeed()),
+      () -> setWristSpeed(getWristSpeed()),
       // Command End
       () -> m_wrist.stopMotor()
     );
@@ -164,11 +167,34 @@ public class ArmSubsystem extends SubsystemBase {
   public Command manualWristCCW(){
     return this.startEnd(
       // Command Start
-      () -> m_wrist.set(-getWristSpeed()),
+      () -> setWristSpeed(-getWristSpeed()),
       // Command End
       () -> m_wrist.stopMotor()
     );
   }
+
+  public Command moveWristLeft(){
+    wristDesiredAngleDeg = -90;
+    return new InstantCommand(()-> moveWristToDesiredAngle());
+  }
+
+  public Command moveWristCenter(){
+    wristDesiredAngleDeg = 0;
+    return new InstantCommand(()-> moveWristToDesiredAngle());
+  }
+
+  public Command moveWristRight(){
+    wristDesiredAngleDeg = 90;
+    return new InstantCommand(()-> moveWristToDesiredAngle());
+  }
+
+  private double getWristAngle(){
+    double angle = wristEncoder.get();
+    angle = angle * 360;
+    return angle;
+  }
+
+
 
 
   public boolean hasCoral(){
@@ -240,6 +266,7 @@ public class ArmSubsystem extends SubsystemBase {
     
   }
 
+
   protected boolean elbowAtDesiredAngle() {
     // see if we're "close enough" to the target desired angle
     if (Math.abs(getArmAngle() - m_elbowDesiredAngleDeg) <= Constants.ArmConstants.kElbowAngleToleranceDeg) {
@@ -248,6 +275,35 @@ public class ArmSubsystem extends SubsystemBase {
       return true;
     }
     return false;
+  }
+
+  public void moveWristToDesiredAngle() {
+ 
+    if (wristAtDesiredAngle()) {
+      // we've reached the goal angle, hold now
+      m_wrist.set(0.0);
+    }
+    else if (getWristAngle() < wristDesiredAngleDeg ) {
+      // need to move up to desired angle
+      setWristSpeed(1);
+    }
+    else if (getWristAngle() > wristDesiredAngleDeg) {
+      // move down to desired angle
+      setElbowSpeed(-1);
+    }
+    
+  }
+
+  protected boolean wristAtDesiredAngle() {
+    // see if we're "close enough" to the target desired angle
+    if (Math.abs(getWristAngle() - wristDesiredAngleDeg) <= Constants.ArmConstants.kWristAngleToleranceDeg) {
+      return true;
+    }
+    return false;
+  }
+
+  private void setWristSpeed(double speed){
+    m_wrist.set(speed);
   }
 
   protected void moveArmWithPIDFF() {

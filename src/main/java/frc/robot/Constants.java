@@ -210,6 +210,8 @@ public static final class ArmConstants {
   public static String kElbowUpSpeedPrefKey = "Arm.ElbowUpSpeed";
   public static String kElbowDownSpeedPrefKey = "Arm.ElbowDownSpeed";
   public static final double kElbowAngleToleranceDeg = 3.0;  // "close enough" to desired angle
+
+  public static final double kWristAngleToleranceDeg = 2.0;
 }
 
 public static final class ShooterConstants {
