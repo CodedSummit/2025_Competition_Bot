@@ -9,6 +9,7 @@ import frc.robot.commands.SetWheelAlignment;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.FloorIntake;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -50,9 +51,10 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private VisionPoseEstimationSubsystem m_visionPoseEstimationSubsystem = new VisionPoseEstimationSubsystem();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
-  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
-
+  private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(armSubsystem);
+  private final FloorIntake floorIntakeSubsystem = new FloorIntake();
+  
   private final PowerDistribution pdp = new PowerDistribution(0,ModuleType.kCTRE);
 
   private SwerveJoystickCmd swerveJoystickCmd;

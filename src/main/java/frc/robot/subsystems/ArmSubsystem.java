@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -183,7 +184,7 @@ public class ArmSubsystem extends SubsystemBase {
       ),
      new SequentialCommandGroup( //if no coral
         new InstantCommand(() -> m_hand.set(-1)),
-        new WaitUntilCommand(() -> hasCoral()),
+        new WaitUntilCommand(() -> hasCoral()).withTimeout(10),
         new WaitCommand(1),
         new InstantCommand(() -> m_hand.set(0))
     ),
@@ -209,6 +210,22 @@ public class ArmSubsystem extends SubsystemBase {
       ()->setArmAngle(0.0),
       ()->moveArmToDesiredAngle());
   } 
+ 
+  public Command cmdArmHorizontalThatFinishes() {
+    return new FunctionalCommand(
+      // command start
+      () -> setArmAngle(0.0),
+      // called repeatedly
+      () -> moveArmToDesiredAngle(),
+      // Stop driving at the end of the command
+      interrupted -> m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed),
+      // End the command when the robot's driven distance exceeds the desired value
+      () -> elbowAtDesiredAngle(),
+      // Require the drive subsystem
+      this
+    );
+  } 
+  
   
   public Command cmdArmPIDHorizontal() {
     return this.startRun(
@@ -379,13 +396,13 @@ public class ArmSubsystem extends SubsystemBase {
    * Else make no change to the motor speed
    */
   protected void setElbowSpeed(double setspeed) {
-    if (setspeed > 0 && maximumLimitReached()){
+    /*if (setspeed > 0 && maximumLimitReached()){
       return;
     }
 
     if (setspeed < 0 && minimumLimitReached()){
       return;
-    }
+    }*/
 /* 
     m_autoElbowEnabled = true; // we've requested arm movement, enable it 
     double dampenedSpeed = setspeed;
