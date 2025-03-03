@@ -40,7 +40,7 @@ public class ArmSubsystem extends SubsystemBase {
   private final DigitalInput inputElbow = new DigitalInput(7);
   private final DigitalInput inputWrist = new DigitalInput(8);
   private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
-  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputWrist, -1.0, -Constants.ArmConstants.kElbowOffset);
+  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputWrist, -1.0, -Constants.ArmConstants.kWristAngleOffset);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
@@ -94,6 +94,10 @@ public class ArmSubsystem extends SubsystemBase {
     checkWristSoftLimits();
   }
 
+  @Logged
+  public String currentCommandName(){
+    return this.getCurrentCommand().getName();
+  }
   /*
    *  Check if the elbow is exceeding angle limits.  If so and it's going the wrong direction, stop the motor before doing any damage
    */
@@ -534,7 +538,7 @@ public class ArmSubsystem extends SubsystemBase {
       double elbowDownSpeed = nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed);
    //   Preferences.setDouble(Constants.ArmConstants.kElbowDownSpeedPrefKey, m_elbowDownSpeed);
    // }
-    return -elbowDownSpeed;
+    return -1.0*elbowDownSpeed;
   } 
 
 

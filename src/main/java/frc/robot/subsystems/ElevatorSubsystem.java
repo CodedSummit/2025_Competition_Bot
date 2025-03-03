@@ -280,6 +280,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       ), 
     () -> encoderCalibrated);
     c.addRequirements(this, armSubsystem);
+    c.setName("ElevatorCalCommand");
     return c;
   }
 
@@ -288,6 +289,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     m_elevator.set(0);
   }
 
+  @Logged
+  public String currentCommandName(){
+    return this.getCurrentCommand().getName();
+  }
   protected void initialize(){
     SparkLimitSwitch bottomSwitch = m_elevator.getReverseLimitSwitch();
     while(!bottomSwitch.isPressed()){
