@@ -16,6 +16,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -69,7 +70,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         .withProperties(Map.of("min", 0, "max", 250))
         .getEntry();
 
-    setDefaultCommand(elevatorCalibrate());
   }
 
   @Override
@@ -116,14 +116,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   
     public double upperRangePercentage(){
-      return calculatePercentage(TopEnd, TopStart, getHeight());
+      return calculateMotionProfilePercentage(TopEnd, TopStart, getHeight());
     }
   
     public double lowerRangePercentage(){
-      return calculatePercentage(BottomEnd, BottomStart, getHeight());
+      return calculateMotionProfilePercentage(BottomEnd, BottomStart, getHeight());
     }
   
-    public static double calculatePercentage(double start, double end, double current) {
+    public static double calculateMotionProfilePercentage(double start, double end, double current) {
       // Calculate the absolute difference between start and end
       double total = Math.abs(end - start);
       
@@ -138,24 +138,6 @@ public class ElevatorSubsystem extends SubsystemBase {
       
       return percentage;
     }
-  
-  /* 
-    public double rangePercentage(double start, double end, double current) {
-      if (min == max) {
-          throw new IllegalArgumentException("Min and max should not be equal.");
-      }
-      if(current >= max) return 1;
-      if(current <= min) return 0;
-  
-      double proportion;
-      if (min > max) {
-          proportion = (current - max) / (min - max); // Proportion toward the 'minimum' number
-      } else {
-          proportion = (current - min) / (max - min); // Proportion toward the 'maximum' number
-      }
-  
-      return proportion ; // Convert to percentage
-    }*/
   
     public Command elevateLevelOne(){
       return cmdElevatorToHeight(Constants.ElevatorConstants.kElevatorHeightL1);  
@@ -219,6 +201,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       return cmdElevatorToHeight( elevator_height_entry.getDouble(0.0));
     }
 
+    
+
     public boolean atBottomLimit(){
       return m_elevator.getForwardLimitSwitch().isPressed();
     }
@@ -259,7 +243,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Command elevatorCalibrate() {
     Command c = new ConditionalCommand(
-      Commands.idle(),  //already calibrated
+      Commands.none(),//Commands.idle(),  //already calibrated
      
       new SequentialCommandGroup( //needs calibration
       //if not at bottom limit, go there, and make sure the arm is out of the way.  
@@ -275,8 +259,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         new WaitUntilCommand(() -> atBottomLimit()),
         new InstantCommand(() -> m_elevator.stopMotor()), //stop
         new InstantCommand(() -> m_encoder.setPosition(0.0)),
-        new InstantCommand(() -> encoderCalibrated = true),
-        Commands.idle()
+        new InstantCommand(() -> encoderCalibrated = true)//,
+        //Commands.idle()
       ), 
     () -> encoderCalibrated);
     c.addRequirements(this, armSubsystem);
@@ -293,12 +277,5 @@ public class ElevatorSubsystem extends SubsystemBase {
   public String currentCommandName(){
     return this.getCurrentCommand().getName();
   }
-  protected void initialize(){
-    SparkLimitSwitch bottomSwitch = m_elevator.getReverseLimitSwitch();
-    while(!bottomSwitch.isPressed()){
-      elevatorDown();
-    }
-    stopElevator();
-    m_encoder.setPosition(0.0);
-  }
+
 }

@@ -94,10 +94,10 @@ public class ArmSubsystem extends SubsystemBase {
     checkWristSoftLimits();
   }
 
-  @Logged
-  public String currentCommandName(){
-    return this.getCurrentCommand().getName();
-  }
+  //@Logged
+  //public String currentCommandName(){
+  //  return this.getCurrentCommand().getName();
+  //}
   /*
    *  Check if the elbow is exceeding angle limits.  If so and it's going the wrong direction, stop the motor before doing any damage
    */
@@ -285,6 +285,13 @@ public class ArmSubsystem extends SubsystemBase {
       ()->setArmAngle(0.0),
       ()->moveArmToDesiredAngle());
   } 
+
+  public Command cmdArmAngle(double angle){
+    return this.startRun(
+      ()->setArmAngle(angle),
+      ()->moveArmToDesiredAngle()
+    );
+  }
  
   public Command cmdArmHorizontalThatFinishes() {
     return new FunctionalCommand(
@@ -347,7 +354,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
     else if (getWristAngle() < wristDesiredAngleDeg ) {
       // need to move left to desired angle
-      setWristSpeed(-0.4);
+      setWristSpeed(-0.1);
     }
     else if (getWristAngle() > wristDesiredAngleDeg) {
       // move right to desired angle

@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
@@ -142,18 +143,11 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-
-    //m_driveXboxController.button(4).onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
-
-    //m_driveXboxController.button(4).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorUp())).onFalse(new InstantCommand(()->elevatorSubsystem.stopElevator()));
-    //m_driveXboxController.button(1).onTrue(new InstantCommand(()->elevatorSubsystem.elevatorDown())).onFalse(new InstantCommand(()->elevatorSubsystem.stopElevator()));
-    //m_driveXboxController.button(3).onTrue(new InstantCommand(()->elevatorSubsystem.stopElevator()));
     
     m_driveXboxController.leftBumper().whileTrue(elevatorSubsystem.elevatorUp());
     m_driveXboxController.leftTrigger().whileTrue(elevatorSubsystem.elevatorDown());
     
-    m_driveXboxController.povUp().onTrue(swerveSubsystem.zeroHeadingCommand());
+    //m_driveXboxController.povUp().onTrue(swerveSubsystem.zeroHeadingCommand());
 
     //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
     //m_driverController.a().whileTrue(navToA);
@@ -204,7 +198,9 @@ public class RobotContainer {
       m_driveXboxController.povRight().onTrue(armSubsystem.moveWristRight());
 
       m_driveXboxController.button(7).onTrue(armSubsystem.smartIntakeCoral());
-      //m_driveXboxController.button(7).and(() ->armSubsystem.hasCoral()).whileTrue(armSubsystem.manualReleaseCoral());
+
+      m_driveXboxController.button(8).onTrue(PositionCommand(100, 10));
+
 
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
@@ -238,6 +234,15 @@ public class RobotContainer {
     /*if(!armSubsystem.isCalibrated()){
       new CalibrateArmCommand(armSubsystem).schedule();
     }*/
+    elevatorSubsystem.elevatorCalibrate().schedule();
+  }
+
+
+  public Command PositionCommand(double elevator_position, double arm_angle){
+    return Commands.parallel(
+      elevatorSubsystem.cmdElevatorToHeight(elevator_position),
+      armSubsystem.cmdArmAngle(arm_angle)
+    );
   }
 
   /**
