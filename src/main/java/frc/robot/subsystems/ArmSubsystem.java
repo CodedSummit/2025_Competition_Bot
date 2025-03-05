@@ -89,10 +89,6 @@ public class ArmSubsystem extends SubsystemBase {
 
   }
 
-  //@Logged
-  //public String currentCommandName(){
-  //  return this.getCurrentCommand().getName();
-  //}
   /*
    *  Check if the elbow is exceeding angle limits.  If so and it's going the wrong direction, stop the motor before doing any damage
    */

@@ -37,6 +37,7 @@ public class HandSubsystem extends SubsystemBase {
     setupShuffleboard();
   }
 
+  @Logged
   public boolean hasCoral(){
     return !coralLimitSwitch.get();
   }

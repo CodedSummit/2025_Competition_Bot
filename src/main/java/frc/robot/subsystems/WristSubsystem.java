@@ -5,11 +5,13 @@
 package frc.robot.subsystems;
 
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -25,7 +27,8 @@ import frc.robot.Constants;
 public class WristSubsystem extends SubsystemBase {
 
   private final DigitalInput inputWrist = new DigitalInput(8);
-  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputWrist, -1.0, -Constants.ArmConstants.kWristAngleOffset);
+  private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputWrist, 360,
+      Constants.ArmConstants.kWristAngleOffset);
   private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
   public double wristDesiredAngleDeg = 90.0;
   private GenericEntry nt_wristSpeed;
@@ -51,7 +54,8 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   /**
-   * An example method querying a boolean state of the subsystem (for example, a digital sensor).
+   * An example method querying a boolean state of the subsystem (for example, a
+   * digital sensor).
    *
    * @return value of some boolean subsystem state, such as a digital sensor.
    */
@@ -64,113 +68,115 @@ public class WristSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     checkWristSoftLimits();
+    ProfileEndMotion();
   }
 
-
   private void checkWristSoftLimits() {
-    if(goingLeft() && leftLimitReached()){
+    if (goingLeft() && leftLimitReached()) {
       setWristSpeed(0);
     }
 
-    if(goingRight() && rightLimitReached()){
-      setWristSpeed(0);;
+    if (goingRight() && rightLimitReached()) {
+      setWristSpeed(0);
     }
   };
 
-  public boolean leftLimitReached(){
+  public boolean leftLimitReached() {
     double degrees = this.getWristAngle();
     boolean limitHit = true;
-    if (degrees > Constants.ArmConstants.kWristLeftLimit){
+    if (degrees > Constants.ArmConstants.kWristLeftLimit) {
       limitHit = false;
-      //System.out.println("lower limit exceed:"+degrees);
+      // System.out.println("lower limit exceed:"+degrees);
     }
     return limitHit;
   }
 
-  public boolean rightLimitReached(){
+  public boolean rightLimitReached() {
     double degrees = this.getWristAngle();
     boolean limitHit = true;
-    if (degrees < Constants.ArmConstants.kWristRightLimit){
+    if (degrees < Constants.ArmConstants.kWristRightLimit) {
       limitHit = false;
-      //System.out.println("lower limit exceed:"+degrees);
+      // System.out.println("lower limit exceed:"+degrees);
     }
     return limitHit;
   }
 
-  public boolean goingLeft(){
-    return m_wrist.get() > 0;
-  }
-
-  public boolean goingRight(){
+  public boolean goingLeft() {
     return m_wrist.get() < 0;
   }
 
-  public Command manualWristCW(){
-    return this.startEnd(
-      // Command Start
-      () -> setWristSpeed(getWristSpeed()),
-      // Command End
-      () -> m_wrist.stopMotor()
-      );
+  public boolean goingRight() {
+    return m_wrist.get() > 0;
   }
-    
-  public Command manualWristCCW(){
+
+  public Command manualWristLeft() {
     return this.startEnd(
-      // Command Start
-       () -> setWristSpeed(-getWristSpeed()),
-       // Command End
-       () -> m_wrist.stopMotor()
-       );
-    }
+        // Command Start
+        () -> setWristSpeed(-getWristSpeed()),
+        // Command End
+        () -> m_wrist.stopMotor()).withName("Manual Left");
+  }
 
-    
-      
-    public Command moveWristLeft(){
-      setWristDesiredAngle(-90);
-      return new InstantCommand(()-> moveWristToDesiredAngle());
-    }
-      
-    public Command moveWristCenter(){
-      setWristDesiredAngle(0);
-      return new InstantCommand(()-> moveWristToDesiredAngle());
-    }
-      
-    public Command moveWristRight(){
-      setWristDesiredAngle(90);
-      return new InstantCommand(()-> moveWristToDesiredAngle());
-      }
-      
-    public double getWristAngle(){
-      double angle = wristEncoder.get();
-      angle = angle * -1;
-      angle = angle * 360 - Constants.ArmConstants.kWristAngleOffset;
-      return angle;
-    }
-      
-    private double getWristSpeed(){
-      return nt_wristSpeed.getDouble(0.1);
-    }
+  public Command manualWristRight() {
+    return this.startEnd(
+        // Command Start
+        () -> setWristSpeed(getWristSpeed()),
+        // Command End
+        () -> m_wrist.stopMotor()).withName("Manual Right");
+  }
 
-    
-  public void setWristDesiredAngle(double angle){
+  public Command moveWristLeft() {
+    return moveWristToPosition(90).withName("MoveLeft");
+  }
+
+  public Command moveWristCenter() {
+    return moveWristToPosition(180).withName("MoveCenter");
+  }
+
+  public Command moveWristRight() {
+    return moveWristToPosition(270).withName("MoveRight");
+  }
+
+
+  public Command moveWristToPosition(double p) {
+    return this.startRun(
+      ()->setWristDesiredAngle(p),
+      ()->moveWristToDesiredAngle());
+  }
+
+  public double getWristAngle() {
+    return wristEncoder.get();
+  }
+
+  private double getWristSpeed() {
+    return nt_wristSpeed.getDouble(0.1);
+  }
+
+  public void setWristDesiredAngle(double angle) {
     wristDesiredAngleDeg = angle;
   }
 
   public void moveWristToDesiredAngle() {
- 
+
     if (wristAtDesiredAngle()) {
       // we've reached the goal angle, stop
-     setWristSpeed(0);
-    }
-    else if (getWristAngle() < wristDesiredAngleDeg ) {
+      setWristSpeed(0);
+    } else if (getWristAngle() < wristDesiredAngleDeg) {
       // need to move left to desired angle
-      setWristSpeed(-0.1);
-    }
-    else if (getWristAngle() > wristDesiredAngleDeg) {
+      setWristSpeed(getWristSpeed());
+    } else if (getWristAngle() > wristDesiredAngleDeg) {
       // move right to desired angle
-      setWristSpeed(0.4);
+      setWristSpeed(-getWristSpeed());
     }
-    
+
+  }
+
+  public String currentCommand(){
+    if(this.getCurrentCommand() != null){
+      return this.getCurrentCommand().getName();
+    } else {
+      return "None";
+    }
   }
 
   protected boolean wristAtDesiredAngle() {
@@ -181,23 +187,12 @@ public class WristSubsystem extends SubsystemBase {
     return false;
   }
 
-  private void setWristSpeed(double speed){
+  private void setWristSpeed(double speed) {
     m_wrist.set(speed);
+    checkWristSoftLimits(); // check here to avoid a loop delay in checking
   }
 
-  public void wristLeft(){
-    m_wrist.set(0.1);
-  }
-
-  public void wristRight(){
-    m_wrist.set(-0.1);
-  }
-
-  public void stopWrist(){
-    m_wrist.set(0);
-  }
-
-    private void setupShuffleboard() {
+  private void setupShuffleboard() {
 
     ShuffleboardTab tab = Shuffleboard.getTab("Wrist");
 
@@ -206,7 +201,69 @@ public class WristSubsystem extends SubsystemBase {
         .withWidget(BuiltInWidgets.kNumberSlider)
         .withProperties(Map.of("min", 0, "max", 1))
         .getEntry();
+        tab.add(moveWristLeft());
+        tab.add(moveWristCenter());
+        tab.add(moveWristRight());
 
   }
+
+
+  // End is the end of motion
+  // Start is the start of the motion limiting.
+  private double TopEnd = Constants.ArmConstants.kWristRightLimit;
+  private double TopStart = Constants.ArmConstants.kWristRightLimit-70;
+  private double BottomEnd = Constants.ArmConstants.kWristLeftLimit;
+  private double BottomStart = Constants.ArmConstants.kWristLeftLimit+70;
+  
+ 
+    private void ProfileEndMotion(){
+      //this method is used to automaticaly profile motion as the elevator approaches it's limits.
+  
+      //if in upper or lower ranges, then set the max speed based on percentage
+      double limit = speedLimitAtCurrentPosition();
+      double motor_speed = m_wrist.get();
+      if(limit < Math.abs(motor_speed)){
+        m_wrist.set(MathUtil.clamp(motor_speed, -limit, limit));
+      }
+  
+    }
+  
+    public double speedLimitAtCurrentPosition(){
+      double position = getWristAngle();
+      double motor_direction = m_wrist.get();
+      if(TopEnd > position && position > TopStart && motor_direction > 0){ //negative motion is up
+        return upperRangePercentage();
+      }else if(BottomStart > position && position > BottomEnd && motor_direction < 0){ //positive motion is down.
+        return lowerRangePercentage();
+      }
+      return 1; //no speed limit at current position.
+  
+    }
+  
+    public double upperRangePercentage(){
+      return calculateMotionProfilePercentage(TopEnd, TopStart, getWristAngle());
+    }
+  
+    public double lowerRangePercentage(){
+      return calculateMotionProfilePercentage(BottomEnd, BottomStart, getWristAngle());
+    }
+  
+    public static double calculateMotionProfilePercentage(double start, double end, double current) {
+      // Calculate the absolute difference between start and end
+      double total = Math.abs(end - start);
+      
+      // Calculate the difference between current and start
+      double progress = Math.abs(current - start);
+      
+      // Calculate the percentage
+      double percentage = (progress / total);
+      
+      // Ensure the percentage is between 0 and 100
+      percentage = Math.min(1, Math.max(0, percentage));
+      
+      return percentage;
+    }
+  
+
 
 }

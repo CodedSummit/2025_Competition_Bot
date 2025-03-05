@@ -94,11 +94,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       double limit = speedLimitAtCurrentPosition();
       double motor_speed = m_elevator.get();
       if(limit < Math.abs(motor_speed)){
-        if(motor_speed > 0){
-          m_elevator.set(limit);
-        } else {
-          m_elevator.set(-limit);
-        }
+        m_elevator.set(MathUtil.clamp(motor_speed, -limit, limit));
       }
   
     }
@@ -271,11 +267,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void stopElevator(){
     m_elevator.set(0);
-  }
-
-  @Logged
-  public String currentCommandName(){
-    return this.getCurrentCommand().getName();
   }
 
 }

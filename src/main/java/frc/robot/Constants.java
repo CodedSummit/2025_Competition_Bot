@@ -211,10 +211,10 @@ public static final class ArmConstants {
   public static String kElbowDownSpeedPrefKey = "Arm.ElbowDownSpeed";
   public static final double kElbowAngleToleranceDeg = 3.0;  // "close enough" to desired angle
 
-  public static final double kWristAngleToleranceDeg = 5.0;
-  public static final double kWristAngleOffset = 215.4;
-  public static final double kWristLeftLimit = -90;
-  public static final double kWristRightLimit = 90;
+  public static final double kWristAngleToleranceDeg = 10.0;
+  public static final double kWristAngleOffset = -76;
+  public static final double kWristLeftLimit = 75;
+  public static final double kWristRightLimit = 280;
 }
 
 public static final class ElevatorConstants {

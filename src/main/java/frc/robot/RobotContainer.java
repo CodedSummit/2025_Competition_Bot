@@ -128,9 +128,11 @@ public class RobotContainer {
 
   private void setupShuffleboard() {
     
-    ShuffleboardTab sys = Shuffleboard.getTab("Systems");
+    ShuffleboardTab tab = Shuffleboard.getTab("Systems");
 
     //sys.add(pdp);
+    tab.add(wristSubsystem);
+    tab.add(armSubsystem);
     
 
   }
@@ -194,12 +196,12 @@ public class RobotContainer {
       m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
       m_driveXboxController.povDown().onTrue(armSubsystem.cmdArmHorizontal());
 
-      //m_driveXboxController.b().whileTrue(armSubsystem.manualWristCW());
-      //m_driveXboxController.x().whileTrue(armSubsystem.manualWristCCW());
+      m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
+      m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
 
-      //m_driveXboxController.povUp().onTrue(armSubsystem.moveWristCenter());
-      //m_driveXboxController.povLeft().onTrue(armSubsystem.moveWristLeft());
-      //m_driveXboxController.povRight().onTrue(armSubsystem.moveWristRight());
+      m_driveXboxController.povUp().onTrue(wristSubsystem.moveWristCenter());
+      m_driveXboxController.povLeft().onTrue(wristSubsystem.moveWristLeft());
+      m_driveXboxController.povRight().onTrue(wristSubsystem.moveWristRight());
 
       m_driveXboxController.button(7).onTrue(handSubsystem.smartIntakeCoral());
 
