@@ -10,9 +10,11 @@ import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FloorIntake;
+import frc.robot.subsystems.HandSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.epilogue.Logged;
@@ -54,6 +56,8 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(armSubsystem);
+  private final WristSubsystem wristSubsystem = new WristSubsystem();
+  private final HandSubsystem handSubsystem = new HandSubsystem();
   private final FloorIntake floorIntakeSubsystem = new FloorIntake();
   
   private final PowerDistribution pdp = new PowerDistribution(0,ModuleType.kCTRE);
@@ -190,14 +194,14 @@ public class RobotContainer {
       m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
       m_driveXboxController.povDown().onTrue(armSubsystem.cmdArmHorizontal());
 
-      m_driveXboxController.b().whileTrue(armSubsystem.manualWristCW());
-      m_driveXboxController.x().whileTrue(armSubsystem.manualWristCCW());
+      //m_driveXboxController.b().whileTrue(armSubsystem.manualWristCW());
+      //m_driveXboxController.x().whileTrue(armSubsystem.manualWristCCW());
 
-      m_driveXboxController.povUp().onTrue(armSubsystem.moveWristCenter());
-      m_driveXboxController.povLeft().onTrue(armSubsystem.moveWristLeft());
-      m_driveXboxController.povRight().onTrue(armSubsystem.moveWristRight());
+      //m_driveXboxController.povUp().onTrue(armSubsystem.moveWristCenter());
+      //m_driveXboxController.povLeft().onTrue(armSubsystem.moveWristLeft());
+      //m_driveXboxController.povRight().onTrue(armSubsystem.moveWristRight());
 
-      m_driveXboxController.button(7).onTrue(armSubsystem.smartIntakeCoral());
+      m_driveXboxController.button(7).onTrue(handSubsystem.smartIntakeCoral());
 
       m_driveXboxController.button(8).onTrue(PositionCommand(100, 10));
 
