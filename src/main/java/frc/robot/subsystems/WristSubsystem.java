@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -33,24 +34,12 @@ public class WristSubsystem extends SubsystemBase {
   public double wristDesiredAngleDeg = 90.0;
   private GenericEntry nt_wristSpeed;
 
+  private PIDController wrist_pid = new PIDController(0.01, 0, 0);
+
   /** Creates a new ExampleSubsystem. */
   public WristSubsystem() {
     wristEncoder.setInverted(true);
     setupShuffleboard();
-  }
-
-  /**
-   * Example command factory method.
-   *
-   * @return a command
-   */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
-    return runOnce(
-        () -> {
-          /* one-time action goes here */
-        });
   }
 
   /**
@@ -141,7 +130,7 @@ public class WristSubsystem extends SubsystemBase {
   public Command moveWristToPosition(double p) {
     return this.startRun(
       ()->setWristDesiredAngle(p),
-      ()->moveWristToDesiredAngle());
+      ()->moveWristWithPID());
   }
 
   public double getWristAngle() {
@@ -154,6 +143,12 @@ public class WristSubsystem extends SubsystemBase {
 
   public void setWristDesiredAngle(double angle) {
     wristDesiredAngleDeg = angle;
+    wrist_pid.reset(); //clears previous state
+  }
+
+  public void moveWristWithPID(){
+    double updated_speed = MathUtil.clamp(wrist_pid.calculate(getWristAngle(), wristDesiredAngleDeg), -getWristSpeed(), getWristSpeed());
+    setWristSpeed(updated_speed);
   }
 
   public void moveWristToDesiredAngle() {
@@ -204,6 +199,8 @@ public class WristSubsystem extends SubsystemBase {
         tab.add(moveWristLeft());
         tab.add(moveWristCenter());
         tab.add(moveWristRight());
+
+    tab.add(wrist_pid);
 
   }
 
