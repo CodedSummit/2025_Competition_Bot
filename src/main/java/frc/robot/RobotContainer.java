@@ -194,12 +194,14 @@ public class RobotContainer {
 
       m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
       m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
-      m_driveXboxController.povDown().onTrue(armSubsystem.cmdArmHorizontal());
+ //     m_driveXboxController.povDown().onTrue(armSubsystem.cmdArmHorizontal());
+    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmUp());
+    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmDown());
 
       m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
       m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
 
-      m_driveXboxController.povUp().onTrue(wristSubsystem.moveWristCenter());
+//      m_driveXboxController.povUp().onTrue(wristSubsystem.moveWristCenter());
       m_driveXboxController.povLeft().onTrue(wristSubsystem.moveWristLeft());
       m_driveXboxController.povRight().onTrue(wristSubsystem.moveWristRight());
 

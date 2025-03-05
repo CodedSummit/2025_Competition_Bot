@@ -240,6 +240,11 @@ public static final class IntakeConstants {
   public static String kIntakeSpeedPrefKey = "Intake.IntakeSpeed";
   public static double kFeedShooterSpeed = 0.6;
   public static double kFeedArmSpeed = -0.3;
+  public static double kIntakeArmSpeed = 0.4;
+  public static double kIntakeArmOffset = 52.8; //This is vertical on the arm : 232.8
+  public static double kMinIntakeArmAngle = 297.3;
+  public static double kMaxIntakeArmAngle = 180;
+  public static double kIntakeArmAngle = 243.6;
 }
 
 public static final class ClimbConstants {

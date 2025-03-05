@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import java.util.Map;
@@ -13,14 +11,15 @@ import java.util.Map;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.SetWheelAlignment;
-import frc.robot.commands.ZeroOdometry;
+import frc.robot.Constants;
 
 @Logged
 public class FloorIntake extends SubsystemBase {
@@ -28,10 +27,12 @@ public class FloorIntake extends SubsystemBase {
   private final VictorSPX intakeArmMotor = new VictorSPX(11);
   private final VictorSPX intakeWheels = new VictorSPX(10);
 
-  private final DutyCycleEncoder intakeArmPosition = new DutyCycleEncoder(9);
+  private final DigitalInput floorInput = new DigitalInput(9);
+  private final DutyCycleEncoder intakeArmPosition = new DutyCycleEncoder(floorInput, 360, 0);
 
+  private double armSpeed;
+  private GenericEntry nt_armSpeed;
 
-  
   /** Creates a new FloorIntake. */
   public FloorIntake() {
     
@@ -50,18 +51,18 @@ public class FloorIntake extends SubsystemBase {
         tab.add("Start Intake", ManualRunIntake());
         tab.add("Stop Intake", ManualStopIntake());
 
-
+      setupShuffleboard();
     }
 
 
   public double armPosition(){
-    return intakeArmPosition.get();
+    return intakeArmPosition.get() - Constants.IntakeConstants.kIntakeArmOffset;
   }
 
   @Logged
   public Command ManualArmDown(){
     return this.startEnd(
-      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, .4), 
+      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, getArmSpeed()), 
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, 0)
     );
   }
@@ -69,7 +70,7 @@ public class FloorIntake extends SubsystemBase {
   @Logged
   public Command ManualArmUp(){
     return this.startEnd(
-      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -.4), 
+      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -1 * getArmSpeed()), 
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, 0)
     );
   }
@@ -95,5 +96,25 @@ public class FloorIntake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public double getArmSpeed(){
+    double armSpeed = nt_armSpeed.getDouble(Constants.IntakeConstants.kIntakeArmSpeed);
+    return armSpeed;
+  }
+
+  public void stopArm(){
+    intakeWheels.set(VictorSPXControlMode.PercentOutput, 0);
+  }
+
+
+  private void setupShuffleboard(){
+    ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+
+    nt_armSpeed = intakeTab.addPersistent("Arm Speed", Constants.IntakeConstants.kIntakeSpeed)
+    .withSize(3,1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0, "max", 1))
+    .getEntry();
   }
 }
