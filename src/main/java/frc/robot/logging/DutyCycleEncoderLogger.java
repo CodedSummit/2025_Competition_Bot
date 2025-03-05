@@ -1,7 +1,5 @@
 package frc.robot.logging;
 
-import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.epilogue.CustomLoggerFor;
 import edu.wpi.first.epilogue.logging.ClassSpecificLogger;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
