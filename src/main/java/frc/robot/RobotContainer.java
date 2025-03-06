@@ -82,7 +82,18 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
 
-  private int selectedAutoArrange;
+  
+  private enum Arrangement {
+    L1,
+    L2,
+    L3,
+    L4,
+    STATION_PICKUP,
+    GROUND_PCKUP
+  }
+
+  @NotLogged
+  private Arrangement selectedAutoArrange;
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -221,8 +232,8 @@ public class RobotContainer {
 
 
 
-      m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(1)));
-      m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(2)));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L4)));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L3)));
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLowerMidbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Outer Buttons pressed")));
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
   
@@ -271,11 +282,10 @@ public class RobotContainer {
     );
   }
 
-  private void setAutoArrangeCommand(int c){
-    selectedAutoArrange = c;
+  private void setAutoArrangeCommand(Arrangement a){
+    selectedAutoArrange = a;
   }
-  private int getAutoArrangeCommand(){
-    System.out.println("Running selected command " + selectedAutoArrange);
+  private Arrangement getAutoArrangeCommand(){
     return selectedAutoArrange;
   }
 
@@ -287,9 +297,9 @@ public class RobotContainer {
       new SelectCommand<>(
           // Maps selector values to commands
           Map.ofEntries(
-              Map.entry(1, PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION)),
-              Map.entry(2, PositionCommand(200, 10, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-              Map.entry(3, new PrintCommand("Command three was selected!"))),
+              Map.entry(Arrangement.L4, PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION)),
+              Map.entry(Arrangement.L3, PositionCommand(200, 10, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+              Map.entry(Arrangement.L2, new PrintCommand("Command three was selected!"))),
           () -> getAutoArrangeCommand());
 
 
