@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.SetWheelAlignment;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.ZeroOdometry;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.FloorIntake;
@@ -216,11 +217,12 @@ public class RobotContainer {
  m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
  m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
  //m_driveXboxController.povUp().onTrue(PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION));
- //m_driveXboxController.povDown().onTrue(AutoArrangeCommand);
+  m_driveXboxController.button(8).onTrue(AutoArrangeCommand);
 
-      m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
-      m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
+ //     m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
+  //    m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
 
+  m_driveXboxController.x().onTrue(new ZeroOdometry(swerveSubsystem));
 //      m_driveXboxController.povUp().onTrue(wristSubsystem.moveWristCenter());
       m_driveXboxController.povLeft().onTrue(wristSubsystem.moveWristLeft());
       m_driveXboxController.povRight().onTrue(wristSubsystem.moveWristRight());
