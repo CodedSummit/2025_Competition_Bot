@@ -193,7 +193,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       new ConditionalCommand(
           Commands.none(), //no arm or elevator motion needed
           new SequentialCommandGroup(
-            armSubsystem.cmdArmPositionThatFinishes(20),
+            armSubsystem.cmdArmPositionThatFinishes(70),
             new InstantCommand(() -> m_elevator.set(0.2)) //slow down
           ),
           () -> atBottomLimit()
@@ -202,7 +202,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         new WaitUntilCommand(() -> atBottomLimit()),
         new InstantCommand(() -> m_elevator.stopMotor()), //stop
         new InstantCommand(() -> m_encoder.setPosition(0.0)),
-        new InstantCommand(() -> encoderCalibrated = true)//,
+        new InstantCommand(() -> encoderCalibrated = true),
+        cmdElevatorToHeight(15) //raise it to save height for driving
         //Commands.idle()
       ), 
     () -> encoderCalibrated);
