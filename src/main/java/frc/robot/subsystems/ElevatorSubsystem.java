@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
+import frc.robot.RangeSpeedLimiter;
+
 
 @Logged
 public class ElevatorSubsystem extends SubsystemBase {
@@ -43,10 +45,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   private GenericEntry elevator_speed_entry;
   private GenericEntry elevator_height_entry; // only used while tuning fixed heights
 
+  private RangeSpeedLimiter rangespeed;
+
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem(ArmSubsystem _ArmSubsystem) {
 
     armSubsystem = _ArmSubsystem;
+    rangespeed = new RangeSpeedLimiter(250, 0, 20, true, m_elevator, ()-> getHeight());
 
     config.apply(limitConfig);
  //   initialize();
@@ -73,7 +78,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    ProfileEndMotion();
+    //ProfileEndMotion();
+    rangespeed.profileEndMotion();
   }
 
   // End is the end of motion
@@ -85,6 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   
     private double m_elevatorDesiredHeight = 0.0; // in arbitrary elevator encoder units
   
+    /*
     private void ProfileEndMotion(){
       //this method is used to automaticaly profile motion as the elevator approaches it's limits.
   
@@ -133,6 +140,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       return percentage;
     }
   
+*/
+
     public Command elevateLevelOne(){
       return cmdElevatorToHeight(Constants.ElevatorConstants.kElevatorHeightL1);  
     }
