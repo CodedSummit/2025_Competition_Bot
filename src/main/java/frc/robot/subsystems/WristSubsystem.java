@@ -34,6 +34,9 @@ public class WristSubsystem extends SubsystemBase {
 
   private PIDController wrist_pid = new PIDController(0.01, 0, 0);
 
+  public static double CENTER = 180;
+  public static double LEFT = 90;
+
   /** Creates a new ExampleSubsystem. */
   public WristSubsystem() {
     wristEncoder.setInverted(true);
@@ -102,6 +105,9 @@ public class WristSubsystem extends SubsystemBase {
         () -> m_wrist.stopMotor()).withName("Manual Right");
   }
 
+
+
+
   public Command moveWristLeft() {
     return moveWristToPosition(90).withName("MoveLeft");
   }
@@ -118,7 +124,7 @@ public class WristSubsystem extends SubsystemBase {
   public Command moveWristToPosition(double p) {
     return this.startRun(
       ()->setWristDesiredAngle(p),
-      ()->moveWristWithPID());
+      ()->moveWristWithPID()).until(() -> wristAtDesiredAngle());
   }
 
   public double getWristAngle() {

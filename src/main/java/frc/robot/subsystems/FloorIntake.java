@@ -11,6 +11,8 @@ import java.util.Map;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -28,39 +30,34 @@ public class FloorIntake extends SubsystemBase {
   private final VictorSPX intakeWheels = new VictorSPX(10);
 
   private final DigitalInput floorInput = new DigitalInput(9);
-  private final DutyCycleEncoder intakeArmPosition = new DutyCycleEncoder(floorInput, 360, 0);
+  private final DutyCycleEncoder intakeArmPosition = new DutyCycleEncoder(floorInput, 360, Constants.IntakeConstants.kIntakeArmOffset);
 
-  private double armSpeed;
   private GenericEntry nt_armSpeed;
+
+    private PIDController intake_arm_pid = new PIDController(0.001, 0, 0);
+    private double intakeArmDesiredAngle = 180;
+
+  public static double UP_POSITION = 180;
+  public static double ALGEA_POSITION = 220;
 
   /** Creates a new FloorIntake. */
   public FloorIntake() {
-    
     intakeWheels.setInverted(true);
     this.initialize();
   }
 
 
     public void initialize() {
-
-        ShuffleboardTab tab = Shuffleboard.getTab("Intake");
-
-
-        tab.add("ArmUp", ManualArmDown());
-        tab.add("ArmDown", ManualArmUp());
-        tab.add("Start Intake", ManualRunIntake());
-        tab.add("Stop Intake", ManualStopIntake());
-
       setupShuffleboard();
     }
 
 
   public double armPosition(){
-    return intakeArmPosition.get() - Constants.IntakeConstants.kIntakeArmOffset;
+    return intakeArmPosition.get();
   }
 
   @Logged
-  public Command ManualArmDown(){
+  public Command ManualArmIn(){
     return this.startEnd(
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, getArmSpeed()), 
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, 0)
@@ -68,7 +65,7 @@ public class FloorIntake extends SubsystemBase {
   }
 
   @Logged
-  public Command ManualArmUp(){
+  public Command ManualArmOut(){
     return this.startEnd(
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -1 * getArmSpeed()), 
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, 0)
@@ -76,6 +73,23 @@ public class FloorIntake extends SubsystemBase {
   }
 
 
+  public void setIntakeArmDesiredAngle(double angle) {
+    intakeArmDesiredAngle = angle;
+    intake_arm_pid.reset(); //clears previous state
+  }
+
+  public Command moveArmToPosition(double p) {
+    return this.startRun(
+      ()->setIntakeArmDesiredAngle(p),
+      ()->moveIntakeArmWithPID()).withTimeout(3);
+  }
+
+  public void moveIntakeArmWithPID(){
+    double updated_speed = MathUtil.clamp(intake_arm_pid.calculate(armPosition(), intakeArmDesiredAngle), -getArmSpeed(), getArmSpeed());
+    intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -updated_speed);
+  }
+
+  
   public Command ManualRunIntake() {
     return runOnce(() -> intakeWheels.set(VictorSPXControlMode.PercentOutput, .5));
   }
@@ -109,12 +123,19 @@ public class FloorIntake extends SubsystemBase {
 
 
   private void setupShuffleboard(){
-    ShuffleboardTab intakeTab = Shuffleboard.getTab("Intake");
+    ShuffleboardTab tab = Shuffleboard.getTab("Intake");
 
-    nt_armSpeed = intakeTab.addPersistent("Arm Speed", Constants.IntakeConstants.kIntakeSpeed)
+    nt_armSpeed = tab.addPersistent("Arm Speed", Constants.IntakeConstants.kIntakeSpeed)
     .withSize(3,1)
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 0, "max", 1))
     .getEntry();
+
+    tab.add(intake_arm_pid);
+
+    tab.add("ArmIn", ManualArmIn());
+    tab.add("ArmOut", ManualArmOut());
+    tab.add("Start Intake", ManualRunIntake());
+    tab.add("Stop Intake", ManualStopIntake());
   }
 }

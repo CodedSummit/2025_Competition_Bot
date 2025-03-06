@@ -157,6 +157,21 @@ private void elbowHold(){
     );
   }
  
+  public Command cmdArmPositionThatFinishes(double angle) {
+    return new FunctionalCommand(
+      // command start
+      () -> setArmAngle(angle),
+      // called repeatedly
+      () -> moveArmToDesiredAngle(),
+      // Stop driving at the end of the command
+      interrupted -> m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed),
+      // End the command when the robot's driven distance exceeds the desired value
+      () -> elbowAtDesiredAngle(),
+      // Require the drive subsystem
+      this
+    );
+  }   
+
   public Command cmdArmHorizontalThatFinishes() {
     return new FunctionalCommand(
       // command start

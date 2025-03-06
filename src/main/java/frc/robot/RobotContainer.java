@@ -18,6 +18,7 @@ import frc.robot.subsystems.WristSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,10 +31,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 //import com.pathplanner.lib.commands.PathfindHolonomic;
@@ -76,6 +81,8 @@ public class RobotContainer {
   private final CommandJoystick m_outerButtons = new CommandJoystick(2);
 
   private final SendableChooser<Command> autoChooser;
+
+  private int selectedAutoArrange;
   
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -195,8 +202,10 @@ public class RobotContainer {
       m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
       m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
  //     m_driveXboxController.povDown().onTrue(armSubsystem.cmdArmHorizontal());
-    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmUp());
-    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmDown());
+ //m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
+ //m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
+ //m_driveXboxController.povUp().onTrue(PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION));
+ m_driveXboxController.povDown().onTrue(AutoArrangeCommand);
 
       m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
       m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
@@ -207,9 +216,16 @@ public class RobotContainer {
 
       m_driveXboxController.button(7).onTrue(handSubsystem.smartIntakeCoral());
 
-      m_driveXboxController.button(8).onTrue(PositionCommand(100, 10));
+      //m_driveXboxController.button(8).onTrue(PositionCommand(100, 10));
 
 
+
+
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(1)));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(2)));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterLowerMidbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Outer Buttons pressed")));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
+  
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));
@@ -246,12 +262,38 @@ public class RobotContainer {
   }
 
 
-  public Command PositionCommand(double elevator_position, double arm_angle){
-    return Commands.parallel(
+  public Command PositionCommand(double elevator_position, double arm_angle, double wrist_angle, double floor_position){
+    return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
       elevatorSubsystem.cmdElevatorToHeight(elevator_position),
-      armSubsystem.cmdArmAngle(arm_angle)
+      armSubsystem.cmdArmPositionThatFinishes(arm_angle),
+      wristSubsystem.moveWristToPosition(wrist_angle),
+      floorIntakeSubsystem.moveArmToPosition(floor_position)
     );
   }
+
+  private void setAutoArrangeCommand(int c){
+    selectedAutoArrange = c;
+  }
+  private int getAutoArrangeCommand(){
+    System.out.println("Running selected command " + selectedAutoArrange);
+    return selectedAutoArrange;
+  }
+
+    // An example selectcommand.  Will select from the three commands based on the value returned
+  // by the selector method at runtime.  Note that selectcommand works on Object(), so the
+  // selector does not have to be an enum; it could be any desired type (string, integer,
+  // boolean, double...)
+  private final Command AutoArrangeCommand =
+      new SelectCommand<>(
+          // Maps selector values to commands
+          Map.ofEntries(
+              Map.entry(1, PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION)),
+              Map.entry(2, PositionCommand(200, 10, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+              Map.entry(3, new PrintCommand("Command three was selected!"))),
+          () -> getAutoArrangeCommand());
+
+
+
 
   /**
    * @param targetPose

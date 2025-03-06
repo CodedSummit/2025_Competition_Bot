@@ -184,7 +184,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command cmdElevatorToHeight(double height) {
       return this.startRun(
         ()->setDesiredHeight(height),
-        ()->moveElevatorToDesiredHeight());
+        ()->moveElevatorToDesiredHeight()).until(() -> elevatorAtDesiredHeight());
     } 
 
     /*
@@ -244,7 +244,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       new ConditionalCommand(
           Commands.none(), //no arm or elevator motion needed
           new SequentialCommandGroup(
-            armSubsystem.cmdArmHorizontalThatFinishes(),
+            armSubsystem.cmdArmPositionThatFinishes(20),
             new InstantCommand(() -> m_elevator.set(0.2)) //slow down
           ),
           () -> atBottomLimit()
