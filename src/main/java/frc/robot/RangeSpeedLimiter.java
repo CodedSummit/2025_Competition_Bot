@@ -90,4 +90,5 @@ public class RangeSpeedLimiter {
         double percentage = progress / total;
         return Math.min(1, Math.max(0, percentage));
     }
+
 }

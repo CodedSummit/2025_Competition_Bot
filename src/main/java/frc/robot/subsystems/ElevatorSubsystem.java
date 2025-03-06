@@ -14,7 +14,6 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -78,69 +77,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //ProfileEndMotion();
     rangespeed.profileEndMotion();
   }
-
-  // End is the end of motion
-  // Start is the start of the motion limiting.
-  private double TopEnd = 250;
-  private double TopStart = 230;
-  private double BottomEnd = 0;
-  private double BottomStart = 20;
   
     private double m_elevatorDesiredHeight = 0.0; // in arbitrary elevator encoder units
-  
-    /*
-    private void ProfileEndMotion(){
-      //this method is used to automaticaly profile motion as the elevator approaches it's limits.
-  
-      //if in upper or lower ranges, then set the max speed based on percentage
-      double limit = speedLimitAtCurrentPosition();
-      double motor_speed = m_elevator.get();
-      if(limit < Math.abs(motor_speed)){
-        m_elevator.set(MathUtil.clamp(motor_speed, -limit, limit));
-      }
-  
-    }
-  
-    public double speedLimitAtCurrentPosition(){
-      double position = getHeight();
-      double motor_direction = m_elevator.get();
-      if(TopEnd > position && position > TopStart && motor_direction < 0){ //negative motion is up
-        return upperRangePercentage();
-      }else if(BottomStart > position && position > BottomEnd && motor_direction > 0){ //positive motion is down.
-        return lowerRangePercentage();
-      }
-      return 1; //no speed limit at current position.
-  
-    }
-  
-    public double upperRangePercentage(){
-      return calculateMotionProfilePercentage(TopEnd, TopStart, getHeight());
-    }
-  
-    public double lowerRangePercentage(){
-      return calculateMotionProfilePercentage(BottomEnd, BottomStart, getHeight());
-    }
-  
-    public static double calculateMotionProfilePercentage(double start, double end, double current) {
-      // Calculate the absolute difference between start and end
-      double total = Math.abs(end - start);
-      
-      // Calculate the difference between current and start
-      double progress = Math.abs(current - start);
-      
-      // Calculate the percentage
-      double percentage = (progress / total);
-      
-      // Ensure the percentage is between 0 and 100
-      percentage = Math.min(1, Math.max(0, percentage));
-      
-      return percentage;
-    }
-  
-*/
 
     public Command elevateLevelOne(){
       return cmdElevatorToHeight(Constants.ElevatorConstants.kElevatorHeightL1);  
