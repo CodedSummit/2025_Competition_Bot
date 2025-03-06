@@ -236,8 +236,9 @@ public class RobotContainer {
 
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L4)));
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L3)));
-      m_outerButtons.button(Constants.ButtonboardConstants.kOuterLowerMidbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Outer Buttons pressed")));
-      m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterLowerMidbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 2 + " on Outer Buttons pressed")));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Outer Buttons pressed")));
+      m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + "Coral" + " on Outer Buttons pressed")));
   
 //REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
@@ -299,9 +300,12 @@ public class RobotContainer {
       new SelectCommand<>(
           // Maps selector values to commands
           Map.ofEntries(
-              Map.entry(Arrangement.L4, PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION)),
-              Map.entry(Arrangement.L3, PositionCommand(200, 10, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-              Map.entry(Arrangement.L2, new PrintCommand("Command three was selected!"))),
+              Map.entry(Arrangement.L4, PositionCommand(222.8, -27, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+              Map.entry(Arrangement.L3, PositionCommand(103.6, 43, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+              Map.entry(Arrangement.L2, PositionCommand(18.25, 43, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+              Map.entry(Arrangement.L1, PositionCommand(116.5, -27, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+              Map.entry(Arrangement.STATION_PICKUP, PositionCommand(50, 29, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+              Map.entry(Arrangement.GROUND_PCKUP, new InstantCommand(()-> System.out.println("Ground Pickup!")))),
           () -> getAutoArrangeCommand());
 
 
