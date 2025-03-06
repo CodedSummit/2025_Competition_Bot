@@ -201,12 +201,12 @@ public class RobotContainer {
         Fix below may work (also applied above) that allows consideration of other button states when applying the commands.
      */
 
-    m_driveXboxController.button(6)
+    m_driveXboxController.rightBumper()
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getDampenedSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
     //includes logic to not activate if dampen is pressed.
-      m_driveXboxController.axisGreaterThan(4, 0.5).and(m_driveXboxController.button(6).negate())
+      m_driveXboxController.rightTrigger(.5).and(m_driveXboxController.rightBumper().negate())
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
 
