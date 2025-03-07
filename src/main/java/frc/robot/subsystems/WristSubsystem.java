@@ -34,9 +34,10 @@ public class WristSubsystem extends SubsystemBase {
   private GenericEntry nt_wristSpeed;
 
   private PIDController wrist_pid = new PIDController(0.01, 0, 0);
-
-  public static double CENTER = 180;
-  public static double LEFT = 90;
+  public static double CENTER_REVERSE = 315;
+  public static double CENTER = 135;
+  public static double LEFT = 45;
+  public static double RIGHT = 220;
 
   /** Creates a new ExampleSubsystem. */
   public WristSubsystem() {
@@ -110,15 +111,15 @@ public class WristSubsystem extends SubsystemBase {
 
 
   public Command moveWristLeft() {
-    return moveWristToPosition(90).withName("MoveLeft");
+    return moveWristToPosition(WristSubsystem.LEFT).withName("MoveLeft");
   }
 
   public Command moveWristCenter() {
-    return moveWristToPosition(180).withName("MoveCenter");
+    return moveWristToPosition(WristSubsystem.CENTER).withName("MoveCenter");
   }
 
   public Command moveWristRight() {
-    return moveWristToPosition(270).withName("MoveRight");
+    return moveWristToPosition(WristSubsystem.RIGHT).withName("MoveRight");
   }
 
 
