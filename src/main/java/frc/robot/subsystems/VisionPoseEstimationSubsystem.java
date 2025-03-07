@@ -36,16 +36,16 @@ import frc.robot.Constants.VisionConstants;
 public class VisionPoseEstimationSubsystem extends SubsystemBase {
  
   PhotonCamera m_backCamera = new PhotonCamera(VisionConstants.kBackCamName);
-  PhotonCamera m_leftCamera = new PhotonCamera(VisionConstants.kLeftCamName);
+  PhotonCamera m_frontCamera = new PhotonCamera(VisionConstants.kFrontCamName);
   PhotonCamera m_rightCamera = new PhotonCamera(VisionConstants.kRightCamName);
   AprilTagFieldLayout m_CompetitionAprilTagFieldLayout = AprilTagFields.k2025ReefscapeWelded.loadAprilTagLayoutField();
   PhotonPoseEstimator m_backCamPhotonPoseEstimator=null;
-  PhotonPoseEstimator m_leftCamPhotonPoseEstimator = null;
+  PhotonPoseEstimator m_frontCamPhotonPoseEstimator = null;
   PhotonPoseEstimator m_rightCamPhotonPoseEstimator = null;
   private boolean m_visionEnabled = true;
   SwerveSubsystem m_SwerveSubsystem;
    private IntegerLogEntry m_rightLog;
-   private IntegerLogEntry m_leftLog;
+   private IntegerLogEntry m_frontLog;
    private IntegerLogEntry m_backLog;
    private IntegerLogEntry m_targetIds;
   private long m_lastLogTime = 0;
@@ -58,13 +58,13 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     // Construct PhotonPoseEstimators
      m_backCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
       PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToBackCam);
-    m_leftCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
-        PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToLeftCam);
+    m_frontCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
+        PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToFrontCam);
     m_rightCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToRightCam);
     DataLog log = DataLogManager.getLog();
     m_rightLog = new IntegerLogEntry(log, "RightCamTargets");
-    m_leftLog = new IntegerLogEntry(log, "LeftCamTargets");
+    m_frontLog = new IntegerLogEntry(log, "FrontCamTargets");
     m_backLog = new IntegerLogEntry(log, "BackCamTargets");
     m_targetIds = new IntegerLogEntry(log, "TargetIDs");
 
@@ -107,14 +107,14 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       else {
         m_rightLog.append(0);
       }
-      result = m_leftCamera.getLatestResult();
+      result = m_frontCamera.getLatestResult();
       targets = result.getTargets();
       if (result.hasTargets()) {
-        m_leftLog.append(targets.size());
+        m_frontLog.append(targets.size());
         targets.forEach(id -> m_targetIds.append(id.getFiducialId()));
       }
       else {
-        m_leftLog.append(0);
+        m_frontLog.append(0);
       }
       result = m_backCamera.getLatestResult();
       targets = result.getTargets();
@@ -130,10 +130,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
 
   //  Get the actual estimates from the different cameras (Left (LC), Right (RC), back (BC))
-  private Optional<EstimatedRobotPose> getLCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-      m_leftCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-      PhotonPipelineResult result = m_leftCamera.getLatestResult();
-      return m_leftCamPhotonPoseEstimator.update(result);
+  private Optional<EstimatedRobotPose> getFCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+      m_frontCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+      PhotonPipelineResult result = m_frontCamera.getLatestResult();
+      return m_frontCamPhotonPoseEstimator.update(result);
   }
  private Optional<EstimatedRobotPose> getRCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
       m_rightCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
@@ -159,7 +159,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     boolean received_vision_update = false;
     if (getVisionEnable()) {
 
-      var pose = getLCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+      var pose = getFCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);

@@ -39,6 +39,7 @@ public class FloorIntake extends SubsystemBase {
 
   public static double UP_POSITION = 180;
   public static double ALGEA_POSITION = 220;
+  public static double FLOOR_INTAKE_POSITION = 240;
 
   /** Creates a new FloorIntake. */
   public FloorIntake() {
@@ -82,7 +83,8 @@ public class FloorIntake extends SubsystemBase {
     return this.startRun(
       ()->setIntakeArmDesiredAngle(p),
       ()->moveIntakeArmWithPID())
-      .withTimeout(1)
+      //.withTimeout(1)
+      .finallyDo(() -> stopArm())
       .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 

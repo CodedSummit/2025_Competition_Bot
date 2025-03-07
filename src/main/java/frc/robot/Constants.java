@@ -138,28 +138,30 @@ public static final class AutoConstants {
 }
 
 public static final class VisionConstants {
-  public static final String kFrontCamName ="FrontCam";  // front cam is now USB driver cam
-  public static final String kLeftCamName ="LeftCam";
+  public static final String kFrontCamName ="FrontCam";  //top cam
+  public static final String kLeftCamName ="LeftCam"; //no left cam this year.
   public static final String kRightCamName ="RightCam";
   public static final String kBackCamName = "BackCam";
   /**
      * Physical location of the camera on the robot, relative to the Robot.
      */
 
-  public static final Transform3d kRobotToFrontCam = new Transform3d(new Translation3d(0.0, 0.0,inchesToMeters(17.0)), new Rotation3d(0.0, 0, 0));
+  public static final Transform3d kRobotToFrontCam = new Transform3d(
+    new Translation3d(0.0, 0.0,inchesToMeters(17.0)), 
+    new Rotation3d(0.0, 0, 0));
   // public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0, 0.0));
-  public static final Transform3d kRobotToBackCam = 
-      new Transform3d(new Translation3d(0.0, 0.0,inchesToMeters(17.0)), 
-      new Rotation3d(0.0, degreesToRadians(18.0), degreesToRadians(180.0)));
+  public static final Transform3d kRobotToBackCam = new Transform3d(
+    new Translation3d(0.0, 0.0,inchesToMeters(17.0)), 
+    new Rotation3d(0.0, degreesToRadians(18.0), degreesToRadians(180.0)));
   public static final Transform2d kRobotToBackCam2d = new Transform2d(new Translation2d(0.0, 0.0), 
       new Rotation2d(degreesToRadians(180.0)));
 
-  public static final Transform3d kRobotToLeftCam = 
+  /*public static final Transform3d kRobotToLeftCam = 
       new Transform3d(new Translation3d(0.0, inchesToMeters(11.0),inchesToMeters(17.0)), 
-      new Rotation3d(degreesToRadians(18.0), 0, degreesToRadians(90)));
-  public static final Transform3d kRobotToRightCam = 
-      new Transform3d(new Translation3d(0.0, inchesToMeters(-11.0),inchesToMeters(17.0)), 
-      new Rotation3d(degreesToRadians(-18.0), 0, degreesToRadians(-90.0)));
+      new Rotation3d(degreesToRadians(18.0), 0, degreesToRadians(90)));*/
+  public static final Transform3d kRobotToRightCam = new Transform3d(
+    new Translation3d(0.0, inchesToMeters(-11.0),inchesToMeters(17.0)), 
+    new Rotation3d(degreesToRadians(-18.0), 0, degreesToRadians(-90.0)));
   // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
   public static final int kBAmpTagID = 6;
   public static final int kBStageTagID = 16;
@@ -212,7 +214,7 @@ public static final class ArmConstants {
   public static final double kElbowAngleToleranceDeg = 3.0;  // "close enough" to desired angle
 
   public static final double kWristAngleToleranceDeg = 10.0;
-  public static final double kWristAngleOffset = -76;
+  public static final double kWristAngleOffset = -58.3;//-76;
   public static final double kWristLeftLimit = 75;
   public static final double kWristRightLimit = 280;
 }
