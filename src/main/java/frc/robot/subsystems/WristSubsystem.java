@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -124,11 +125,18 @@ public class WristSubsystem extends SubsystemBase {
   public Command moveWristToPosition(double p) {
     return this.startRun(
       ()->setWristDesiredAngle(p),
-      ()->moveWristWithPID()).until(() -> wristAtDesiredAngle());
+      ()->moveWristWithPID())
+      .until(() -> wristAtDesiredAngle())
+      .finallyDo(() -> m_wrist.stopMotor())
+      .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
   public double getWristAngle() {
     return wristEncoder.get();
+  }
+
+  public boolean isPieceVertical(){
+    return !MathUtil.isNear(WristSubsystem.CENTER, getWristAngle(), 20);
   }
 
   private double getWristSpeed() {

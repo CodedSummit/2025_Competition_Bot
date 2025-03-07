@@ -31,9 +31,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -228,7 +233,7 @@ public class RobotContainer {
       m_driveXboxController.povLeft().onTrue(wristSubsystem.moveWristLeft());
       m_driveXboxController.povRight().onTrue(wristSubsystem.moveWristRight());
 
-      m_driveXboxController.button(7).onTrue(handSubsystem.smartIntakeCoral());
+      m_driveXboxController.button(7).onTrue(smartIntakeCoral());
 
       //m_driveXboxController.button(8).onTrue(PositionCommand(100, 10));
 
@@ -277,14 +282,30 @@ public class RobotContainer {
     elevatorSubsystem.elevatorCalibrate().schedule();
   }
 
+  public Command smartIntakeCoral(){
+    return new ConditionalCommand(
+      new SequentialCommandGroup( //if has coral
+        elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12).onlyIf(() ->wristSubsystem.isPieceVertical()),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(1)),
+        new WaitCommand(2),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(0))
+      ),
+     new SequentialCommandGroup( //if no coral
+        new InstantCommand(() -> handSubsystem.setHandSpeed(-1)),
+        new WaitUntilCommand(() -> handSubsystem.hasCoral()).withTimeout(10),
+        new WaitCommand(1),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(0))
+    ),
+    () -> handSubsystem.hasCoral());
+  }
 
   public Command PositionCommand(double elevator_position, double arm_angle, double wrist_angle, double floor_position){
     return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
-      elevatorSubsystem.cmdElevatorToHeight(elevator_position),
+      elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position),
       armSubsystem.cmdArmPositionThatFinishes(arm_angle),
       wristSubsystem.moveWristToPosition(wrist_angle),
       floorIntakeSubsystem.moveArmToPosition(floor_position)
-    );
+    ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
   private void setAutoArrangeCommand(Arrangement a){
@@ -304,11 +325,11 @@ public class RobotContainer {
       new SelectCommand<>(
           // Maps selector values to commands
           Map.ofEntries(
-            Map.entry(Arrangement.L4, PositionCommand(222.8, 48, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.L4, PositionCommand(222.8, 49, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
             Map.entry(Arrangement.L3, PositionCommand(103.6, 43, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
             Map.entry(Arrangement.L2, PositionCommand(18.25, 43, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
             Map.entry(Arrangement.L1, PositionCommand(116.5, -27, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.STATION_PICKUP, PositionCommand(50, 29, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.STATION_PICKUP, PositionCommand(50, 28, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
           ),

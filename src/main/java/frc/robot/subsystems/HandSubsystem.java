@@ -59,22 +59,6 @@ public class HandSubsystem extends SubsystemBase {
       ()-> setHandSpeed(0));
   }
 
-  public Command smartIntakeCoral(){
-    return new ConditionalCommand(
-      new SequentialCommandGroup( //if has coral
-        new InstantCommand(() -> m_hand.set(1)),
-        new WaitCommand(2),
-        new InstantCommand(() -> m_hand.set(0))
-      ),
-     new SequentialCommandGroup( //if no coral
-        new InstantCommand(() -> m_hand.set(-1)),
-        new WaitUntilCommand(() -> hasCoral()).withTimeout(10),
-        new WaitCommand(1),
-        new InstantCommand(() -> m_hand.set(0))
-    ),
-    () -> hasCoral());
-  }
-
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
