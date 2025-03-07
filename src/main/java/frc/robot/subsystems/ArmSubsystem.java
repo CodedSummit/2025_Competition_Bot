@@ -198,7 +198,12 @@ private void elbowHold(){
    * either moves the elbow/arm to the desired angle, or hold it there if at angle
    */
   public void moveArmToDesiredAngle() {
- 
+    if (!absEncoder.isConnected()){
+      setElbowSpeed(Constants.ArmConstants.kElbowHoldSpeed);
+      System.out.println("ERROR - Absolute Encoder is not connected.");
+      return;
+    }
+
     if (elbowAtDesiredAngle()) {
       // we've reached the goal angle, hold now
       m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed);

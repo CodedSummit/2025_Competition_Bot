@@ -167,8 +167,9 @@ public class WristSubsystem extends SubsystemBase {
       return "None";
     }
   }
-
-  protected boolean wristAtDesiredAngle() {
+  
+  @Logged
+  public boolean wristAtDesiredAngle() {
     // see if we're "close enough" to the target desired angle
     if (Math.abs(getWristAngle() - wristDesiredAngleDeg) <= Constants.ArmConstants.kWristAngleToleranceDeg) {
       return true;
