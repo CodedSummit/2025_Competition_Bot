@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
@@ -22,9 +23,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
 import frc.robot.RangeSpeedLimiter;
 
@@ -82,6 +85,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   
     private double m_elevatorDesiredHeight = 0.0; // in arbitrary elevator encoder units
 
+    /*
     public Command elevateLevelOne(){
       return cmdElevatorToHeight(Constants.ElevatorConstants.kElevatorHeightL1);  
     }
@@ -94,7 +98,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command elevateLevelFour(){
       return cmdElevatorToHeight(Constants.ElevatorConstants.kElevatorHeightL4);  
     }
-  
+  */
     public double getSpeed() {
       return elevator_speed_entry.getDouble(0.25);
     }
@@ -130,10 +134,13 @@ public class ElevatorSubsystem extends SubsystemBase {
       );
     }
   
-    public Command cmdElevatorToHeight(double height) {
+    public Command cmdElevatorToHeight(DoubleSupplier height_Supplier) {
       return this.startRun(
-        ()->setDesiredHeight(height),
-        ()->moveElevatorToDesiredHeight()).until(() -> elevatorAtDesiredHeight());
+        ()->setDesiredHeight(height_Supplier),
+        ()->moveElevatorToDesiredHeight())
+        .until(() -> elevatorAtDesiredHeight())
+        .finallyDo(() -> stopElevator())
+        .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
     } 
 
     /*
@@ -141,7 +148,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * it will seek to the height pulled from the shuffleboard widget
      */
     public Command cmdElevatorToShuffleboardHeight() {
-      return cmdElevatorToHeight( elevator_height_entry.getDouble(0.0));
+      return cmdElevatorToHeight(() ->elevator_height_entry.getDouble(0.0));
     }
 
     
@@ -153,8 +160,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       return m_elevator.getReverseLimitSwitch().isPressed();
     }
 
-    private void setDesiredHeight(double desiredHeight) {
-      m_elevatorDesiredHeight = desiredHeight;
+    private void setDesiredHeight(DoubleSupplier desiredHeight) {
+      m_elevatorDesiredHeight = desiredHeight.getAsDouble();
     }
 
     /*
@@ -193,7 +200,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       new ConditionalCommand(
           Commands.none(), //no arm or elevator motion needed
           new SequentialCommandGroup(
-            armSubsystem.cmdArmPositionThatFinishes(70),
+            armSubsystem.cmdArmPositionThatFinishes(65),
             new InstantCommand(() -> m_elevator.set(0.2)) //slow down
           ),
           () -> atBottomLimit()
@@ -203,7 +210,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         new InstantCommand(() -> m_elevator.stopMotor()), //stop
         new InstantCommand(() -> m_encoder.setPosition(0.0)),
         new InstantCommand(() -> encoderCalibrated = true),
-        cmdElevatorToHeight(15) //raise it to save height for driving
+        cmdElevatorToHeight(() -> 15) //raise it to save height for driving
         //Commands.idle()
       ), 
     () -> encoderCalibrated);

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -80,7 +81,9 @@ public class FloorIntake extends SubsystemBase {
   public Command moveArmToPosition(double p) {
     return this.startRun(
       ()->setIntakeArmDesiredAngle(p),
-      ()->moveIntakeArmWithPID()).withTimeout(3);
+      ()->moveIntakeArmWithPID())
+      .withTimeout(1)
+      .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
   public void moveIntakeArmWithPID(){
