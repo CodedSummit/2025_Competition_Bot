@@ -83,7 +83,7 @@ public class FloorIntake extends SubsystemBase {
     return this.startRun(
       ()->setIntakeArmDesiredAngle(p),
       ()->moveIntakeArmWithPID())
-      //.withTimeout(1)
+      .withTimeout(1)
       .finallyDo(() -> stopArm())
       .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }

@@ -215,8 +215,8 @@ public static final class ArmConstants {
 
   public static final double kWristAngleToleranceDeg = 10.0;
   public static final double kWristAngleOffset = -58.3;//-76;
-  public static final double kWristLeftLimit = 75;
-  public static final double kWristRightLimit = 280;
+  public static final double kWristLeftLimit = 20;
+  public static final double kWristRightLimit = 340;
 }
 
 public static final class ElevatorConstants {

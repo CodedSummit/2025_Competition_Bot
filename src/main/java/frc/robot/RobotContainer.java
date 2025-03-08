@@ -228,10 +228,10 @@ public class RobotContainer {
  //     m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
   //    m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
 
-  m_driveXboxController.x().onTrue(new ZeroOdometry(swerveSubsystem));
+  m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
 //      m_driveXboxController.povUp().onTrue(wristSubsystem.moveWristCenter());
-      m_driveXboxController.povLeft().onTrue(wristSubsystem.moveWristLeft());
-      m_driveXboxController.povRight().onTrue(wristSubsystem.moveWristRight());
+      m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
+      m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
 
       m_driveXboxController.button(7).onTrue(smartIntakeCoral());
 
@@ -303,8 +303,8 @@ public class RobotContainer {
     return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
       elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position),
       armSubsystem.cmdArmPositionThatFinishes(arm_angle),
-      wristSubsystem.moveWristToPosition(wrist_angle),
-      floorIntakeSubsystem.moveArmToPosition(floor_position)
+      wristSubsystem.moveWristToPosition(wrist_angle)//,
+      //floorIntakeSubsystem.moveArmToPosition(floor_position)
     ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
