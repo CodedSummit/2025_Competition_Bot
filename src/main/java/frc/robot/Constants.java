@@ -147,11 +147,11 @@ public static final class VisionConstants {
      */
 
   public static final Transform3d kRobotToFrontCam = new Transform3d(
-    new Translation3d(inchesToMeters(-9.0), inchesToMeters(1.25),inchesToMeters(35.5)), 
-    new Rotation3d(degreesToRadians(-52.8), 0, degreesToRadians(70)));
+    new Translation3d(inchesToMeters(1.25), inchesToMeters(-9),inchesToMeters(35.5)), 
+    new Rotation3d(0, degreesToRadians(52.8), degreesToRadians(70)));
   // public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0, 0.0));
   public static final Transform3d kRobotToBackCam = new Transform3d(
-    new Translation3d(inchesToMeters(-4.5), inchesToMeters(8),inchesToMeters(4.5)), 
+    new Translation3d(inchesToMeters(-4.5), inchesToMeters(-8),inchesToMeters(4.5)), 
     new Rotation3d(degreesToRadians(15.0), 0.0, 0.0));
   public static final Transform2d kRobotToBackCam2d = new Transform2d(new Translation2d(0.0, 0.0), 
       new Rotation2d(degreesToRadians(180.0)));
@@ -160,7 +160,7 @@ public static final class VisionConstants {
       new Transform3d(new Translation3d(0.0, inchesToMeters(11.0),inchesToMeters(17.0)), 
       new Rotation3d(degreesToRadians(18.0), 0, degreesToRadians(90)));*/
   public static final Transform3d kRobotToRightCam = new Transform3d(
-    new Translation3d(inchesToMeters(-13), inchesToMeters(5.0),inchesToMeters(3.75)), 
+    new Translation3d(inchesToMeters(-13), inchesToMeters(-5.0),inchesToMeters(3.75)), 
     new Rotation3d(degreesToRadians(15.0), 0, 0));
   // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
   public static final int kBAmpTagID = 6;
