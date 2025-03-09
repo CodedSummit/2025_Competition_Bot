@@ -174,71 +174,46 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
+    m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
+    m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
     
     m_driveXboxController.leftBumper().whileTrue(elevatorSubsystem.elevatorUp());
     m_driveXboxController.leftTrigger().whileTrue(elevatorSubsystem.elevatorDown());
     
+    m_driveXboxController.rightBumper()
+    .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getDampenedSpeedFactor())))
+    .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
+    
+    //includes logic to not activate if dampen is pressed.
+    m_driveXboxController.rightTrigger(.5).and(m_driveXboxController.rightBumper().negate())
+    .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
+    .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
     //m_driveXboxController.povUp().onTrue(swerveSubsystem.zeroHeadingCommand());
-
-    //Command navToA = makeNavCommand(new Pose2d(1.81, 7.68, new Rotation2d(0)));
-    //m_driverController.a().whileTrue(navToA);
-
-    //m_driverController.x().whileTrue(new ChaseTagCommand(m_visionSubsystem, swerveSubsystem, m_led));
-
+    
+    m_driveXboxController.button(7).onTrue(smartIntakeCoral());
+    m_driveXboxController.button(8).onTrue(AutoArrangeCommand);
+    
+    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
+    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
+    m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
+    m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
+    
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
+    /* 
     m_driveXboxController.button(5)
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setFieldOriented(false)))
-      .onFalse(new InstantCommand(() -> swerveJoystickCmd.setFieldOriented(true)));
-
+      .onFalse(new InstantComma nmnd(() -> swerveJoystickCmd.setFieldOriented(true)));*/
+/* 
       //reverse robot orientation mode
       m_driveXboxController.axisGreaterThan(3, 0.5).and(m_driveXboxController.button(5).negate())
       .onTrue(new InstantCommand(() -> swerveJoystickCmd.setReverseFieldOriented(true)))
       .onFalse(new InstantCommand(() -> swerveJoystickCmd.setReverseFieldOriented(false)));
+*/
 
-    /*
-    note: there is an odd state you can get into with the dampen and boost features enabled below. As the press and
-          release are different operations, you can cause odd behaviors. Consider the following sequence:
-        Press bumper(set dampened)
-        Press Trigger(set Turbo)
-        Release Trigger (Set Normal)
-        now, the speed is normal, in spite of still holding the bumper in.
-        this can be resolved by considering the state of both buttons when choosing the speed factor.
-
-        Fix below may work (also applied above) that allows consideration of other button states when applying the commands.
-     */
-
-    m_driveXboxController.rightBumper()
-      .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getDampenedSpeedFactor())))
-      .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
-
-    //includes logic to not activate if dampen is pressed.
-      m_driveXboxController.rightTrigger(.5).and(m_driveXboxController.rightBumper().negate())
-      .onTrue(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getTurboSpeedFactor())))
-      .onFalse(new InstantCommand(() -> swerveJoystickCmd.setMotionScale(swerveSubsystem.getNormalSpeedFactor())));
-
-      m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
-      m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
  //     m_driveXboxController.povDown().onTrue(armSubsystem.cmdArmHorizontal());
- m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
- m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
  //m_driveXboxController.povUp().onTrue(PositionCommand(100, -10, WristSubsystem.CENTER, FloorIntake.ALGEA_POSITION));
-  m_driveXboxController.button(8).onTrue(AutoArrangeCommand);
-
- //     m_driveXboxController.b().whileTrue(wristSubsystem.manualWristRight());
-  //    m_driveXboxController.x().whileTrue(wristSubsystem.manualWristLeft());
-
-  m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
-//      m_driveXboxController.povUp().onTrue(wristSubsystem.moveWristCenter());
-      m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
-      m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
-
-      m_driveXboxController.button(7).onTrue(smartIntakeCoral());
-
-      //m_driveXboxController.button(8).onTrue(PositionCommand(100, 10));
-
-
-
 
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L4)));
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L3)));
@@ -247,7 +222,6 @@ public class RobotContainer {
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.STATION_PICKUP)));
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.GROUND_PICKUP)));
   
-//REMEMBER: YOU NEED AT LEAST 3 USB PORTS TO RUN THIS BUILD!
 /* 
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Reef Buttons pressed")));
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 2 + " on Reef Buttons pressed")));

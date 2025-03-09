@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -80,6 +81,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private GenericEntry normalSpeedFactor;
     private GenericEntry dampenedSpeedFactor;
 
+    @Logged
     private final Field2d m_field = new Field2d();
 
     public SwerveSubsystem() {
@@ -129,6 +131,27 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveTab.add("Field", m_field);
 
         swerveTab.add(new ZeroOdometry(this));
+
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("SwerveDrive");
+
+    builder.addDoubleProperty("Front Left Angle", () -> frontLeft.getTurningPosition(), null);
+    builder.addDoubleProperty("Front Left Velocity", () -> frontLeft.getDriveVelocity(), null);
+
+    builder.addDoubleProperty("Front Right Angle", () -> frontRight.getTurningPosition(), null);
+    builder.addDoubleProperty("Front Right Velocity", () -> frontRight.getDriveVelocity(), null);
+
+    builder.addDoubleProperty("Back Left Angle", () -> backLeft.getTurningPosition(), null);
+    builder.addDoubleProperty("Back Left Velocity", () -> backLeft.getDriveVelocity(), null);
+
+    builder.addDoubleProperty("Back Right Angle", () -> backRight.getTurningPosition(), null);
+    builder.addDoubleProperty("Back Right Velocity", () -> backRight.getDriveVelocity(), null);
+
+    builder.addDoubleProperty("Robot Angle", () -> getRotation2d().getRadians(), null);
+  }
+});
 
         // Configure AutoBuilder last
         try {
@@ -239,6 +262,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("PoseX", getPose().getX() );
         SmartDashboard.putNumber("PoseY", getPose().getY() );
     }
+
+    
 
     public void updatePose(){
         m_VisionPoseEstimationSubsystem.updatePoseWithVision(odometer);

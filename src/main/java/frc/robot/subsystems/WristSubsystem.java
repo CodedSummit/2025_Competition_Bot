@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -124,6 +125,10 @@ public class WristSubsystem extends SubsystemBase {
 
 
   public Command moveWristToPosition(double p) {
+    if(!wristEncoder.isConnected()){
+      System.out.println("ERROR - Wrist Encoder is not connected.");
+      return new InstantCommand(()-> setWristSpeed(0));
+    }
     return this.startRun(
       ()->setWristDesiredAngle(p),
       ()->moveWristWithPID())

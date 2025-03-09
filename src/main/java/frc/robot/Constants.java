@@ -213,7 +213,7 @@ public static final class ArmConstants {
   public static String kElbowDownSpeedPrefKey = "Arm.ElbowDownSpeed";
   public static final double kElbowAngleToleranceDeg = 3.0;  // "close enough" to desired angle
 
-  public static final double kWristAngleToleranceDeg = 10.0;
+  public static final double kWristAngleToleranceDeg = 5.0;
   public static final double kWristAngleOffset = -58.3;//-76;
   public static final double kWristLeftLimit = 20;
   public static final double kWristRightLimit = 340;
