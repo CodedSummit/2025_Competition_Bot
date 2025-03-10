@@ -196,8 +196,13 @@ public class RobotContainer {
     
     m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
     m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
-    m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
-    m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
+    
+    m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
+    m_driveXboxController.povRight().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.FLOOR_INTAKE_POSITION));
+    
+    //real code
+    //m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
+    //m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
     
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
