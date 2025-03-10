@@ -223,7 +223,7 @@ public static final class ElevatorConstants {
   // Various constants for the Elevator
   public static final int kElevatorCanbusID = 5;
   public static double kShooterSpeed = 0.5;
-  public static final double kElevatorHeightTolerance = 10.0; // elevator encoder arbitrary units
+  public static final double kElevatorHeightTolerance = 1.0; // elevator encoder arbitrary units
   public static final double kElevatorHeightL1 = 0.0;  // scoring level
   public static final double kElevatorHeightL2 = 0.0;  // scoring level
   public static final double kElevatorHeightL3 = 0.0;  // scoring level

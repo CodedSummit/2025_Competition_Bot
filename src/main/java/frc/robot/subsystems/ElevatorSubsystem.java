@@ -15,6 +15,8 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -49,6 +51,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private RangeSpeedLimiter rangespeed;
 
+    private PIDController elevator_pid = new PIDController(0.08, 0.001, 0);
+
+
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem(ArmSubsystem _ArmSubsystem) {
 
@@ -61,6 +66,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     //shuffleboard setup w/dashboard editing
     ShuffleboardTab elevatorTab = Shuffleboard.getTab("Elevator");
   
+    elevatorTab.add(elevator_pid);
+
     elevator_speed_entry = elevatorTab
         .addPersistent("Elevator Speed", 0.25)
         .withSize(3, 1)
@@ -137,7 +144,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command cmdElevatorToHeight(DoubleSupplier height_Supplier) {
       return this.startRun(
         ()->setDesiredHeight(height_Supplier),
-        ()->moveElevatorToDesiredHeight())
+        ()->moveElevatorToDesiredHeightPID())
         .until(() -> elevatorAtDesiredHeight())
         .finallyDo(() -> stopElevator())
         .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
@@ -162,6 +169,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private void setDesiredHeight(DoubleSupplier desiredHeight) {
       m_elevatorDesiredHeight = desiredHeight.getAsDouble();
+      elevator_pid.reset();
     }
 
     /*
@@ -181,13 +189,19 @@ public class ElevatorSubsystem extends SubsystemBase {
       }
     }
 
+    public void moveElevatorToDesiredHeightPID() {
+      double updated_speed = MathUtil.clamp(elevator_pid.calculate(getHeight(), m_elevatorDesiredHeight), -getSpeed(), getSpeed());
+      m_elevator.set(-updated_speed);
+    }
+
     protected boolean elevatorAtDesiredHeight() {
       // see if we're "close enough" to the target height
-      if (Math.abs(getHeight() - m_elevatorDesiredHeight) <= Constants.ElevatorConstants.kElevatorHeightTolerance) {
+      return MathUtil.isNear(m_elevatorDesiredHeight, getHeight(), Constants.ElevatorConstants.kElevatorHeightTolerance);
+      /*if (Math.abs(getHeight() - m_elevatorDesiredHeight) <= Constants.ElevatorConstants.kElevatorHeightTolerance) {
         // close enough
         return true;
       }
-      return false;
+      return false;*/
     }
 
 
