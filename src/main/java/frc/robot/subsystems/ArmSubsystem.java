@@ -200,7 +200,7 @@ private void elbowHold(){
   public void moveArmToDesiredAngle() {
     if (!absEncoder.isConnected()){
       setElbowSpeed(Constants.ArmConstants.kElbowHoldSpeed);
-      System.out.println("ERROR - Absolute Encoder is not connected.");
+      System.out.println("ERROR - ARM Absolute Encoder is not connected.");
       return;
     }
 

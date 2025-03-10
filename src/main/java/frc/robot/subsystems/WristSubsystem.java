@@ -125,10 +125,6 @@ public class WristSubsystem extends SubsystemBase {
 
 
   public Command moveWristToPosition(double p) {
-    if(!wristEncoder.isConnected()){
-      System.out.println("ERROR - Wrist Encoder is not connected.");
-      return new InstantCommand(()-> setWristSpeed(0));
-    }
     return this.startRun(
       ()->setWristDesiredAngle(p),
       ()->moveWristWithPID())
@@ -155,6 +151,10 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public void moveWristWithPID(){
+    if(!wristEncoder.isConnected()){
+      System.out.println("ERROR - Wrist Encoder is not connected.");
+      setWristSpeed(0);
+    }
     double updated_speed = MathUtil.clamp(wrist_pid.calculate(getWristAngle(), wristDesiredAngleDeg), -getWristSpeed(), getWristSpeed());
     setWristSpeed(updated_speed);
   }

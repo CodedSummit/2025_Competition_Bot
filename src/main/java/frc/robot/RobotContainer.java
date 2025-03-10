@@ -299,11 +299,11 @@ public class RobotContainer {
       new SelectCommand<>(
           // Maps selector values to commands
           Map.ofEntries(
-            Map.entry(Arrangement.L4, PositionCommand(222.8, 49, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.L3, PositionCommand(103.6, 43, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.L2, PositionCommand(18.25, 43, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.L1, PositionCommand(116.5, -27, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.STATION_PICKUP, PositionCommand(50, 28, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.L4, PositionCommand(243.6, 42.6, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.L3, PositionCommand(121, 36.7, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.L2, PositionCommand(27.3, 46.5, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.L1, PositionCommand(138.5, -33, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.STATION_PICKUP, PositionCommand(7.9, 51.4, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
           ),

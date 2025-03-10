@@ -132,7 +132,8 @@ public class SwerveModule implements Sendable {
     }
 
     public void setDesiredState(SwerveModuleState state) {
-        state = SwerveModuleState.optimize(state, getState().angle);
+        //state = SwerveModuleState.optimize(state, getState().angle); //old version of the opt method. New instance method down below.
+        state.optimize(getState().angle);
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
 
         /*if (Math.abs(state.speedMetersPerSecond) < 0.005) {
