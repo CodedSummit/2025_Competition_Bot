@@ -32,9 +32,11 @@ public class FloorIntake extends SubsystemBase {
   private final DigitalInput floorInput = new DigitalInput(9);
   private final DutyCycleEncoder intakeArmPosition = new DutyCycleEncoder(floorInput, 360, Constants.IntakeConstants.kIntakeArmOffset);
 
-  private GenericEntry nt_armSpeed;
+  private GenericEntry nt_armSpeedDown;
+  private GenericEntry nt_armSpeedUp;
 
-    private PIDController intake_arm_pid = new PIDController(0.001, 0, 0);
+  //This needs a FeedForward to hit a specific setpoint
+    private PIDController intake_arm_pid = new PIDController(0.005, 0, 0);
     private double intakeArmDesiredAngle = 180;
 
   public static double UP_POSITION = 180;
@@ -60,7 +62,7 @@ public class FloorIntake extends SubsystemBase {
   @Logged
   public Command ManualArmIn(){
     return this.startEnd(
-      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, getArmSpeed()), 
+      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, getArmSpeedUp()), 
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, 0)
     );
   }
@@ -68,7 +70,7 @@ public class FloorIntake extends SubsystemBase {
   @Logged
   public Command ManualArmOut(){
     return this.startEnd(
-      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -1 * getArmSpeed()), 
+      () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -1 * getArmSpeedDown()), 
       () -> intakeArmMotor.set(VictorSPXControlMode.PercentOutput, 0)
     );
   }
@@ -89,7 +91,7 @@ public class FloorIntake extends SubsystemBase {
   }
 
   public void moveIntakeArmWithPID(){
-    double updated_speed = MathUtil.clamp(intake_arm_pid.calculate(armPosition(), intakeArmDesiredAngle), -getArmSpeed(), getArmSpeed());
+    double updated_speed = MathUtil.clamp(intake_arm_pid.calculate(armPosition(), intakeArmDesiredAngle), -getArmSpeedDown(), getArmSpeedUp());
     intakeArmMotor.set(VictorSPXControlMode.PercentOutput, -updated_speed);
   }
 
@@ -116,9 +118,14 @@ public class FloorIntake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public double getArmSpeed(){
-    double armSpeed = nt_armSpeed.getDouble(Constants.IntakeConstants.kIntakeArmSpeed);
-    return armSpeed;
+  public double getArmSpeedDown(){
+    double armSpeedDown = nt_armSpeedDown.getDouble(Constants.IntakeConstants.kIntakeArmSpeedDown);
+    return armSpeedDown;
+  }
+
+  public double getArmSpeedUp(){
+    double armSpeedUp = nt_armSpeedUp.getDouble(Constants.IntakeConstants.kIntakeArmSpeedUp);
+    return armSpeedUp;
   }
 
   public void stopArm(){
@@ -129,11 +136,17 @@ public class FloorIntake extends SubsystemBase {
   private void setupShuffleboard(){
     ShuffleboardTab tab = Shuffleboard.getTab("Intake");
 
-    nt_armSpeed = tab.addPersistent("Arm Speed", Constants.IntakeConstants.kIntakeSpeed)
+    nt_armSpeedDown = tab.addPersistent("Arm Speed Down", Constants.IntakeConstants.kIntakeArmSpeedDown)
     .withSize(3,1)
     .withWidget(BuiltInWidgets.kNumberSlider)
     .withProperties(Map.of("min", 0, "max", 1))
     .getEntry();
+
+    nt_armSpeedUp = tab.addPersistent("Arm Speed Up", Constants.IntakeConstants.kIntakeArmSpeedUp)
+    .withSize(3,1)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0, "max", 1))
+    .getEntry();   
 
     tab.add(intake_arm_pid);
 

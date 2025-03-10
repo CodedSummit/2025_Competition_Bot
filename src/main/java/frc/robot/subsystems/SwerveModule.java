@@ -37,6 +37,8 @@ public class SwerveModule implements Sendable {
     private final int driveid;
     private final String encoderOffsetKey;
 
+    private double angleErrorSpeedFactor;
+
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
             int absoluteEncoderId, boolean absoluteEncoderReversed) { // removed args: double absoluteEncoderOffset
 
@@ -113,6 +115,9 @@ public class SwerveModule implements Sendable {
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);        
     }
 
+    public Rotation2d getDirctionRotation(){
+        return new Rotation2d(getAbsoluteEncoderRad());
+    }
     public double getAbsoluteEncoderRad() {
         double angle = directionDutyCycle.get();
         
@@ -141,6 +146,16 @@ public class SwerveModule implements Sendable {
             driveTalonFX.set(0);
             return;
         }*/
+
+        // this calculation slows the wheel based on how far off it is from desired direction.
+        // This is intended to solve the 'wheel lockup' we've been seeing where different modules choose opposite
+        // directions to get to the desired angle, and fight each other.
+        // source: https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#cosine-compensation
+        angleErrorSpeedFactor = state.angle.minus(getDirctionRotation()).getCos();
+
+        state.speedMetersPerSecond *= angleErrorSpeedFactor;
+
+
         driveTalonFX.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
     }
 
