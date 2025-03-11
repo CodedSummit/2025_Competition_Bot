@@ -47,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 //import com.pathplanner.lib.commands.PathfindHolonomic;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -148,6 +149,12 @@ public class RobotContainer {
     SmartDashboard.putData("poseestimator", m_visionPoseEstimationSubsystem);
     SmartDashboard.putData("Power", pdp);
     SmartDashboard.putData("Arm", armSubsystem);
+
+    NamedCommands.registerCommand("L1", ArrangementL1());
+    NamedCommands.registerCommand("L2", ArrangementL2());
+    NamedCommands.registerCommand("L3", ArrangementL3());
+    NamedCommands.registerCommand("L4", ArrangementL4());
+    NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
 
   }
 
@@ -305,11 +312,11 @@ public class RobotContainer {
       new SelectCommand<>(
           // Maps selector values to commands
           Map.ofEntries(
-            Map.entry(Arrangement.L4, PositionCommand(243.6, 42.6, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.L3, PositionCommand(121, 36.7, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.L2, PositionCommand(27.3, 46.5, WristSubsystem.LEFT, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.L1, PositionCommand(138.5, -33, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
-            Map.entry(Arrangement.STATION_PICKUP, PositionCommand(7.9, 51.4, WristSubsystem.CENTER, FloorIntake.UP_POSITION)),
+            Map.entry(Arrangement.L4, ArrangementL4()),
+            Map.entry(Arrangement.L3, ArrangementL3()),
+            Map.entry(Arrangement.L2, ArrangementL2()),
+            Map.entry(Arrangement.L1, ArrangementL1()),
+            Map.entry(Arrangement.STATION_PICKUP, ArrangementStationPickup()),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
           ),
@@ -356,7 +363,29 @@ public class RobotContainer {
   public void loadPreferences(){
     swerveSubsystem.loadPreferences();
   }
+  //IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please.
 
+  public Command ArrangementL4(){
+    return PositionCommand(243.6, 42.6, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+  }
+
+  public Command ArrangementL3(){
+    return PositionCommand(121, 36.7, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+  }
+
+  public Command ArrangementL2(){
+    return PositionCommand(27.3, 46.5, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+  }
+
+  public Command ArrangementL1(){
+    return PositionCommand(138.5, -33, WristSubsystem.CENTER, FloorIntake.UP_POSITION);
+  }
+
+  public Command ArrangementStationPickup(){
+    return PositionCommand(7.9, 51.4, WristSubsystem.CENTER, FloorIntake.UP_POSITION);
+  }
+
+  //Commands that are going to Pathplanner should stay above this line.
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
