@@ -16,8 +16,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -33,6 +35,7 @@ import frc.robot.Constants.VisionConstants;
  *  the design pattern.
  * Uses the Left and Right cameras for estimations.
  */
+@Logged
 public class VisionPoseEstimationSubsystem extends SubsystemBase {
  
   PhotonCamera m_backCamera = new PhotonCamera(VisionConstants.kBackCamName);
@@ -49,6 +52,8 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
    private IntegerLogEntry m_backLog;
    private IntegerLogEntry m_targetIds;
   private long m_lastLogTime = 0;
+
+  private GenericEntry nt_visionEnabled;
 
   /** Creates a new VisionPoseEstimationSubsystem. */
   public VisionPoseEstimationSubsystem() {
@@ -80,9 +85,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   public void initialize() {
      ShuffleboardTab vTab = Shuffleboard.getTab("Vision");
-     vTab.addBoolean("Enable vision ", () -> enableVisionPose(m_visionEnabled))
+
+     nt_visionEnabled = vTab.add("Enable vision ", true)
      .withWidget(BuiltInWidgets.kToggleSwitch)
-     .withSize(1,1);
+     .withSize(1,1).getEntry();
 
   }
   @Override
@@ -192,11 +198,27 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   }
 
   public void initSendable(SendableBuilder builder) {
-    builder.addBooleanProperty("Vision Location Enabled", this::getVisionEnable, this::enableVisionPose);
+    //builder.addBooleanProperty("Vision Location Enabled", this::getVisionEnable, this::enableVisionPose);
+  }
+
+  public boolean rightCamHasTarget(){
+    return m_rightCamera.getLatestResult().hasTargets();
+  }
+
+  public boolean backCamHasTarget() {
+    return m_backCamera.getLatestResult().hasTargets();
+  }
+
+  public boolean rightCamConnected() {
+    return m_rightCamera.isConnected();
+  }
+
+  public boolean backCamConnected() {
+    return m_backCamera.isConnected();
   }
 
   public boolean getVisionEnable(){
-    return m_visionEnabled;
+    return nt_visionEnabled.getBoolean(true);
   }
   public boolean enableVisionPose(boolean b) {
     m_visionEnabled = b;
