@@ -20,8 +20,8 @@
         "y": 2.508555327868852
       },
       "prevControl": {
-        "x": 3.596311475409836,
-        "y": 2.3407274590163936
+        "x": 3.6322745901639335,
+        "y": 2.2448258196721316
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 59.0362434679265
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Reef Alignment",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 57.050000000000004
