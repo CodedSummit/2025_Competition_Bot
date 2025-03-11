@@ -81,6 +81,8 @@ public class SwerveSubsystem extends SubsystemBase {
     private GenericEntry normalSpeedFactor;
     private GenericEntry dampenedSpeedFactor;
 
+    private Rotation2d offsetYawAngle = new Rotation2d(0);
+
     @Logged
     private final Field2d m_field = new Field2d();
 
@@ -216,7 +218,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void zeroHeading() {
         //gyro.reset();
-        gyro.setYaw(0);
+        offsetYawAngle = new Rotation2d(gyro.getYaw().getValue());
+        
+        //gyro.setYaw(0);
     }
     public void setHeading(double setAngle){
         gyro.setYaw(setAngle);
@@ -229,6 +233,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
+    }
+
+    public Rotation2d getOffsetRotation2d(){
+        return getRotation2d().minus(offsetYawAngle);
     }
 
     public Pose2d getPose() {
