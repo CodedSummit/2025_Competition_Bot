@@ -5,9 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Left Inner Reef Blue"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Inner Reef Blue"
+                }
+              }
+            ]
           }
         },
         {
