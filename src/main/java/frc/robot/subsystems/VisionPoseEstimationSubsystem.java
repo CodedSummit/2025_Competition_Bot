@@ -46,7 +46,6 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   PhotonPoseEstimator m_frontCamPhotonPoseEstimator = null;
   PhotonPoseEstimator m_rightCamPhotonPoseEstimator = null;
   private boolean m_visionEnabled = true;
-  SwerveSubsystem m_SwerveSubsystem;
    private IntegerLogEntry m_rightLog;
    private IntegerLogEntry m_frontLog;
    private IntegerLogEntry m_backLog;
