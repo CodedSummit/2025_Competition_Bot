@@ -106,37 +106,40 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
- /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
+    /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
-
+    
     UsbCamera riocam_shooter = CameraServer.startAutomaticCapture();
     riocam_shooter.setFPS(5);
     riocam_shooter.setResolution(160, 120);
-  */  
+    */  
     // Configure the trigger bindings
-
+    
     swerveJoystickCmd = new SwerveJoystickCmd(
       swerveSubsystem,
       m_driveXboxController);
-    swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
+      swerveSubsystem.setDefaultCommand(swerveJoystickCmd); 
 
-    //Named commands for Autos
+      // make the chasetag command
+      
+      Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem);
+      
+      configureBindings();
+      
+      //   for debugging only - make a default chase command
+      // CommandScheduler.getInstance().setDefaultCommand(m_visionSubsystem, placeholderChaser);
+      
+      //Named Commands for PathPlanner
 
+      NamedCommands.registerCommand("L1", ArrangementL1());
+      NamedCommands.registerCommand("L2", ArrangementL2());
+      NamedCommands.registerCommand("L3", ArrangementL3());
+      NamedCommands.registerCommand("L4", ArrangementL4());
+      NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
+      NamedCommands.registerCommand("Intake/Place", smartIntakeCoral());
 
-
-    
-
-    // make the chasetag command
-
-    Command placeholderChaser = new ChaseTagCommand(m_visionSubsystem, swerveSubsystem);
-    
-    configureBindings();
-
-    //   for debugging only - make a default chase command
-   // CommandScheduler.getInstance().setDefaultCommand(m_visionSubsystem, placeholderChaser);
-
-    // Build an auto chooser. This will use Commands.none() as the default option.
+      // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();
     
 
@@ -149,13 +152,6 @@ public class RobotContainer {
     SmartDashboard.putData("poseestimator", m_visionPoseEstimationSubsystem);
     SmartDashboard.putData("Power", pdp);
     SmartDashboard.putData("Arm", armSubsystem);
-
-    NamedCommands.registerCommand("L1", ArrangementL1());
-    NamedCommands.registerCommand("L2", ArrangementL2());
-    NamedCommands.registerCommand("L3", ArrangementL3());
-    NamedCommands.registerCommand("L4", ArrangementL4());
-    NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
-
   }
 
   private void setupShuffleboard() {
