@@ -106,6 +106,15 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    NamedCommands.registerCommand("L1", ArrangementL1());
+    NamedCommands.registerCommand("L2", ArrangementL2());
+    NamedCommands.registerCommand("L3", ArrangementL3());
+    NamedCommands.registerCommand("L4", ArrangementL4());
+    NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
+    NamedCommands.registerCommand("Intake/Place", smartIntakeCoral());
+    NamedCommands.registerCommand("Print", new InstantCommand(()-> System.out.println("Autonomous Print Achieved!")));
+    NamedCommands.registerCommand("Elevator", new InstantCommand(()-> elevatorSubsystem.cmdElevatorToHeight(()-> 100.0)));
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
@@ -132,12 +141,7 @@ public class RobotContainer {
       
       //Named Commands for PathPlanner
 
-      NamedCommands.registerCommand("L1", ArrangementL1());
-      NamedCommands.registerCommand("L2", ArrangementL2());
-      NamedCommands.registerCommand("L3", ArrangementL3());
-      NamedCommands.registerCommand("L4", ArrangementL4());
-      NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
-      NamedCommands.registerCommand("Intake/Place", smartIntakeCoral());
+
 
       // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();

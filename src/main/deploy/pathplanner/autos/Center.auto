@@ -5,22 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center Blue"
-                }
-              }
-            ]
+            "pathName": "Center Blue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "02 Reefside Blue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake/Place"
           }
         }
       ]
