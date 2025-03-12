@@ -112,6 +112,14 @@ public class FloorIntake extends SubsystemBase {
     );
   }
 
+  @Logged
+  public Command Outtake(){
+    return this.startEnd(
+      () -> intakeWheels.set(VictorSPXControlMode.PercentOutput, -.5), 
+      () -> intakeWheels.set(VictorSPXControlMode.PercentOutput, 0)
+    );
+  }
+
 
   @Override
   public void periodic() {

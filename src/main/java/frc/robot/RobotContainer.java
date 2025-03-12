@@ -184,7 +184,13 @@ public class RobotContainer {
     m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
     m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
     m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
-    
+    //m_driveXboxController.b().whileTrue(floorIntakeSubsystem.Intake());
+
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).whileTrue(floorIntakeSubsystem.Intake());
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).whileTrue(floorIntakeSubsystem.Outtake());
+
+
+
     m_driveXboxController.leftBumper().whileTrue(elevatorSubsystem.elevatorUp());
     m_driveXboxController.leftTrigger().whileTrue(elevatorSubsystem.elevatorDown());
     
