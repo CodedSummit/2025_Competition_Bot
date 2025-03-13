@@ -209,7 +209,7 @@ public class RobotContainer {
     m_driveXboxController.button(8).onTrue(AutoArrangeCommand);
 
     m_driveXboxController.button(9).whileTrue(armSubsystem.manualElbowUp());
-    m_driveXboxController.button(10).whileTrue(armSubsystem.manualElbowUp());
+    m_driveXboxController.button(10).whileTrue(armSubsystem.manualElbowDown());
     
     m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
     m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
@@ -397,7 +397,7 @@ public class RobotContainer {
   }
 
   public Command ArrangementClimb(){
-    return PositionCommand(57.6,65, WristSubsystem.RIGHT, FloorIntake.UP_POSITION);
+    return PositionCommand(50,85, WristSubsystem.RIGHT, FloorIntake.UP_POSITION);
   }
 
   //Commands that are going to Pathplanner should stay above this line.
