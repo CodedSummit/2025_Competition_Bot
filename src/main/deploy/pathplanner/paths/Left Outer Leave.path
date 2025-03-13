@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.646209016393443,
-        "y": 6.392571721311475
+        "x": 5.370491803278688,
+        "y": 5.493493852459016
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.489908466924446,
-        "y": 6.121851228380238
+        "x": 5.291434861774479,
+        "y": 5.730664676971645
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.0468237704918035,
-        "y": 5.33765368852459
+        "x": 5.658196721311475,
+        "y": 7.44748975409836
       },
       "prevControl": {
-        "x": 5.250614754098361,
-        "y": 5.690630026255584
+        "x": 5.71813524590164,
+        "y": 6.860092213114752
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 0.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Reef Alignment",
+  "folder": "Vacate the Premises",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": -123.69006752597973
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

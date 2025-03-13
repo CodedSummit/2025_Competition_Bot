@@ -97,6 +97,7 @@ public class RobotContainer {
     L4,
     STATION_PICKUP,
     GROUND_PICKUP,
+    CLIMB,
     NONE
   }
 
@@ -206,6 +207,9 @@ public class RobotContainer {
     
     m_driveXboxController.button(7).onTrue(smartIntakeCoral());
     m_driveXboxController.button(8).onTrue(AutoArrangeCommand);
+
+    m_driveXboxController.button(9).whileTrue(armSubsystem.manualElbowUp());
+    m_driveXboxController.button(10).whileTrue(armSubsystem.manualElbowUp());
     
     m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
     m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
@@ -262,10 +266,10 @@ public class RobotContainer {
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Outer Buttons pressed")));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 7 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 8 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 9 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 10 + " on Outer Buttons pressed"))); 
-    */
+  */m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Outtake())); 
+
   }
 
     public void runStartupCalibration(){
@@ -324,6 +328,7 @@ public class RobotContainer {
             Map.entry(Arrangement.L1, ArrangementL1()),
             Map.entry(Arrangement.STATION_PICKUP, ArrangementStationPickup()),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
+              Map.entry(Arrangement.CLIMB, ArrangementClimb()),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
           ),
           () -> getAutoArrangeCommand());
@@ -389,6 +394,10 @@ public class RobotContainer {
 
   public Command ArrangementStationPickup(){
     return PositionCommand(7.9, 51.4, WristSubsystem.CENTER, FloorIntake.UP_POSITION);
+  }
+
+  public Command ArrangementClimb(){
+    return PositionCommand(57.6,65, WristSubsystem.RIGHT, FloorIntake.UP_POSITION);
   }
 
   //Commands that are going to Pathplanner should stay above this line.
