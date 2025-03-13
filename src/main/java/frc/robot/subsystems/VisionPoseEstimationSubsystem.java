@@ -20,6 +20,8 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -45,6 +47,11 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   PhotonPoseEstimator m_backCamPhotonPoseEstimator=null;
   PhotonPoseEstimator m_frontCamPhotonPoseEstimator = null;
   PhotonPoseEstimator m_rightCamPhotonPoseEstimator = null;
+  StructPublisher<Pose2d> m_backcamPub;
+  StructPublisher<Pose2d> m_frontcamPub;
+  StructPublisher<Pose2d> m_rightcamPub;
+
+  
   private boolean m_visionEnabled = true;
    private IntegerLogEntry m_rightLog;
    private IntegerLogEntry m_frontLog;
@@ -58,14 +65,20 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   public VisionPoseEstimationSubsystem() {
 
  
-
     // Construct PhotonPoseEstimators
-     m_backCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout, 
-      PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToBackCam);
+    m_backCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
+        PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToBackCam);
     m_frontCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToFrontCam);
     m_rightCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.AVERAGE_BEST_TARGETS, VisionConstants.kRobotToRightCam);
+    m_backcamPub = NetworkTableInstance.getDefault()
+        .getStructTopic("BackCamPose", Pose2d.struct).publish();
+    m_frontcamPub = NetworkTableInstance.getDefault()
+        .getStructTopic("FrontCamPose", Pose2d.struct).publish();
+    m_rightcamPub = NetworkTableInstance.getDefault()
+        .getStructTopic("RightCamPose", Pose2d.struct).publish();
+
     DataLog log = DataLogManager.getLog();
     m_rightLog = new IntegerLogEntry(log, "RightCamTargets");
     m_frontLog = new IntegerLogEntry(log, "FrontCamTargets");
@@ -167,6 +180,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       var pose = getFCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
+        m_frontcamPub.set(pose2d);
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
         received_vision_update = true;
  //       System.out.println(" Updated pose with left cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
@@ -174,6 +188,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       pose = getRCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
+        m_rightcamPub.set(pose2d);
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
  //       System.out.println(" Updated pose with right cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
         received_vision_update = true;
@@ -181,6 +196,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       pose = getBCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
+        m_backcamPub.set(pose2d);
         poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
   //      System.out.println(" Updated pose with back cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
         received_vision_update = true;
