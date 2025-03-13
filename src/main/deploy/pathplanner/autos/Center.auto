@@ -5,15 +5,27 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Center Blue"
+            "name": "Calibrate"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Elevator"
+            "name": "L1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Blue"
           }
         },
         {

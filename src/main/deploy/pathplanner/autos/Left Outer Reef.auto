@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Calibrate"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "11 Reefside Blue"
@@ -14,6 +20,12 @@
           "type": "named",
           "data": {
             "name": "L4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake/Place"
           }
         }
       ]
