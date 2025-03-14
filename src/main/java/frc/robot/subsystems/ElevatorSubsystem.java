@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(ArmSubsystem _ArmSubsystem) {
 
     armSubsystem = _ArmSubsystem;
-    rangespeed = new RangeSpeedLimiter(250, 0, 20, true, m_elevator, ()-> getHeight());
+    rangespeed = new RangeSpeedLimiter(250, -5, 20, true, m_elevator, ()-> getHeight());
 
     config.apply(limitConfig);
  //   initialize();

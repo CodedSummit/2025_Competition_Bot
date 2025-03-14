@@ -116,7 +116,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake/Place", smartIntakeCoral());
     NamedCommands.registerCommand("Print", new InstantCommand(()-> System.out.println("Autonomous Print Achieved!")));
     NamedCommands.registerCommand("Elevator", new InstantCommand(()-> elevatorSubsystem.cmdElevatorToHeight(()-> 100.0)));
-    NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 5)));
+    NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 6)));
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
