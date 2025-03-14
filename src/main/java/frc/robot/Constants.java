@@ -146,15 +146,22 @@ public static final class VisionConstants {
      * Physical location of the camera on the robot, relative to the Robot.
      */
 
-  public static final Transform3d kRobotToFrontCam = new Transform3d(
-    new Translation3d(inchesToMeters(-1), inchesToMeters(-9),inchesToMeters(39.5)), 
-    new Rotation3d(0, degreesToRadians(52.8), degreesToRadians(20)));
-  public static final Transform3d kRobotToBackCam = new Transform3d(
-    new Translation3d(inchesToMeters(-8.5), inchesToMeters(-4.5),inchesToMeters(8.25)), 
-    new Rotation3d(0, degreesToRadians(15.0), degreesToRadians(180)));
-  public static final Transform3d kRobotToRightCam = new Transform3d(
-    new Translation3d(inchesToMeters(-5.0), inchesToMeters(-13.0),inchesToMeters(7.5)), 
-    new Rotation3d(degreesToRadians(15.0), 0, degreesToRadians(-90)));
+     public static final Transform3d kRobotToFrontCam = new Transform3d(
+      new Translation3d(inchesToMeters(-1), inchesToMeters(-9),inchesToMeters(39.5)), 
+  //    new Rotation3d(0, degreesToRadians(52.8), degreesToRadians(20)));
+      new Rotation3d(0, degreesToRadians(50), 0)
+        .rotateBy(new Rotation3d(0, 0, degreesToRadians(20)))
+    );
+    
+    public static final Transform3d kRobotToBackCam = new Transform3d(
+      new Translation3d(inchesToMeters(-8.5), inchesToMeters(-4.5),inchesToMeters(8.25)), 
+      new Rotation3d(0, degreesToRadians(15.0), degreesToRadians(180))
+      );
+  
+    public static final Transform3d kRobotToRightCam = new Transform3d(
+      new Translation3d(inchesToMeters(-5.0), inchesToMeters(-13.0),inchesToMeters(7.5)), 
+      new Rotation3d(degreesToRadians(15.0), 0, degreesToRadians(-90))
+      );
 
   // public static final Transform2d kRobotToFrontCam2d = new Transform2d(new Translation2d(0.0, 0.0), new Rotation2d(0.0, 0.0));
 

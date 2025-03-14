@@ -116,6 +116,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake/Place", smartIntakeCoral());
     NamedCommands.registerCommand("Print", new InstantCommand(()-> System.out.println("Autonomous Print Achieved!")));
     NamedCommands.registerCommand("Elevator", new InstantCommand(()-> elevatorSubsystem.cmdElevatorToHeight(()-> 100.0)));
+    NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 5)));
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
@@ -300,8 +301,9 @@ public class RobotContainer {
     return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
       elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position),
       armSubsystem.cmdArmPositionThatFinishes(arm_angle),
-      wristSubsystem.moveWristToPosition(wrist_angle)//,
-      //floorIntakeSubsystem.moveArmToPosition(floor_position)
+      wristSubsystem.moveWristToPosition(wrist_angle)
+      //,
+     // floorIntakeSubsystem.moveArmToPosition(floor_position)
     ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
@@ -397,7 +399,7 @@ public class RobotContainer {
   }
 
   public Command ArrangementClimb(){
-    return PositionCommand(50,85, WristSubsystem.RIGHT, FloorIntake.UP_POSITION);
+    return PositionCommand(63,85, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
   }
 
   //Commands that are going to Pathplanner should stay above this line.

@@ -11,27 +11,21 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "L1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Center Blue"
+            "name": "L4"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "02 Reefside Blue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elbow Down"
           }
         },
         {
