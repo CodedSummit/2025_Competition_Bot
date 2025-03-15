@@ -27,7 +27,7 @@ public class SwerveModule implements Sendable {
 
     private final RelativeEncoder turningEncoder;
 
-    private final PIDController turningPidController;
+    public final PIDController turningPidController;
 
     private final DutyCycleEncoder directionDutyCycle;
 

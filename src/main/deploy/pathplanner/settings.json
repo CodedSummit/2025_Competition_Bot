@@ -5,12 +5,12 @@
   "pathFolders": [
     "Left Side",
     "Reef Alignment",
-    "Right Side",
-    "Return & Leave"
+    "Align",
+    "Right Side"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxVel": 2.0,
+  "defaultMaxAccel": 0.5,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

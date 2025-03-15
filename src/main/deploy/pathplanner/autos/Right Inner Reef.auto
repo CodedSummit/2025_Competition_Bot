@@ -13,13 +13,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "06 Reefside Blue"
+            "pathName": "Right Inner Reef Blue"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "L1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "06 Reefside Blue"
           }
         },
         {

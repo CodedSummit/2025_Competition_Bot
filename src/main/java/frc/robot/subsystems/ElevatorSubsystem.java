@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(ArmSubsystem _ArmSubsystem) {
 
     armSubsystem = _ArmSubsystem;
-    rangespeed = new RangeSpeedLimiter(250, -5, 20, true, m_elevator, ()-> getHeight());
+    rangespeed = new RangeSpeedLimiter(250, -5, 20, true, m_elevator, ()-> getHeight(), ()-> encoderCalibrated);
 
     config.apply(limitConfig);
  //   initialize();
@@ -211,23 +211,22 @@ public class ElevatorSubsystem extends SubsystemBase {
      
       new SequentialCommandGroup( //needs calibration
       //if not at bottom limit, go there, and make sure the arm is out of the way.  
-      new ConditionalCommand(
-          Commands.none(), //no arm or elevator motion needed
-          new SequentialCommandGroup(
-            armSubsystem.cmdArmPositionThatFinishes(65),
-            new InstantCommand(() -> m_elevator.set(0.2)) //slow down
-          ),
-          () -> atBottomLimit()
+            new ConditionalCommand(
+                Commands.none(), // no arm or elevator motion needed
+                new SequentialCommandGroup(
+                    armSubsystem.cmdArmPositionThatFinishes(65),
+                    new InstantCommand(() -> m_elevator.set(0.2)), // slow down
+                    new WaitUntilCommand(() -> atBottomLimit()),
+                    new InstantCommand(() -> m_elevator.stopMotor())),
+                () -> atBottomLimit()),
+            // now wait till bottom limit is hit, and set right values.
+            // stop
+            new InstantCommand(() -> m_encoder.setPosition(0.0)),
+            new InstantCommand(() -> encoderCalibrated = true),
+            cmdElevatorToHeight(() -> 15) // raise it to save height for driving
+        // Commands.idle()
         ),
-        //now wait till bottom limit is hit, and set right values.
-        new WaitUntilCommand(() -> atBottomLimit()),
-        new InstantCommand(() -> m_elevator.stopMotor()), //stop
-        new InstantCommand(() -> m_encoder.setPosition(0.0)),
-        new InstantCommand(() -> encoderCalibrated = true),
-        cmdElevatorToHeight(() -> 15) //raise it to save height for driving
-        //Commands.idle()
-      ), 
-    () -> encoderCalibrated);
+        () -> encoderCalibrated);
     c.addRequirements(this, armSubsystem);
     c.setName("ElevatorCalCommand");
     return c;

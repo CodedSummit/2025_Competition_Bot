@@ -16,15 +16,17 @@ public class RangeSpeedLimiter {
 
     private final MotorController motorController;
     private final Supplier<Double> positionSupplier;
+    private final Supplier<Boolean> limitEnabled;
 
     // Constructor with testMode as optional
     public RangeSpeedLimiter(
         double upperEnd, double lowerEnd, double speedLimitDistance,
         boolean isMotorReversed,
         MotorController motorController,
-        Supplier<Double> positionSupplier
+        Supplier<Double> positionSupplier,
+        Supplier<Boolean> limitEnabled
     ) {
-        this(upperEnd, lowerEnd, speedLimitDistance, isMotorReversed, motorController, positionSupplier, false);
+        this(upperEnd, lowerEnd, speedLimitDistance, isMotorReversed, motorController, positionSupplier, limitEnabled, false);
     }
 
     // Full constructor with testMode explicitly provided
@@ -33,6 +35,7 @@ public class RangeSpeedLimiter {
         boolean isMotorReversed,
         MotorController motorController,
         Supplier<Double> positionSupplier,
+        Supplier<Boolean> limitEnabled,
         boolean testMode
     ) {
         this.upperEnd = upperEnd;
@@ -41,6 +44,7 @@ public class RangeSpeedLimiter {
         this.isMotorReversed = isMotorReversed;
         this.motorController = motorController;
         this.positionSupplier = positionSupplier;
+        this.limitEnabled = limitEnabled;
         this.testMode = testMode;
     }
 
@@ -62,6 +66,9 @@ public class RangeSpeedLimiter {
     }
 
     public double speedLimitAtCurrentPosition() {
+        if (!limitEnabled.get()){
+            return 1;
+        }
         double position = positionSupplier.get(); // Use the supplier to get the position
         double motorDirection = motorController.get();
         if (isMotorReversed) {
