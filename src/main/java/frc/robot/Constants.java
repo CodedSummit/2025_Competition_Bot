@@ -43,7 +43,7 @@ public final class Constants {
     public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-    public static final double kPTurning = 0.1;
+    public static final double kPTurning = 0.5;
     public static final double kMaybeGearOffset = 6.283185307179586;
 }
 
@@ -278,8 +278,8 @@ public static final int kReefBlueLbuttonID = 7;
 public static final int kReefBlueRbuttonID = 8;
 public static final int kReefYellowBbuttonID = 9;
 public static final int kReefYellowTbuttonID = 10;
-public static final int kReefPersonbuttonID = 11;
-public static final int kReefCoinbuttonID = 12;
+public static final int kReefCoinbuttonID = 11;
+public static final int kReefPersonbuttonID = 12;
 
 public static final int kOuterMaxbuttonID = 1;
 public static final int kOuterUpperMidbuttonID = 2;

@@ -83,8 +83,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
     private Rotation2d offsetYawAngle = new Rotation2d(0);
 
+    public RobotConfig config;
+
     @Logged
-    private final Field2d m_field = new Field2d();
+    public final Field2d m_field = new Field2d();
 
     public SwerveSubsystem() {
         this.initialize();
@@ -110,6 +112,7 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveTab.add("Back Left", backLeft)
                 .withSize(2, 2)
                 .withPosition(2, 2);
+        swerveTab.add("FL PID", frontLeft.turningPidController);
 
         swerveTab.add("Set Wheel Offsets", new SetWheelAlignment(this));
 
@@ -157,7 +160,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         // Configure AutoBuilder last
         try {
-            RobotConfig config = RobotConfig.fromGUISettings();
+            config = RobotConfig.fromGUISettings();
 
             AutoBuilder.configure(
                     this::getPose, // Robot pose supplier
@@ -327,7 +330,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public Command followPathCommand(String pathName) {
         PathPlannerPath path = null;
         Command command = null;
-        RobotConfig config = null;
+        config = null;
         try {
             path = PathPlannerPath.fromPathFile(pathName);
         } catch (Exception e) {
