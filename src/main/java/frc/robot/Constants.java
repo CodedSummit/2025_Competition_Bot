@@ -175,7 +175,7 @@ public static final class VisionConstants {
 
   public static final double kVisionXStdDev = 5.0;
   public static final double kVisionYStdDev = 5.0;
-  public static final double kVisionThetaStdDev = 500.0;  //  basically don't trust yaw
+  public static final double kVisionThetaStdDev = degreesToRadians(180);  //  basically don't trust yaw
   // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
   public static final int kBAmpTagID = 6;
   public static final int kBStageTagID = 16;
