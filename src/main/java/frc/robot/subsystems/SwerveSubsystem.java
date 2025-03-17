@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import java.util.Map;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +17,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -22,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.SetWheelAlignment;
 import frc.robot.commands.ZeroOdometry;
@@ -88,6 +93,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public SwerveSubsystem() {
         this.initialize();
+        Matrix<N3, N1> visionMeasurementStdDevs =  new Matrix<>(Nat.N3(), Nat.N1());
+        visionMeasurementStdDevs.set(0,0,Constants.VisionConstants.kVisionXStdDev);
+        visionMeasurementStdDevs.set(1,0,Constants.VisionConstants.kVisionYStdDev);
+        visionMeasurementStdDevs.set(2,0,Constants.VisionConstants.kVisionThetaStdDev);
+
+        odometer.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
     }
 
     public SwerveSubsystem( VisionPoseEstimationSubsystem vPoseEstimation){
