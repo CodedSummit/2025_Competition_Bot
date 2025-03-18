@@ -1,4 +1,4 @@
-package frc.util;
+package frc.robot.util;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.targeting.PhotonPipelineResult;

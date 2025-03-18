@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.util.VisionFilteringStrategy;
+import frc.robot.util.VisionFilteringTagDistanceStrategy;
 /**
  *  Uses Vision data to come up with estimated poses that can be fed to the drive system pose estimator.
  *  Don't really need this to be a subsystem since it's doesn't need mutex protection - but keeping it as one fits 
@@ -61,6 +63,8 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   private GenericEntry nt_visionEnabled;
 
+  private VisionFilteringStrategy m_visionFilter=null;
+
   /** Creates a new VisionPoseEstimationSubsystem. */
   public VisionPoseEstimationSubsystem() {
 
@@ -88,6 +92,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     m_backLog = new IntegerLogEntry(log, "BackCamTargets");
     m_targetIds = new IntegerLogEntry(log, "TargetIDs");
 
+    m_visionFilter = new VisionFilteringTagDistanceStrategy(m_CompetitionAprilTagFieldLayout);
     initialize();
   }
     

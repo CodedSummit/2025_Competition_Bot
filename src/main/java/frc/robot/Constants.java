@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.degreesToRadians;
+import static edu.wpi.first.math.util.Units.feetToMeters;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
 
@@ -184,6 +185,7 @@ public static final class VisionConstants {
   public static final int kRStageTagID = 11;
   public static final int kRSpeakerTagID = 4;
   public static long kLogInterval = 5; // logging interval, ms.  Set to 0 to disable logging
+public static double kMaxTagRangeM = feetToMeters(8.0);
 
 }
 
