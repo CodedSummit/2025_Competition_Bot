@@ -232,6 +232,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     return m_backCamera.getLatestResult().hasTargets();
   }
 
+  public boolean frontCamHasTarget() {
+    return m_frontCamera.getLatestResult().hasTargets();
+  }
+
   public boolean rightCamConnected() {
     return m_rightCamera.isConnected();
   }
@@ -240,6 +244,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     return m_backCamera.isConnected();
   }
 
+  public boolean frontCamConnected() {
+    return m_frontCamera.isConnected();
+  }
+  
   public boolean getVisionEnable(){
     return nt_visionEnabled.getBoolean(true);
   }
