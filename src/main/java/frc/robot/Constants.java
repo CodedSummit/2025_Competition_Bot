@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.math.util.Units.degreesToRadians;
+import static edu.wpi.first.math.util.Units.feetToMeters;
 import static edu.wpi.first.math.util.Units.inchesToMeters;
 
 
@@ -172,6 +173,10 @@ public static final class VisionConstants {
 
     public static final Transform2d kRobotToBackCam2d = new Transform2d(new Translation2d(0.0, 0.0), 
     new Rotation2d(degreesToRadians(180.0)));
+
+  public static final double kVisionXStdDev = 5.0;
+  public static final double kVisionYStdDev = 5.0;
+  public static final double kVisionThetaStdDev = degreesToRadians(180);  //  basically don't trust yaw
   // Use appropriate tag vals based on the alliance membership (B-Blue, R- Red)
   public static final int kBAmpTagID = 6;
   public static final int kBStageTagID = 16;
@@ -180,6 +185,7 @@ public static final class VisionConstants {
   public static final int kRStageTagID = 11;
   public static final int kRSpeakerTagID = 4;
   public static long kLogInterval = 5; // logging interval, ms.  Set to 0 to disable logging
+public static double kMaxTagRangeM = feetToMeters(8.0);
 
 }
 

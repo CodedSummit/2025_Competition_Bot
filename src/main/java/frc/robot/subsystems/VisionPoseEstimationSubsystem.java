@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.util.VisionFilteringStrategy;
+import frc.robot.util.VisionFilteringTagDistanceStrategy;
 /**
  *  Uses Vision data to come up with estimated poses that can be fed to the drive system pose estimator.
  *  Don't really need this to be a subsystem since it's doesn't need mutex protection - but keeping it as one fits 
@@ -61,6 +63,8 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   private GenericEntry nt_visionEnabled;
 
+  private VisionFilteringStrategy m_visionFilter=null;
+
   /** Creates a new VisionPoseEstimationSubsystem. */
   public VisionPoseEstimationSubsystem() {
 
@@ -68,13 +72,13 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     // Construct PhotonPoseEstimators
     m_backCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToBackCam);
-    m_backCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    m_backCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
     m_frontCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToFrontCam);
-    m_frontCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    m_frontCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
     m_rightCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToRightCam);
-    m_rightCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    m_rightCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
     m_backcamPub = NetworkTableInstance.getDefault()
         .getStructTopic("BackCamPose", Pose2d.struct).publish();
     m_frontcamPub = NetworkTableInstance.getDefault()
@@ -88,6 +92,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     m_backLog = new IntegerLogEntry(log, "BackCamTargets");
     m_targetIds = new IntegerLogEntry(log, "TargetIDs");
 
+    m_visionFilter = new VisionFilteringTagDistanceStrategy(m_CompetitionAprilTagFieldLayout);
     initialize();
   }
     
@@ -227,6 +232,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     return m_backCamera.getLatestResult().hasTargets();
   }
 
+  public boolean frontCamHasTarget() {
+    return m_frontCamera.getLatestResult().hasTargets();
+  }
+
   public boolean rightCamConnected() {
     return m_rightCamera.isConnected();
   }
@@ -235,6 +244,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     return m_backCamera.isConnected();
   }
 
+  public boolean frontCamConnected() {
+    return m_frontCamera.isConnected();
+  }
+  
   public boolean getVisionEnable(){
     return nt_visionEnabled.getBoolean(true);
   }
