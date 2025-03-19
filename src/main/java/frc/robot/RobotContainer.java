@@ -73,7 +73,7 @@ public class RobotContainer {
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(armSubsystem);
   private final WristSubsystem wristSubsystem = new WristSubsystem();
   private final HandSubsystem handSubsystem = new HandSubsystem();
-  private final FloorIntake floorIntakeSubsystem = new FloorIntake();
+//  private final FloorIntake floorIntakeSubsystem = new FloorIntake();
   
   private final PowerDistribution pdp = new PowerDistribution(0,ModuleType.kCTRE);
 
@@ -192,8 +192,8 @@ public class RobotContainer {
     m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
     //m_driveXboxController.b().whileTrue(floorIntakeSubsystem.Intake());
 
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).whileTrue(floorIntakeSubsystem.Intake());
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).whileTrue(floorIntakeSubsystem.Outtake());
+//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).whileTrue(floorIntakeSubsystem.Intake());
+//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).whileTrue(floorIntakeSubsystem.Outtake());
 
 
 
@@ -216,8 +216,8 @@ public class RobotContainer {
     m_driveXboxController.button(9).whileTrue(armSubsystem.manualElbowUp());
     m_driveXboxController.button(10).whileTrue(armSubsystem.manualElbowDown());
     
-    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
-    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
+//    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
+//    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
     
     //testing
     //m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
@@ -273,8 +273,8 @@ public class RobotContainer {
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new NothingCommand());
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Outtake())); 
+//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
+//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Outtake())); 
 
   }
 

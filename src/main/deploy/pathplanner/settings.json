@@ -5,8 +5,8 @@
   "pathFolders": [
     "Left Side",
     "Reef Alignment",
-    "Align",
-    "Right Side"
+    "Right Side",
+    "Return & Leave"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,
@@ -34,6 +34,6 @@
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
   "robotFeatures": [
-    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":0.0,\"y\":0.065},\"end\":{\"x\":1.5,\"y\":0.065},\"strokeWidth\":0.02}}"
+    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":0.0,\"y\":0.06},\"end\":{\"x\":1.5,\"y\":0.06},\"strokeWidth\":0.02}}"
   ]
 }
