@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,6 +39,7 @@ public class Robot extends TimedRobot {
   private NetworkTableInstance m_oldInst =null;
   private RobotContainer m_robotContainer;
   private String newAutoName, autoName;
+  private boolean lastFlipNeeded = false;
 
 
   public Robot(){
@@ -79,25 +82,47 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-      newAutoName = m_robotContainer.getAutonomousCommand().getName();
-      if (autoName != newAutoName) {
+    newAutoName = m_robotContainer.getAutonomousCommand().getName();
+
+    boolean flipNeeded = false;
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if (ally.isPresent() && ally.get() == Alliance.Red) {
+      flipNeeded = true;
+    }
+
+    if (autoName != newAutoName || lastFlipNeeded != flipNeeded) {
       autoName = newAutoName;
-      try{
+      lastFlipNeeded = flipNeeded;
+
+      try {
         if (AutoBuilder.getAllAutoNames().contains(autoName)) {
           System.out.println("Displaying " + autoName);
           List<PathPlannerPath> pathPlannerPaths = PathPlannerAuto.getPathGroupFromAutoFile(autoName);
           List<Pose2d> poses = new ArrayList<>();
-          for (PathPlannerPath path : pathPlannerPaths) {
-              poses.addAll(path.getAllPathPoints().stream().map(point -> new Pose2d(point.position.getX(), point.position.getY(), new Rotation2d())).collect(Collectors.toList()));
+          if (flipNeeded) {
+            // flip needed for red side
+            for (PathPlannerPath path : pathPlannerPaths) {
+              poses.addAll(path.flipPath().getAllPathPoints().stream()
+                  .map(point -> new Pose2d(point.position.getX(), point.position.getY(), new Rotation2d()))
+                  .collect(Collectors.toList()));
+            }
+          } else {
+            // no flip needed for blue side
+            for (PathPlannerPath path : pathPlannerPaths) {
+              poses.addAll(path.getAllPathPoints().stream()
+                  .map(point -> new Pose2d(point.position.getX(), point.position.getY(), new Rotation2d()))
+                  .collect(Collectors.toList()));
+            }
           }
+
           m_robotContainer.swerveSubsystem.m_field.getObject("path").setPoses(poses);
-      }
-      }catch(Exception e){
-        DriverStation.reportError("Failed to load Auto " +autoName+ "'s trajectory", e.getStackTrace());
+        }
+      } catch (Exception e) {
+        DriverStation.reportError("Failed to load Auto " + autoName + "'s trajectory", e.getStackTrace());
       }
 
+    }
   }
-}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
