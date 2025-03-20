@@ -5,45 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Calibrate"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L1"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center Blue"
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Intake/Place"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center Alignment"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Calibrate Gyro"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "StationPickup"
           }
         }
       ]

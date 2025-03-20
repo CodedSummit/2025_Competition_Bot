@@ -5,27 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Calibrate"
+            "pathName": "Right Outer Reef Blue"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "04 Reefside Blue"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "L1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake/Place"
           }
         }
       ]

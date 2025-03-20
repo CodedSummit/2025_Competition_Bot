@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2606557377049183,
-        "y": 2.172899590163934
+        "x": 3.4764344262295084,
+        "y": 2.5325307377049184
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4836399388130515,
-        "y": 2.5591195557683766
+        "x": 3.600469160818716,
+        "y": 2.7495915232360337
       },
       "isLocked": false,
       "linkedName": null
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "Reef Alignment",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": true
 }

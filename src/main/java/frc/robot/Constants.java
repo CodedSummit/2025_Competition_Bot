@@ -155,7 +155,7 @@ public static final class VisionConstants {
     );
     
     public static final Transform3d kRobotToBackCam = new Transform3d(
-      new Translation3d(inchesToMeters(-8.5), inchesToMeters(-4.5),inchesToMeters(8.25)), 
+      new Translation3d(inchesToMeters(-8.5+7.5), inchesToMeters(-4.5),inchesToMeters(8.25)), 
       new Rotation3d(0, degreesToRadians(15.0), degreesToRadians(180))
       );
   
