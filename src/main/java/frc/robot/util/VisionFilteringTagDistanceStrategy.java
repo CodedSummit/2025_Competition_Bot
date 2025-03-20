@@ -25,6 +25,7 @@ public class VisionFilteringTagDistanceStrategy extends VisionFilteringStrategy 
       PhotonPipelineResult photonResult) {
 
     double targetRange = 0.0;
+    if (oldPose.getX() == 0.0 && oldPose.getY() == 0.0) return true;   //  if we're starting from zero, use what we got
     if (!estimatedPose.targetsUsed.isEmpty()) {
       for (PhotonTrackedTarget target : estimatedPose.targetsUsed) {
 

@@ -72,13 +72,13 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     // Construct PhotonPoseEstimators
     m_backCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToBackCam);
-    m_backCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
+    m_backCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     m_frontCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToFrontCam);
-    m_frontCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
+    m_frontCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     m_rightCamPhotonPoseEstimator = new PhotonPoseEstimator(m_CompetitionAprilTagFieldLayout,
         PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, VisionConstants.kRobotToRightCam);
-    m_rightCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
+    m_rightCamPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     m_backcamPub = NetworkTableInstance.getDefault()
         .getStructTopic("BackCamPose", Pose2d.struct).publish();
     m_frontcamPub = NetworkTableInstance.getDefault()
@@ -155,24 +155,49 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
   }
 
 
-  //  Get the actual estimates from the different cameras (Left (LC), Right (RC), back (BC))
+  // Get the actual estimates from the different cameras (Left (LC), Right (RC),
+  // back (BC))
   private Optional<EstimatedRobotPose> getFCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-      m_frontCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-      PhotonPipelineResult result = m_frontCamera.getLatestResult();
-      return m_frontCamPhotonPoseEstimator.update(result);
+    m_frontCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+    PhotonPipelineResult result = m_frontCamera.getLatestResult();
+    Optional<EstimatedRobotPose> OptNewVisonPose = m_frontCamPhotonPoseEstimator.update(result);
+    EstimatedRobotPose newVisionPose;
+    Pose2d pose2d;
+    if (OptNewVisonPose.isPresent()) {
+      newVisionPose = OptNewVisonPose.get();
+      pose2d = newVisionPose.estimatedPose.toPose2d();
+      if (getVisionFilterStrategy().useVisionPose(prevEstimatedRobotPose,
+          pose2d, newVisionPose, result)) {
+        return OptNewVisonPose;
+      }
+    }
+    return Optional.empty();
   }
  private Optional<EstimatedRobotPose> getRCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
       m_rightCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
       PhotonPipelineResult result = m_rightCamera.getLatestResult();
       return m_rightCamPhotonPoseEstimator.update(result);
   }
+ 
   private Optional<EstimatedRobotPose> getBCEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-      m_backCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-      PhotonPipelineResult result = m_backCamera.getLatestResult();
-      return m_backCamPhotonPoseEstimator.update(result);
+    m_backCamPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+    PhotonPipelineResult result = m_backCamera.getLatestResult();
+    Optional<EstimatedRobotPose> OptNewVisonPose = m_backCamPhotonPoseEstimator.update(result);
+    EstimatedRobotPose newVisionPose;
+    Pose2d pose2d;
+    if (OptNewVisonPose.isPresent()) {
+      newVisionPose = OptNewVisonPose.get();
+      pose2d = newVisionPose.estimatedPose.toPose2d();
+      if (getVisionFilterStrategy().useVisionPose(prevEstimatedRobotPose,
+          pose2d, newVisionPose, result)) {
+            return OptNewVisonPose;
+      }
+    }
+    return Optional.empty();
   }
-
-  /**
+      
+      
+        /**
    * Adds vision esimtates to the provided pose esimator.
    * If vision pose estimation is enabled, get estimates from both right and left cameras and mix them in
    * to the estimation.
@@ -220,6 +245,10 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
   }
 
+  private VisionFilteringStrategy getVisionFilterStrategy() {
+    // in the future can have logic to select different strategies at different points of the game
+    return m_visionFilter;
+  }
   public void initSendable(SendableBuilder builder) {
     //builder.addBooleanProperty("Vision Location Enabled", this::getVisionEnable, this::enableVisionPose);
   }
