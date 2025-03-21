@@ -36,8 +36,12 @@ public class HandSubsystem extends SubsystemBase {
   }
 
   @Logged
-  public boolean hasCoral(){
+  public boolean hasAlgea(){
     return !algeaLimitSwitch.get();
+  }
+  
+  public boolean hasCoral(){
+    return !coralBeamBreak.get();
   }
 
   public void setHandSpeed(double speed){
@@ -93,5 +97,7 @@ public class HandSubsystem extends SubsystemBase {
         .getEntry();
 */
   }
+
+
 
 }

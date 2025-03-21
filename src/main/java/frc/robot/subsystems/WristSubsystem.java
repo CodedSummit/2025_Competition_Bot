@@ -30,7 +30,7 @@ public class WristSubsystem extends SubsystemBase {
   private final DigitalInput inputWrist = new DigitalInput(8);
   private final DutyCycleEncoder wristEncoder = new DutyCycleEncoder(inputWrist, 360,
       Constants.ArmConstants.kWristAngleOffset);
-  private final SparkMax m_wrist = new SparkMax(7, MotorType.kBrushless);
+  private final SparkMax m_wrist = new SparkMax(100, MotorType.kBrushless);
   public double wristDesiredAngleDeg = 90.0;
   private GenericEntry nt_wristSpeed;
 
