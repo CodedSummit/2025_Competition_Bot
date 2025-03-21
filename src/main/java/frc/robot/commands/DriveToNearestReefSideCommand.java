@@ -27,13 +27,13 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class DriveToNearestReefSideCommand extends Command {
   private Command fullPath;
   private SwerveSubsystem drive;
-  private boolean isLeftBumper = false;
+  private boolean isLeftSide = false;
 
   /** Creates a new DriveToNearestReefSideCommand. */
-  public DriveToNearestReefSideCommand(SwerveSubsystem drive, boolean isLeftBumper) {
+  public DriveToNearestReefSideCommand(SwerveSubsystem drive, boolean isLeftSide) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drive = drive;
-    this.isLeftBumper = isLeftBumper;
+    this.isLeftSide = isLeftSide;
 
     addRequirements(drive);
   }
@@ -42,6 +42,7 @@ public class DriveToNearestReefSideCommand extends Command {
   @Override
   public void initialize() {
     Pose2d closestAprilTagPose = getClosestReefAprilTagPose();
+    // find a path from wherever we are to the stand-off from the closest tag
     Command pathfindPath = AutoBuilder.pathfindToPose(
       translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5),
         new PathConstraints(
@@ -49,7 +50,7 @@ public class DriveToNearestReefSideCommand extends Command {
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
 
     try {
-      // Load the path you want to follow using its name in the GUI
+      // Path from the standoff point, to the final position (left or right of tag, as selected)
       PathPlannerPath pathToFront = new PathPlannerPath(
           PathPlannerPath.waypointsFromPoses(
             translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5),
@@ -113,14 +114,14 @@ public class DriveToNearestReefSideCommand extends Command {
         -Units.inchesToMeters(23.773));
 
     Pose2d leftOrRightOfAprilTag;
-    if (isLeftBumper) {
+    if (isLeftSide) {  // translate distance from tag center to pole center
       leftOrRightOfAprilTag = translateCoord(inFrontOfAprilTag, closestPose.getRotation().getDegrees() + 90, 0.1432265);
     } else {
       leftOrRightOfAprilTag = translateCoord(inFrontOfAprilTag, closestPose.getRotation().getDegrees() + 90, -0.1432265);
     }
 
     if (List.of(11, 10, 9, 22, 21, 20).contains(aprilTagNum)) {
-      if (isLeftBumper) {
+      if (isLeftSide) {
         leftOrRightOfAprilTag = translateCoord(inFrontOfAprilTag, closestPose.getRotation().getDegrees() + 90, -0.1432265);
       } else {
         leftOrRightOfAprilTag = translateCoord(inFrontOfAprilTag, closestPose.getRotation().getDegrees() + 90, 0.1432265);
