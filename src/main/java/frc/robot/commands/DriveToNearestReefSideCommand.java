@@ -19,7 +19,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.util.AprilTagPositions;
+//import frc.robot.util.AprilTagPositions;
+import frc.robot.util.AprilTagPositionsFromLayout;
 import frc.robot.subsystems.SwerveSubsystem;
 
 
@@ -28,6 +29,7 @@ public class DriveToNearestReefSideCommand extends Command {
   private Command fullPath;
   private SwerveSubsystem drive;
   private boolean isLeftSide = false;
+
 
   /** Creates a new DriveToNearestReefSideCommand. */
   public DriveToNearestReefSideCommand(SwerveSubsystem drive, boolean isLeftSide) {
@@ -87,11 +89,11 @@ public class DriveToNearestReefSideCommand extends Command {
   }
 
   private Pose2d getClosestReefAprilTagPose() {
-    HashMap<Integer, Pose2d> aprilTagsToAlignTo = AprilTagPositions.WELDED_BLUE_CORAL_APRIL_TAG_POSITIONS;
+    HashMap<Integer, Pose2d> aprilTagsToAlignTo = AprilTagPositionsFromLayout.weldedBlueAprilTagPositions();
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Red) {
-        aprilTagsToAlignTo = AprilTagPositions.WELDED_RED_CORAL_APRIL_TAG_POSITIONS;
+        aprilTagsToAlignTo = AprilTagPositionsFromLayout.weldedRedAprilTagPositions();
       }
     }
 
