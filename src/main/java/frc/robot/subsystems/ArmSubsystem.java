@@ -67,6 +67,9 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     checkElbowSoftLimits();
+    if(safetyZoneStop()){
+      setElbowSpeed(0.0);
+    }
   }
 
   public void setElevatorSystem(ElevatorSubsystem elevator){
@@ -84,6 +87,14 @@ public class ArmSubsystem extends SubsystemBase {
       m_elbow.stopMotor();
     }
   };
+
+  public boolean safetyZoneStop(){
+    boolean unsafe = false;
+    if ((!m_elevatorSubsystem.isSafeToTuck() && !isSafeForElevator()) && goingDown()){
+      unsafe = true;
+    }
+    return unsafe;
+  }
 
   //Add a reference to check if it's safe to tuck under the elevator.
   public boolean maximumLimitReached(){
@@ -269,7 +280,7 @@ private void elbowHold(){
 
   public boolean isSafeForElevator(){
     boolean safe = false;
-    if((getArmAngle() >= 32) && (getArmAngle() <= Constants.ArmConstants.kMaxElbowAngle)){
+    if((getArmAngle() >= 32) && (getArmAngle() <= Constants.ArmConstants.kMaxElbowAngle + 20)){ // The +20 allows us to tuck
       safe = true;
     }
     return safe;

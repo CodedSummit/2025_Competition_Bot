@@ -246,7 +246,7 @@ public static final class ElevatorConstants {
   public static final double kElevatorHeightL3 = 0.0;  // scoring level
   public static final double kElevatorHeightL4 = 0.0;  // scoring level
 
-  public static final double kTuckSafeUpper = 39.8;
+  public static final double kTuckSafeUpper = 33;
   public static final double kTuckSafeLower = 0.0;
 
 }

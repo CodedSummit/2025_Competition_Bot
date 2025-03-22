@@ -89,6 +89,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     rangespeed.profileEndMotion();
+    if (!armSubsystem.isSafeForElevator()){
+      setSpeed(0.0);
+    }
   }
   
     private double m_elevatorDesiredHeight = 0.0; // in arbitrary elevator encoder units
@@ -137,7 +140,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   
     public Command elevatorDown(){
       return this.startEnd(
-        () -> setSpeed(1 * getSpeed()),
+        () -> setSpeed(getSpeed()),
         () -> m_elevator.stopMotor()
       );
     }
