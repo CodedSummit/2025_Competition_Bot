@@ -71,7 +71,7 @@ public class RobotContainer {
   public final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(m_visionPoseEstimationSubsystem);
   private final ArmSubsystem armSubsystem = new ArmSubsystem();
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem(armSubsystem);
-  private final WristSubsystem wristSubsystem = new WristSubsystem();
+//  private final WristSubsystem wristSubsystem = new WristSubsystem();
   private final HandSubsystem handSubsystem = new HandSubsystem();
 //  private final FloorIntake floorIntakeSubsystem = new FloorIntake();
   
@@ -169,7 +169,7 @@ public class RobotContainer {
     ShuffleboardTab tab = Shuffleboard.getTab("Systems");
 
     //sys.add(pdp);
-    tab.add(wristSubsystem);
+//    tab.add(wristSubsystem);
     tab.add(armSubsystem);
     
 
@@ -211,7 +211,7 @@ public class RobotContainer {
     //m_driveXboxController.povUp().onTrue(swerveSubsystem.zeroHeadingCommand());
     
     m_driveXboxController.button(7).onTrue(smartIntakeCoral());
-    m_driveXboxController.button(8).onTrue(AutoArrangeCommand);
+//    m_driveXboxController.button(8).onTrue(AutoArrangeCommand); Re-add this when time to get the arrangements
 
     m_driveXboxController.button(9).whileTrue(armSubsystem.manualElbowUp());
     m_driveXboxController.button(10).whileTrue(armSubsystem.manualElbowDown());
@@ -224,8 +224,8 @@ public class RobotContainer {
     //m_driveXboxController.povRight().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.ALGEA_POSITION));
     
     //real code
-    m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
-    m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
+//    m_driveXboxController.povLeft().whileTrue(wristSubsystem.manualWristLeft());
+ //   m_driveXboxController.povRight().whileTrue(wristSubsystem.manualWristRight());
     
     // Left Bumper controls field orientation for drive mode. Upressed (default) is field oriented
     //     Pressed is robot oriented
@@ -259,7 +259,7 @@ public class RobotContainer {
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueRbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 7 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 8 + " on Reef Buttons pressed")));
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand);
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand); Re-add this when time to get the arrangements
   m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue(handSubsystem.manualIntakeCoral());
   m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(elevatorSubsystem.elevatorCalibrate());
   m_reefButtons.button(Constants.ButtonboardConstants.kReefCoinbuttonID).whileTrue(handSubsystem.manualReleaseCoral());
@@ -288,7 +288,8 @@ public class RobotContainer {
   public Command smartIntakeCoral(){
     return new ConditionalCommand(
       new SequentialCommandGroup( //if has coral
-        elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12).onlyIf(() ->wristSubsystem.isPieceVertical()),
+        elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12),
+        //.onlyIf(() ->wristSubsystem.isPieceVertical()),
         new InstantCommand(() -> handSubsystem.setHandSpeed(1)),
         new WaitCommand(2),
         new InstantCommand(() -> handSubsystem.setHandSpeed(0))
@@ -302,13 +303,21 @@ public class RobotContainer {
     () -> handSubsystem.hasCoral());
   }
 
-  public Command PositionCommand(double elevator_position, double arm_angle, double wrist_angle, double floor_position){
+  public Command oldPositionCommand(double elevator_position, double arm_angle, double wrist_angle, double floor_position){
     return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
       elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position),
-      armSubsystem.cmdArmPositionThatFinishes(arm_angle),
-      wristSubsystem.moveWristToPosition(wrist_angle)
+      armSubsystem.cmdArmPositionThatFinishes(arm_angle)
+      //,
+    //  wristSubsystem.moveWristToPosition(wrist_angle)
       //,
      // floorIntakeSubsystem.moveArmToPosition(floor_position)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+  }
+
+  public Command PositionCommand(double elevator_position, double arm_angle){
+    return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
+      elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position),
+      armSubsystem.cmdArmPositionThatFinishes(arm_angle)
     ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
@@ -385,30 +394,31 @@ public class RobotContainer {
   public void loadPreferences(){
     swerveSubsystem.loadPreferences();
   }
-  //IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please.
+  //IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please. 
+  //IMPORTANT! We need to find the values for the elevator and arm before we run these!
 
   public Command ArrangementL4(){
-    return PositionCommand(243.6, 42.6, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+    return PositionCommand(243.6, 42.6);
   }
 
   public Command ArrangementL3(){
-    return PositionCommand(121, 36.7, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+    return PositionCommand(121, 36.7);
   }
 
   public Command ArrangementL2(){
-    return PositionCommand(27.3, 46.5, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+    return PositionCommand(27.3, 46.5);
   }
 
   public Command ArrangementL1(){
-    return PositionCommand(138.5, -33, WristSubsystem.CENTER, FloorIntake.UP_POSITION);
+    return PositionCommand(138.5, -33);
   }
 
   public Command ArrangementStationPickup(){
-    return PositionCommand(7.9, 51.4, WristSubsystem.CENTER, FloorIntake.UP_POSITION);
+    return PositionCommand(7.9, 51.4);
   }
 
   public Command ArrangementClimb(){
-    return PositionCommand(63,85, WristSubsystem.LEFT, FloorIntake.UP_POSITION);
+    return PositionCommand(63,85);
   }
 
   //Commands that are going to Pathplanner should stay above this line.

@@ -24,9 +24,10 @@ import frc.robot.Constants;
 @Logged
 public class HandSubsystem extends SubsystemBase {
 
-  private final SparkMax m_hand = new SparkMax(8, MotorType.kBrushed);
+  private final SparkMax m_hand = new SparkMax(7, MotorType.kBrushless);
   public final SparkLimitSwitch handLimit = m_hand.getReverseLimitSwitch();
-  private DigitalInput coralLimitSwitch = new DigitalInput(6);
+  private DigitalInput algeaLimitSwitch = new DigitalInput(6);
+  private DigitalInput coralBeamBreak = new DigitalInput(7);
 
 
   /** Creates a new ExampleSubsystem. */
@@ -35,8 +36,12 @@ public class HandSubsystem extends SubsystemBase {
   }
 
   @Logged
+  public boolean hasAlgea(){
+    return !algeaLimitSwitch.get();
+  }
+  
   public boolean hasCoral(){
-    return !coralLimitSwitch.get();
+    return !coralBeamBreak.get();
   }
 
   public void setHandSpeed(double speed){
@@ -92,5 +97,7 @@ public class HandSubsystem extends SubsystemBase {
         .getEntry();
 */
   }
+
+
 
 }

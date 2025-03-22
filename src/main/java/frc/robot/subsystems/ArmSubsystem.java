@@ -31,7 +31,7 @@ import frc.robot.Constants.ArmConstants;
 public class ArmSubsystem extends SubsystemBase {
 
   private SparkMaxConfig config = new SparkMaxConfig();
-  private final DigitalInput inputElbow = new DigitalInput(7);
+  private final DigitalInput inputElbow = new DigitalInput(8);
   private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
 
@@ -59,7 +59,7 @@ public class ArmSubsystem extends SubsystemBase {
     setupShuffleboard();
     m_elbowPIDController.setTolerance(ArmConstants.kElbowAngleToleranceDeg);
     absEncoder.setInverted(true);
-    absEncoder.setDutyCycleRange(-180, 180);
+    absEncoder.setDutyCycleRange(0, 360);
 
   }
 
@@ -262,11 +262,8 @@ private void elbowHold(){
 
   public double getArmAngle(){
     double d = getRawElbowAngleDegrees();
-    if(d < -180){
-      d = d + 360;
-      return d;
-    }
-    return d;
+
+    return -1*d;
   }
 
   private void setArmAngle(double desiredAngle) {

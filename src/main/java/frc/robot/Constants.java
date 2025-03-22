@@ -217,13 +217,13 @@ public static final class ArmConstants {
   public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = -40.1; // In Degrees
-  public static final double kMaxElbowAngle = 72.8; // Actual value: 
-  public static final double kMinElbowAngle = -40.6; // Actual value:
+  public static final double kElbowOffset = -74.8; // In Degrees
+  public static final double kMaxElbowAngle = 275; // Placeholder value:Change later
+  public static final double kMinElbowAngle = 0; // Placeholder value:Change later
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
   public static final double kElbowDownSpeed = 0.1;
-  public static final double kElbowHoldSpeed = 0.015;  // hold the current position
+  public static final double kElbowHoldSpeed = 0.0;  // hold the current position
   public static String kElbowSpeedPrefKey = "Arm.ElbowSpeed";
   public static String kElbowUpSpeedPrefKey = "Arm.ElbowUpSpeed";
   public static String kElbowDownSpeedPrefKey = "Arm.ElbowDownSpeed";
@@ -240,6 +240,7 @@ public static final class ElevatorConstants {
   public static final int kElevatorCanbusID = 5;
   public static double kShooterSpeed = 0.5;
   public static final double kElevatorHeightTolerance = 1.0; // elevator encoder arbitrary units
+  public static final double kElevatorHoldSpeed = 0.02;
   public static final double kElevatorHeightL1 = 0.0;  // scoring level
   public static final double kElevatorHeightL2 = 0.0;  // scoring level
   public static final double kElevatorHeightL3 = 0.0;  // scoring level
