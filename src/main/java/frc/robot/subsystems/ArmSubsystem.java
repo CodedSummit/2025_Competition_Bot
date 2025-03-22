@@ -32,7 +32,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private SparkMaxConfig config = new SparkMaxConfig();
   private final DigitalInput inputElbow = new DigitalInput(8);
-  private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(inputElbow, -1.0, -Constants.ArmConstants.kElbowOffset);
+  private final DutyCycleEncoder absEncoder = new DutyCycleEncoder(inputElbow, 360, -Constants.ArmConstants.kElbowOffset);
   private final SparkMax m_elbow = new SparkMax(6, MotorType.kBrushless);
 
   private double m_elbowDesiredAngleDeg = 0.0;  // Angle we want the arm.  0.0 is horizontal, 90 straight up
@@ -51,6 +51,7 @@ public class ArmSubsystem extends SubsystemBase {
   private double feedforward;
   private double pidOutput;
   private double target_speed;  // fom -1.0 to 1.0
+  private ElevatorSubsystem m_elevatorSubsystem;
 
   /** Creates a new ArmSubsystem. */
   public ArmSubsystem() {
@@ -59,7 +60,7 @@ public class ArmSubsystem extends SubsystemBase {
     setupShuffleboard();
     m_elbowPIDController.setTolerance(ArmConstants.kElbowAngleToleranceDeg);
     absEncoder.setInverted(true);
-    absEncoder.setDutyCycleRange(0, 360);
+    absEncoder.setDutyCycleRange(-20, 340);
 
   }
 
@@ -68,6 +69,9 @@ public class ArmSubsystem extends SubsystemBase {
     checkElbowSoftLimits();
   }
 
+  public void setElevatorSystem(ElevatorSubsystem elevator){
+    m_elevatorSubsystem = elevator;
+  }
   /*
    *  Check if the elbow is exceeding angle limits.  If so and it's going the wrong direction, stop the motor before doing any damage
    */
@@ -81,6 +85,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
   };
 
+  //Add a reference to check if it's safe to tuck under the elevator.
   public boolean maximumLimitReached(){
     double degrees = this.getArmAngle();
     boolean limitHit = true;
@@ -254,16 +259,20 @@ private void elbowHold(){
   }
   
   public double getRawElbowAngleDegrees() {
-
-    m_percentage = absEncoder.get();
-    m_degrees = m_percentage * 360;
-    return m_degrees;
+    return absEncoder.get();
   }
 
   public double getArmAngle(){
-    double d = getRawElbowAngleDegrees();
+    return getRawElbowAngleDegrees();
 
-    return -1*d;
+  }
+
+  public boolean isSafeForElevator(){
+    boolean safe = false;
+    if((getArmAngle() >= 32) && (getArmAngle() <= Constants.ArmConstants.kMaxElbowAngle)){
+      safe = true;
+    }
+    return safe;
   }
 
   private void setArmAngle(double desiredAngle) {
