@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(ArmSubsystem _ArmSubsystem) {
 
     armSubsystem = _ArmSubsystem;
-    rangespeed = new RangeSpeedLimiter(250, -5, 20, true, m_elevator, ()-> getHeight(), ()-> encoderCalibrated);
+    rangespeed = new RangeSpeedLimiter(151.8, 0, 20, true, m_elevator, ()-> getHeight(), ()-> encoderCalibrated);
 
     config.apply(limitConfig);
  //   initialize();
@@ -214,8 +214,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             new ConditionalCommand(
                 Commands.none(), // no arm or elevator motion needed
                 new SequentialCommandGroup(
-                    armSubsystem.cmdArmPositionThatFinishes(65),
-                    new InstantCommand(() -> m_elevator.set(0.2)), // slow down
+                    //armSubsystem.cmdArmPositionThatFinishes(65),
+                    new InstantCommand(() -> m_elevator.set(0.1)), // slow down
                     new WaitUntilCommand(() -> atBottomLimit()),
                     new InstantCommand(() -> m_elevator.stopMotor())),
                 () -> atBottomLimit()),
