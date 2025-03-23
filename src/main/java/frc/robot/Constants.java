@@ -219,7 +219,7 @@ public static final class ArmConstants {
 
   public static final double kElbowOffset = 284.1; // In Degrees
   public static final double kMaxElbowAngle = 275; // Placeholder value:Change later
-  public static final double kMinElbowAngle = 0; // Placeholder value:Change later
+  public static final double kMinElbowAngle = 0.2; // Placeholder value:Change later
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
   public static final double kElbowDownSpeed = 0.1;

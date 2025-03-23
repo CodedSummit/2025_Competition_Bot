@@ -108,9 +108,9 @@ public class ArmSubsystem extends SubsystemBase {
 
   public boolean minimumLimitReached(){
     double degrees = this.getArmAngle();
-    boolean limitHit = true;
-    if (degrees > Constants.ArmConstants.kMinElbowAngle){
-      limitHit = false;
+    boolean limitHit = false;
+    if (degrees < Constants.ArmConstants.kMinElbowAngle || degrees > 340.0){
+      limitHit = true;
     }
     return limitHit;
   }

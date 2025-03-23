@@ -89,6 +89,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     rangespeed.profileEndMotion();
+
     if (!armSubsystem.isSafeForElevator()){
       setSpeed(0.0);
     }
@@ -238,7 +239,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 Commands.none(), // no arm or elevator motion needed
                 new SequentialCommandGroup(
                     //armSubsystem.cmdArmPositionThatFinishes(65),
-                    new InstantCommand(() -> m_elevator.set(0.1)), // slow down
+                    new InstantCommand(() -> m_elevator.set(0.2)), // slow down
                     new WaitUntilCommand(() -> atBottomLimit()),
                     new InstantCommand(() -> m_elevator.stopMotor())),
                 () -> atBottomLimit()),
