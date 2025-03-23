@@ -45,6 +45,7 @@ public class DriveToNearestReefSideCommand extends Command {
   public void initialize() {
     Pose2d closestAprilTagPose = getClosestReefAprilTagPose();
     // find a path from wherever we are to the stand-off from the closest tag
+    //  may need to rotate the pose found by the first translateCoord by 180 to back in to target
     Command pathfindPath = AutoBuilder.pathfindToPose(
       translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5),
         new PathConstraints(
