@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.commands.ChaseTagCommand;
+import frc.robot.commands.DriveToNearestReefSideCommand;
 import frc.robot.commands.NothingCommand;
 import frc.robot.commands.SetWheelAlignment;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -284,7 +285,7 @@ public class RobotContainer {
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new NothingCommand());
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
-//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Outtake())); 
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false)); 
 
   }
 

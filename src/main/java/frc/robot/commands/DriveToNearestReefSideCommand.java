@@ -7,6 +7,10 @@ package frc.robot.commands;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static edu.wpi.first.units.Units.Rotation;
+
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,11 +20,13 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-//import frc.robot.util.AprilTagPositions;
-import frc.robot.util.AprilTagPositionsFromLayout;
+import frc.robot.util.AprilTagPositions;
+//import frc.robot.util.AprilTagPositionsFromLayout;
+//import frc.robot.util.AprilTagPositionsFromLayout;
 import frc.robot.subsystems.SwerveSubsystem;
 
 
@@ -44,10 +50,18 @@ public class DriveToNearestReefSideCommand extends Command {
   @Override
   public void initialize() {
     Pose2d closestAprilTagPose = getClosestReefAprilTagPose();
+    ArrayList<Pose2d> poses = new ArrayList<>();
+    poses.add(closestAprilTagPose);
+    drive.m_field.getObject("translatedtag").setPoses(poses);
     // find a path from wherever we are to the stand-off from the closest tag
     //  may need to rotate the pose found by the first translateCoord by 180 to back in to target
+    Pose2d rotatedAprilTagPose = translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5);
+    
+    rotatedAprilTagPose.rotateBy(Rotation2d.k180deg);
+
+
     Command pathfindPath = AutoBuilder.pathfindToPose(
-      translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5),
+      rotatedAprilTagPose,
         new PathConstraints(
             3.0, 4.0,
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
@@ -56,7 +70,7 @@ public class DriveToNearestReefSideCommand extends Command {
       // Path from the standoff point, to the final position (left or right of tag, as selected)
       PathPlannerPath pathToFront = new PathPlannerPath(
           PathPlannerPath.waypointsFromPoses(
-            translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5),
+            rotatedAprilTagPose,
               closestAprilTagPose),
           new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
           null, 
@@ -90,11 +104,11 @@ public class DriveToNearestReefSideCommand extends Command {
   }
 
   private Pose2d getClosestReefAprilTagPose() {
-    HashMap<Integer, Pose2d> aprilTagsToAlignTo = AprilTagPositionsFromLayout.weldedBlueAprilTagPositions();
+    HashMap<Integer, Pose2d> aprilTagsToAlignTo = AprilTagPositions.WELDED_APRIL_TAG_POSITIONS;
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Red) {
-        aprilTagsToAlignTo = AprilTagPositionsFromLayout.weldedRedAprilTagPositions();
+        aprilTagsToAlignTo = AprilTagPositions.WELDED_APRIL_TAG_POSITIONS;
       }
     }
 
@@ -110,9 +124,16 @@ public class DriveToNearestReefSideCommand extends Command {
         closestDistance = distance;
         closestPose = pose;
         aprilTagNum = entry.getKey();
+        
       }
-    }
 
+
+    }
+    ArrayList<Pose2d> poses = new ArrayList<>();
+    poses.add(closestPose);
+    drive.m_field.getObject("nativetag").setPoses(poses);
+  
+System.out.println(" Selected April tag: "+aprilTagNum);
     Pose2d inFrontOfAprilTag = translateCoord(closestPose, closestPose.getRotation().getDegrees(),
         -Units.inchesToMeters(23.773));
 
