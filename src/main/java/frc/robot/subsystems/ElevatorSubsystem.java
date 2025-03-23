@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants;
 import frc.robot.RangeSpeedLimiter;
+import frc.robot.commands.NothingCommand;
 
 
 @Logged
@@ -58,7 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem(ArmSubsystem _ArmSubsystem) {
 
     armSubsystem = _ArmSubsystem;
-    rangespeed = new RangeSpeedLimiter(250, -5, 20, true, m_elevator, ()-> getHeight(), ()-> encoderCalibrated);
+    rangespeed = new RangeSpeedLimiter(151.8, 0, 20, true, m_elevator, ()-> getHeight(), ()-> encoderCalibrated);
 
     config.apply(limitConfig);
  //   initialize();
@@ -88,6 +89,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     rangespeed.profileEndMotion();
+
+    if (!armSubsystem.isSafeForElevator()){
+      setSpeed(0.0);
+    }
   }
   
     private double m_elevatorDesiredHeight = 0.0; // in arbitrary elevator encoder units
@@ -117,7 +122,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public double getHeight() {
       return -m_encoder.getPosition();
     }
-
+/* 
     public void ManualElevatorUp(){
       m_elevator.set(-1 * getSpeed());
     }
@@ -125,10 +130,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void ManualElevatorDown(){
       m_elevator.set(1 * getSpeed());
     }
-  
+  */
     public Command elevatorUp(){
       return this.startEnd(
-        () -> m_elevator.set(-1 * getSpeed()),
+        () -> setSpeed(-1 * getSpeed()),
         () -> m_elevator.stopMotor()
       );
   
@@ -136,19 +141,26 @@ public class ElevatorSubsystem extends SubsystemBase {
   
     public Command elevatorDown(){
       return this.startEnd(
-        () -> m_elevator.set(1 * getSpeed()),
+        () -> setSpeed(getSpeed()),
         () -> m_elevator.stopMotor()
       );
     }
   
     public Command cmdElevatorToHeight(DoubleSupplier height_Supplier) {
-      return this.startRun(
-        ()->setDesiredHeight(height_Supplier),
-        ()->moveElevatorToDesiredHeightPID())
-        .until(() -> elevatorAtDesiredHeight())
-        .finallyDo(() -> stopElevator())
-        .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+        return this.startRun(
+          ()->setDesiredHeight(height_Supplier),
+          ()->moveElevatorToDesiredHeightPID())
+          .until(() -> elevatorAtDesiredHeight())
+          .finallyDo(() -> stopElevator())
+          .onlyIf(()-> armSubsystem.isSafeForElevator())
+          .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
     } 
+
+    public void setSpeed(double speed){
+//      if (armSubsystem.isSafeForElevator()){
+        m_elevator.set(speed);
+ //     }
+    }
 
     /*
      * this command is for tuning the desired elevator heights - 
@@ -165,6 +177,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     public boolean atTopLimit(){
       return m_elevator.getReverseLimitSwitch().isPressed();
+    }
+
+    public boolean isSafeToTuck(){
+      boolean safe = false;
+      if ((getHeight() >= Constants.ElevatorConstants.kTuckSafeLower) && 
+      (getHeight() <= Constants.ElevatorConstants.kTuckSafeUpper)){
+        safe = true;
+      }
+      return safe;
     }
 
     private void setDesiredHeight(DoubleSupplier desiredHeight) {
@@ -214,7 +235,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             new ConditionalCommand(
                 Commands.none(), // no arm or elevator motion needed
                 new SequentialCommandGroup(
-                    armSubsystem.cmdArmPositionThatFinishes(65),
+                    //armSubsystem.cmdArmPositionThatFinishes(65),
                     new InstantCommand(() -> m_elevator.set(0.2)), // slow down
                     new WaitUntilCommand(() -> atBottomLimit()),
                     new InstantCommand(() -> m_elevator.stopMotor())),

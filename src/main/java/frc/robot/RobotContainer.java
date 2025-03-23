@@ -101,6 +101,7 @@ public class RobotContainer {
     STATION_PICKUP,
     GROUND_PICKUP,
     CLIMB,
+    BARGE,
     NONE
   }
 
@@ -110,17 +111,22 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
+    armSubsystem.setElevatorSystem(elevatorSubsystem);
+    
     NamedCommands.registerCommand("L1", ArrangementL1());
     NamedCommands.registerCommand("L2", ArrangementL2());
     NamedCommands.registerCommand("L3", ArrangementL3());
     NamedCommands.registerCommand("L4", ArrangementL4());
     NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
-    NamedCommands.registerCommand("Intake/Place", smartIntakeCoral());
+    NamedCommands.registerCommand("Barge", ArrangementBarge());
+    NamedCommands.registerCommand("Intake/Place Coral", smartIntakeCoral());
+    NamedCommands.registerCommand("Algea Intake/Place", smartIntakeCoral());
     NamedCommands.registerCommand("Print", new InstantCommand(()-> System.out.println("Autonomous Print Achieved!")));
     NamedCommands.registerCommand("Calibrate", elevatorSubsystem.elevatorCalibrate());
     NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 6)));
     NamedCommands.registerCommand("Calibrate Gyro", swerveSubsystem.zeroHeadingCommand());
+
+
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
@@ -191,6 +197,7 @@ public class RobotContainer {
     m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
     m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
     //m_driveXboxController.b().whileTrue(floorIntakeSubsystem.Intake());
+    m_driveXboxController.b().onTrue(AutoArrangeCommand);
 
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).whileTrue(floorIntakeSubsystem.Intake());
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).whileTrue(floorIntakeSubsystem.Outtake());
@@ -211,13 +218,16 @@ public class RobotContainer {
     //m_driveXboxController.povUp().onTrue(swerveSubsystem.zeroHeadingCommand());
     
     m_driveXboxController.button(7).onTrue(smartIntakeCoral());
-//    m_driveXboxController.button(8).onTrue(AutoArrangeCommand); Re-add this when time to get the arrangements
+    m_driveXboxController.button(8).onTrue(smartIntakeAlgea());
 
     m_driveXboxController.button(9).whileTrue(armSubsystem.manualElbowUp());
     m_driveXboxController.button(10).whileTrue(armSubsystem.manualElbowDown());
     
 //    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
 //    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
+
+    m_driveXboxController.povUp().whileTrue(handSubsystem.manualIntakeAlgea());
+    m_driveXboxController.povDown().whileTrue(handSubsystem.manualReleaseAlgea());    
     
     //testing
     //m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
@@ -288,19 +298,37 @@ public class RobotContainer {
   public Command smartIntakeCoral(){
     return new ConditionalCommand(
       new SequentialCommandGroup( //if has coral
-        elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12),
+        //elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12),
         //.onlyIf(() ->wristSubsystem.isPieceVertical()),
-        new InstantCommand(() -> handSubsystem.setHandSpeed(1)),
-        new WaitCommand(2),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(handSubsystem.getCoralReleaseSpeed())),
+        new WaitCommand(1),
         new InstantCommand(() -> handSubsystem.setHandSpeed(0))
       ),
      new SequentialCommandGroup( //if no coral
-        new InstantCommand(() -> handSubsystem.setHandSpeed(-1)),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(handSubsystem.getCoralIntakeSpeed())),
         new WaitUntilCommand(() -> handSubsystem.hasCoral()).withTimeout(10),
-        new WaitCommand(1),
+        new WaitCommand(0),
         new InstantCommand(() -> handSubsystem.setHandSpeed(0))
     ),
     () -> handSubsystem.hasCoral());
+  }
+
+  public Command smartIntakeAlgea(){
+    return new ConditionalCommand(
+      new SequentialCommandGroup( //if has coral
+        //elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12),
+        //.onlyIf(() ->wristSubsystem.isPieceVertical()),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(handSubsystem.getAlgeaReleaseSpeed())),
+        new WaitCommand(1),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(0))
+      ),
+     new SequentialCommandGroup( //if no coral
+        new InstantCommand(() -> handSubsystem.setHandSpeed(handSubsystem.getAlgeaIntakeSpeed())),
+        new WaitUntilCommand(() -> handSubsystem.hasAlgea()).withTimeout(10),
+        new WaitCommand(0),
+        new InstantCommand(() -> handSubsystem.setHandSpeed(0))
+    ),
+    () -> handSubsystem.hasAlgea());
   }
 
   public Command oldPositionCommand(double elevator_position, double arm_angle, double wrist_angle, double floor_position){
@@ -344,6 +372,7 @@ public class RobotContainer {
             Map.entry(Arrangement.L1, ArrangementL1()),
             Map.entry(Arrangement.STATION_PICKUP, ArrangementStationPickup()),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
+              Map.entry(Arrangement.BARGE, ArrangementBarge()),
               Map.entry(Arrangement.CLIMB, ArrangementClimb()),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
           ),
@@ -398,27 +427,31 @@ public class RobotContainer {
   //IMPORTANT! We need to find the values for the elevator and arm before we run these!
 
   public Command ArrangementL4(){
-    return PositionCommand(243.6, 42.6);
+    return PositionCommand(132.5, 180);
   }
 
   public Command ArrangementL3(){
-    return PositionCommand(121, 36.7);
+    return PositionCommand(1.5, 180);
   }
 
   public Command ArrangementL2(){
-    return PositionCommand(27.3, 46.5);
+    return PositionCommand(0, 73);
   }
 
   public Command ArrangementL1(){
-    return PositionCommand(138.5, -33);
+    return PositionCommand(0, 73);
   }
 
   public Command ArrangementStationPickup(){
-    return PositionCommand(7.9, 51.4);
+    return PositionCommand(30.5, 0);
   }
 
   public Command ArrangementClimb(){
     return PositionCommand(63,85);
+  }
+
+  public Command ArrangementBarge(){
+    return PositionCommand(150, 180);
   }
 
   //Commands that are going to Pathplanner should stay above this line.
