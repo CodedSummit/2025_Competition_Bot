@@ -147,16 +147,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
   
     public Command cmdElevatorToHeight(DoubleSupplier height_Supplier) {
-      if (armSubsystem.isSafeForElevator()){
         return this.startRun(
           ()->setDesiredHeight(height_Supplier),
           ()->moveElevatorToDesiredHeightPID())
           .until(() -> elevatorAtDesiredHeight())
           .finallyDo(() -> stopElevator())
+          .onlyIf(()-> armSubsystem.isSafeForElevator())
           .withInterruptBehavior(InterruptionBehavior.kCancelSelf);
-      }else{
-        return new NothingCommand();
-      }
     } 
 
     public void setSpeed(double speed){

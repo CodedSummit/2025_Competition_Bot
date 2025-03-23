@@ -217,7 +217,7 @@ public static final class ArmConstants {
   public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = 284.1; // In Degrees
+  public static final double kElbowOffset = 338.2; // In Degrees
   public static final double kMaxElbowAngle = 275; // Placeholder value:Change later
   public static final double kMinElbowAngle = 0.2; // Placeholder value:Change later
   public static final double kElbowSpeed = 0.2;
