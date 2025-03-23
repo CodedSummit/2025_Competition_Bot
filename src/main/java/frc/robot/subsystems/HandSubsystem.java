@@ -4,12 +4,16 @@
 
 package frc.robot.subsystems;
 
+import java.util.Map;
+
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,7 +32,10 @@ public class HandSubsystem extends SubsystemBase {
   public final SparkLimitSwitch handLimit = m_hand.getReverseLimitSwitch();
   private DigitalInput algeaLimitSwitch = new DigitalInput(6);
   private DigitalInput coralBeamBreak = new DigitalInput(7);
-
+  private GenericEntry nt_coralIntakeSpeed;
+  private GenericEntry nt_coralReleaseSpeed;
+  private GenericEntry nt_algeaIntakeSpeed;
+  private GenericEntry nt_algeaReleaseSpeed;
 
   /** Creates a new ExampleSubsystem. */
   public HandSubsystem() {
@@ -44,6 +51,14 @@ public class HandSubsystem extends SubsystemBase {
     return !coralBeamBreak.get();
   }
 
+  public boolean hasPiece(){
+    if(hasCoral() || hasAlgea()){
+      return true;
+    }
+    return false;
+  }
+
+
   public void setHandSpeed(double speed){
     m_hand.set(speed);
   }
@@ -54,13 +69,25 @@ public class HandSubsystem extends SubsystemBase {
 
   public Command manualIntakeCoral(){
     return this.startEnd(
-      ()-> setHandSpeed(-1), 
+      ()-> setHandSpeed(getCoralIntakeSpeed()), 
       ()-> setHandSpeed(0));
   }
 
   public Command manualReleaseCoral(){
     return this.startEnd(
-      ()-> setHandSpeed(1), 
+      ()-> setHandSpeed(getCoralReleaseSpeed()), 
+      ()-> setHandSpeed(0));
+  }
+
+  public Command manualIntakeAlgea(){
+    return this.startEnd(
+      ()-> setHandSpeed(getAlgeaIntakeSpeed()), 
+      ()-> setHandSpeed(0));
+  }
+
+  public Command manualReleaseAlgea(){
+    return this.startEnd(
+      ()-> setHandSpeed(getAlgeaReleaseSpeed()), 
       ()-> setHandSpeed(0));
   }
 
@@ -79,25 +106,55 @@ public class HandSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  public double getCoralIntakeSpeed(){
+    double intakeSpeed = nt_coralIntakeSpeed.getDouble(Constants.HandConstants.kCoralIntakeSpeed);
+    intakeSpeed *= -1;
+    return intakeSpeed;
+  }
 
-  private void setupShuffleboard() {
+  public double getCoralReleaseSpeed(){
+    double releaseSpeed = nt_coralReleaseSpeed.getDouble(Constants.HandConstants.kCoralReleaseSpeed);
+    return releaseSpeed;
+  }
 
-    ShuffleboardTab tab = Shuffleboard.getTab("Hand");
+  public double getAlgeaIntakeSpeed(){
+    double intakeSpeed = nt_algeaIntakeSpeed.getDouble(Constants.HandConstants.kAlgeaIntakeSpeed);
+    intakeSpeed *= -1;
+    return intakeSpeed;
+  }
 
-    /*nt_elbowUPSpeed = armTab.addPersistent("Elbow UP speed", Constants.ArmConstants.kElbowUpSpeed)
-        .withSize(3, 1)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 1))
-        .getEntry();
-
-    nt_elbowDOWNSpeed = armTab.addPersistent("Elbow DOWN speed", Constants.ArmConstants.kElbowDownSpeed)
-        .withSize(3, 1)
-        .withWidget(BuiltInWidgets.kNumberSlider)
-        .withProperties(Map.of("min", 0, "max", 1))
-        .getEntry();
-*/
+  public double getAlgeaReleaseSpeed(){
+    double releaseSpeed = nt_algeaReleaseSpeed.getDouble(Constants.HandConstants.kAlgeaReleaseSpeed);
+    return releaseSpeed;
   }
 
 
+  private void setupShuffleboard() {
 
+    ShuffleboardTab handTab = Shuffleboard.getTab("Hand");
+
+    nt_coralIntakeSpeed = handTab.addPersistent("Coral Intake Speed", Constants.HandConstants.kCoralIntakeSpeed)
+        .withSize(3, 1)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", 1))
+        .getEntry();
+
+    nt_coralReleaseSpeed = handTab.addPersistent("Coral Release Speed", Constants.HandConstants.kCoralReleaseSpeed)
+        .withSize(3, 1)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", 1))
+        .getEntry();
+
+    nt_algeaIntakeSpeed = handTab.addPersistent("Algea Intake Speed", Constants.HandConstants.kAlgeaIntakeSpeed)
+        .withSize(3, 1)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", 1))
+        .getEntry();
+
+    nt_algeaReleaseSpeed = handTab.addPersistent("Algea Release Speed", Constants.HandConstants.kAlgeaReleaseSpeed)
+        .withSize(3, 1)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", 0, "max", 1))
+        .getEntry();
+  }
 }

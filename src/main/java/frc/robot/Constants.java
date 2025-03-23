@@ -217,9 +217,9 @@ public static final class ArmConstants {
   public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = -74.8; // In Degrees
+  public static final double kElbowOffset = 338.2; // In Degrees
   public static final double kMaxElbowAngle = 275; // Placeholder value:Change later
-  public static final double kMinElbowAngle = 0; // Placeholder value:Change later
+  public static final double kMinElbowAngle = 0.2; // Placeholder value:Change later
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
   public static final double kElbowDownSpeed = 0.1;
@@ -245,6 +245,9 @@ public static final class ElevatorConstants {
   public static final double kElevatorHeightL2 = 0.0;  // scoring level
   public static final double kElevatorHeightL3 = 0.0;  // scoring level
   public static final double kElevatorHeightL4 = 0.0;  // scoring level
+
+  public static final double kTuckSafeUpper = 33;
+  public static final double kTuckSafeLower = 0.0;
 
 }
 
@@ -298,6 +301,13 @@ public static final int kOuterRLIntakebuttonID = 7;
 public static final int kOuterRRIntakebuttonID = 8;
 public static final int kOuterProcessorbuttonID = 9;
 public static final int kOuterBargebuttonID = 10;  
+}
+
+public static final class HandConstants{
+  public static final double kCoralIntakeSpeed = 0.4;
+  public static final double kCoralReleaseSpeed = 0.4;
+  public static final double kAlgeaIntakeSpeed = 1.0;
+  public static final double kAlgeaReleaseSpeed = 1.0;
 }
 
 }
