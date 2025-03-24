@@ -236,6 +236,19 @@ public class SwerveSubsystem extends SubsystemBase {
         
         //gyro.setYaw(0);
     }
+
+    public void zeroHeadingWithVision(boolean isRed){
+        Rotation2d odometer_rotation = odometer.getEstimatedPosition().getRotation();
+        Rotation2d gyroAngle = new Rotation2d(gyro.getYaw().getValue());
+
+        offsetYawAngle = gyroAngle.minus(odometer_rotation);
+
+        //if red alliance, flip 180
+        if(isRed){
+            offsetYawAngle.rotateBy(Rotation2d.k180deg);
+        }
+    }
+
     public void setHeading(double setAngle){
         gyro.setYaw(setAngle);
     }

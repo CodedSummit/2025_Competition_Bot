@@ -27,6 +27,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -81,13 +82,16 @@ public class RobotContainer {
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
+  @Logged
   private final CommandXboxController m_driveXboxController = 
     new CommandXboxController(0);
 //  private final Joystick m_buttonBoard = new Joystick(1);
 //  private final Trigger m_button1 = new Trigger(() ->m_buttonBoard.getRawButton(1));
   //private final CommandXboxController m_driverController =
   //    new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  @Logged
   private final CommandJoystick m_reefButtons = new CommandJoystick(1);
+  @Logged
   private final CommandJoystick m_outerButtons = new CommandJoystick(2);
 
   private final SendableChooser<Command> autoChooser;
@@ -196,6 +200,8 @@ public class RobotContainer {
     m_driveXboxController.y().whileTrue(armSubsystem.manualElbowUp());
     m_driveXboxController.a().whileTrue(armSubsystem.manualElbowDown());
     m_driveXboxController.x().onTrue(swerveSubsystem.zeroHeadingCommand());
+    swerveSubsystem.zeroHeadingWithVision()
+
     //m_driveXboxController.b().whileTrue(floorIntakeSubsystem.Intake());
     m_driveXboxController.b().onTrue(AutoArrangeCommand);
 
