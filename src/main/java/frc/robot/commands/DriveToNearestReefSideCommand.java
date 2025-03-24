@@ -8,6 +8,8 @@ package frc.robot.commands;
 import java.util.HashMap;
 import java.util.List;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.util.AprilTagPositions;
@@ -33,6 +36,7 @@ public class DriveToNearestReefSideCommand extends Command {
   private PathPlannerPath m_pathtofront;
   private SwerveSubsystem drive;
   private boolean isLeftSide = false;
+  public static final Time kAlignmentAdjustmentTimeout = Seconds.of(0.075);
 
 
   /** Creates a new DriveToNearestReefSideCommand. */
@@ -52,7 +56,7 @@ public class DriveToNearestReefSideCommand extends Command {
     poses.add(closestAprilTagPose);
     drive.m_field.getObject("translatedtag").setPoses(poses);
     // find a path from wherever we are to the stand-off from the closest tag
-    //  may need to rotate the pose found by the first translateCoord by 180 to back in to target
+    
     Pose2d standoffAprilTagPose = translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -1.5);
     
     Pose2d rotatedStandoffAprilTagPose = new Pose2d(standoffAprilTagPose.getX(), standoffAprilTagPose.getY(),
@@ -84,14 +88,16 @@ public class DriveToNearestReefSideCommand extends Command {
         new PathConstraints(
             3.0, 4.0,
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
-pathfindPath.schedule();
-
-  //    fullPath.schedule();
+ pathfindPath.schedule();
+// if simple findpath to the tag isn't close enough, then do:
+//fullPath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
+//fullPath.schedule();
     } catch (Exception e) {
       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
     }
   }
 
+  
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
@@ -141,7 +147,7 @@ pathfindPath.schedule();
     poses.add(closestPose);
     drive.m_field.getObject("nativetag").setPoses(poses);
   
-System.out.println(" Selected April tag: "+aprilTagNum);
+    System.out.println(" Selected April tag: "+aprilTagNum);
     Pose2d inFrontOfAprilTag = translateCoord(closestPose, closestPose.getRotation().getDegrees(),
         -Units.inchesToMeters(23.773));
 
