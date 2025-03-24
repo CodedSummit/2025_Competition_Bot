@@ -224,7 +224,7 @@ private void elbowHold(){
       // we've reached the goal angle, hold now
       m_elbow.set(Constants.ArmConstants.kElbowHoldSpeed);
     }
-    else if (getArmAngle() < m_elbowDesiredAngleDeg ) {
+    else if (getArmAngle() < m_elbowDesiredAngleDeg || getArmAngle() > 340 ) {
       // need to move up to desired angle
       setElbowSpeed(getElbowUPSpeed());
     }
