@@ -32,8 +32,9 @@ public class FinalAlignCommand extends Command {
     private final Trigger endTrigger;
     private final Trigger endTriggerDebounced;
 
-    private final BooleanPublisher endTriggerLogger = NetworkTableInstance.getDefault().getTable("logging")
-            .getBooleanTopic("PositionPIDEndTrigger").publish();
+    private final BooleanPublisher endTriggerLogger = NetworkTableInstance.getDefault().getTable("Telemetry")
+            .getBooleanTopic("FinalAlignComplete").publish();
+
 
     public static final Time kEndTriggerDebounce = Seconds.of(0.04);
     public static final Distance kPositionTolerance = Inches.of(0.4);
@@ -61,6 +62,9 @@ public class FinalAlignCommand extends Command {
         endTriggerDebounced = endTrigger.debounce(kEndTriggerDebounce.in(Seconds));
     }
 
+    /*
+     * Provide desired goalPose (end state), and timeout (window of time to do final alignment)
+     */
     public static Command generateCommand(SwerveSubsystem swerve, Pose2d goalPose, Time timeout) {
         return new FinalAlignCommand(swerve, goalPose).withTimeout(timeout).finallyDo(() -> {
             swerve.driveRobotRelative(new ChassisSpeeds(0, 0, 0), null);
