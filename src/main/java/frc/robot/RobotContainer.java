@@ -230,7 +230,9 @@ public class RobotContainer {
 //    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
 
     m_driveXboxController.povUp().whileTrue(handSubsystem.manualIntakeAlgea());
-    m_driveXboxController.povDown().whileTrue(handSubsystem.manualReleaseAlgea());    
+    m_driveXboxController.povDown().whileTrue(handSubsystem.manualReleaseAlgea());  
+    
+    m_driveXboxController.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeadingWithVision(DriverStation.getAlliance().equals(DriverStation.Alliance.Red))));
     
     //testing
     //m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
