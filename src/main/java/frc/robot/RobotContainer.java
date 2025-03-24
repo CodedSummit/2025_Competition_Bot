@@ -171,6 +171,10 @@ public class RobotContainer {
     SmartDashboard.putData("Arm", armSubsystem);
   }
 
+  public boolean isRedAlliance(){
+    return DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
+  }
+
   private void setupShuffleboard() {
     
     ShuffleboardTab tab = Shuffleboard.getTab("Systems");
@@ -231,7 +235,7 @@ public class RobotContainer {
     m_driveXboxController.povUp().whileTrue(handSubsystem.manualIntakeAlgea());
     m_driveXboxController.povDown().whileTrue(handSubsystem.manualReleaseAlgea());  
     
-    m_driveXboxController.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeadingWithVision(DriverStation.getAlliance().equals(DriverStation.Alliance.Red))));
+    m_driveXboxController.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeadingWithVision(isRedAlliance())));
     
     //testing
     //m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
@@ -348,7 +352,7 @@ public class RobotContainer {
 
   public Command PositionCommand(double elevator_position, double arm_angle){
     return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
-      elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position),
+      elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position).beforeStarting(new WaitUntilCommand(()-> armSubsystem.isSafeForElevator())),
       armSubsystem.cmdArmPositionThatFinishes(arm_angle)
     ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
@@ -447,7 +451,7 @@ public class RobotContainer {
   }
 
   public Command ArrangementStationPickup(){
-    return PositionCommand(30.5, 0);
+    return PositionCommand(21.7, 10.55);
   }
 
   public Command ArrangementClimb(){
