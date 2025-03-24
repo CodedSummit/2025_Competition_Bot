@@ -8,8 +8,6 @@ package frc.robot.commands;
 import java.util.HashMap;
 import java.util.List;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -26,13 +24,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.util.AprilTagPositions;
 //import frc.robot.util.AprilTagPositionsFromLayout;
-//import frc.robot.util.AprilTagPositionsFromLayout;
 import frc.robot.subsystems.SwerveSubsystem;
 
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveToNearestReefSideCommand extends Command {
   private Command fullPath;
+  private PathPlannerPath m_pathtofront;
   private SwerveSubsystem drive;
   private boolean isLeftSide = false;
 
@@ -55,30 +53,40 @@ public class DriveToNearestReefSideCommand extends Command {
     drive.m_field.getObject("translatedtag").setPoses(poses);
     // find a path from wherever we are to the stand-off from the closest tag
     //  may need to rotate the pose found by the first translateCoord by 180 to back in to target
-    Pose2d rotatedAprilTagPose = translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -0.5);
+    Pose2d standoffAprilTagPose = translateCoord(closestAprilTagPose, closestAprilTagPose.getRotation().getDegrees(), -1.5);
     
-    rotatedAprilTagPose.rotateBy(Rotation2d.k180deg);
+    Pose2d rotatedStandoffAprilTagPose = new Pose2d(standoffAprilTagPose.getX(), standoffAprilTagPose.getY(),
+     standoffAprilTagPose.getRotation().rotateBy(Rotation2d.k180deg));
 
 
     Command pathfindPath = AutoBuilder.pathfindToPose(
-      rotatedAprilTagPose,
+      rotatedStandoffAprilTagPose,
         new PathConstraints(
             3.0, 4.0,
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
 
     try {
       // Path from the standoff point, to the final position (left or right of tag, as selected)
-      PathPlannerPath pathToFront = new PathPlannerPath(
+      Rotation2d backinRot = closestAprilTagPose.getRotation().rotateBy(Rotation2d.k180deg);
+      GoalEndState goal = new GoalEndState(0.0, backinRot);
+      Pose2d endPose = new Pose2d(closestAprilTagPose.getX(), closestAprilTagPose.getY(), backinRot);
+      m_pathtofront = new PathPlannerPath(
           PathPlannerPath.waypointsFromPoses(
-            rotatedAprilTagPose,
-              closestAprilTagPose),
+            rotatedStandoffAprilTagPose,
+            endPose),
           new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
-          null, 
-          new GoalEndState(0.0, closestAprilTagPose.getRotation())
-      );
-      pathToFront.preventFlipping = true;
-      fullPath = pathfindPath.andThen(AutoBuilder.followPath(pathToFront));
-      fullPath.schedule();
+          null, goal);
+      m_pathtofront.preventFlipping = true;
+      fullPath = pathfindPath.andThen(AutoBuilder.followPath(m_pathtofront));
+
+       pathfindPath = AutoBuilder.pathfindToPose(
+      endPose,
+        new PathConstraints(
+            3.0, 4.0,
+            Units.degreesToRadians(540), Units.degreesToRadians(720)));
+pathfindPath.schedule();
+
+  //    fullPath.schedule();
     } catch (Exception e) {
       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
     }
@@ -104,11 +112,11 @@ public class DriveToNearestReefSideCommand extends Command {
   }
 
   private Pose2d getClosestReefAprilTagPose() {
-    HashMap<Integer, Pose2d> aprilTagsToAlignTo = AprilTagPositions.WELDED_APRIL_TAG_POSITIONS;
+    HashMap<Integer, Pose2d> aprilTagsToAlignTo = AprilTagPositions.WELDED_BLUE_CORAL_APRIL_TAG_POSITIONS;
     Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       if (alliance.get() == DriverStation.Alliance.Red) {
-        aprilTagsToAlignTo = AprilTagPositions.WELDED_APRIL_TAG_POSITIONS;
+        aprilTagsToAlignTo = AprilTagPositions.WELDED_RED_CORAL_APRIL_TAG_POSITIONS;
       }
     }
 
