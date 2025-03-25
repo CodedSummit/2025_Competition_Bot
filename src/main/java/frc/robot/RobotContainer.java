@@ -291,8 +291,8 @@ public class RobotContainer {
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, true));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, false));
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false)); 
 
