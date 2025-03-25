@@ -149,14 +149,12 @@ public static final class VisionConstants {
 
      public static final Transform3d kRobotToFrontCam = new Transform3d(
       new Translation3d(inchesToMeters(-1), inchesToMeters(-9),inchesToMeters(39.5)), 
-  //    new Rotation3d(0, degreesToRadians(52.8), degreesToRadians(20)));
-      new Rotation3d(0, degreesToRadians(50), 0)
-        .rotateBy(new Rotation3d(0, 0, degreesToRadians(20)))
+      new Rotation3d(0, degreesToRadians(-1.2), degreesToRadians(0.0))
     );
     
     public static final Transform3d kRobotToBackCam = new Transform3d(
       new Translation3d(inchesToMeters(-8.5+7.5), inchesToMeters(-4.5),inchesToMeters(8.25)), 
-      new Rotation3d(0, degreesToRadians(15.0), degreesToRadians(180))
+      new Rotation3d(0, degreesToRadians(15.0), degreesToRadians(181.25))
       );
   
     public static final Transform3d kRobotToRightCam = new Transform3d(
