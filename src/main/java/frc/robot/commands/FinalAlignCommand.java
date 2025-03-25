@@ -93,10 +93,14 @@ public class FinalAlignCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         endTriggerLogger.accept(endTrigger.getAsBoolean());
+        System.out.println("**********************************FinalAlign ENDED");
     }
 
     @Override
     public boolean isFinished() {
+        if (endTriggerDebounced.getAsBoolean()) {
+            System.out.println("**********************************FinalAlign finished");
+        }
         return endTriggerDebounced.getAsBoolean();
     }
 }
