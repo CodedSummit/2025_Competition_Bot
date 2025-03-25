@@ -90,6 +90,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public RobotConfig config;
 
+    public boolean calibratedDirection = false;
+
     @Logged
     public final Field2d m_field = new Field2d();
 
@@ -233,9 +235,23 @@ public class SwerveSubsystem extends SubsystemBase {
     public void zeroHeading() {
         //gyro.reset();
         offsetYawAngle = new Rotation2d(gyro.getYaw().getValue());
+        calibratedDirection = true;
         
         //gyro.setYaw(0);
     }
+
+    public double DriverOffsetYaw(){
+        return offsetYawAngle.getDegrees();
+    }
+
+    public double OdometerRotation(){
+        return odometer.getEstimatedPosition().getRotation().getDegrees();
+    }
+
+    public double CalcGyroAngle(){
+        return gyro.getYaw().getValueAsDouble();
+    }
+
 
     public void zeroHeadingWithVision(boolean isRed){
         Rotation2d odometer_rotation = odometer.getEstimatedPosition().getRotation();
@@ -245,8 +261,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
         //if red alliance, flip 180
         if(isRed){
-            offsetYawAngle.rotateBy(Rotation2d.k180deg);
+            offsetYawAngle = offsetYawAngle.rotateBy(Rotation2d.k180deg);
         }
+        calibratedDirection = true;
     }
 
     public void setHeading(double setAngle){

@@ -90,8 +90,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     rangespeed.profileEndMotion();
 
-    if (!armSubsystem.isSafeForElevator()){
+    if (!elevatorSafeToMove() && encoderCalibrated){
       setSpeed(0.0);
+    }
+
+    if (!encoderCalibrated && atBottomLimit()){
+      encoderCalibrated = true;
     }
   }
   
@@ -183,6 +187,14 @@ public class ElevatorSubsystem extends SubsystemBase {
       boolean safe = false;
       if ((getHeight() >= Constants.ElevatorConstants.kTuckSafeLower) && 
       (getHeight() <= Constants.ElevatorConstants.kTuckSafeUpper)){
+        safe = true;
+      }
+      return safe;
+    }
+
+    public boolean elevatorSafeToMove(){
+      boolean safe=false;
+      if (isSafeToTuck() || armSubsystem.isSafeForElevator()){
         safe = true;
       }
       return safe;
