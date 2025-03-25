@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.util.VisionFilteringStrategy;
-import frc.robot.util.VisionFilteringTagDistanceStrategy;
+import frc.robot.util.VisionFilteringTagAngleStrategy;
 /**
  *  Uses Vision data to come up with estimated poses that can be fed to the drive system pose estimator.
  *  Don't really need this to be a subsystem since it's doesn't need mutex protection - but keeping it as one fits 
@@ -92,7 +92,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     m_backLog = new IntegerLogEntry(log, "BackCamTargets");
     m_targetIds = new IntegerLogEntry(log, "TargetIDs");
 
-    m_visionFilter = new VisionFilteringTagDistanceStrategy(m_CompetitionAprilTagFieldLayout);
+    m_visionFilter = new VisionFilteringTagAngleStrategy(m_CompetitionAprilTagFieldLayout);
     initialize();
   }
     
@@ -187,9 +187,11 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
 
       var pose = getFCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
-        var pose2d = pose.get().estimatedPose.toPose2d();
-        m_frontcamPub.set(pose2d);
-        poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        Pose2d pose2d = pose.get().estimatedPose.toPose2d();
+        if (m_visionFilter.useVisionPose(poseEstimator.getEstimatedPosition(), pose2d, pose.get(),null)) {
+          m_frontcamPub.set(pose2d);
+          poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        }
         received_vision_update = true;
  //       System.out.println(" Updated pose with left cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
       }

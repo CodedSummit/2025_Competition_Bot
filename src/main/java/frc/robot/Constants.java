@@ -182,9 +182,10 @@ public static final class VisionConstants {
   public static final int kRAmpTagID = 5;
   public static final int kRStageTagID = 11;
   public static final int kRSpeakerTagID = 4;
+
   public static long kLogInterval = 5; // logging interval, ms.  Set to 0 to disable logging
 public static double kMaxTagRangeM = feetToMeters(8.0);
-
+public static final double kMaxTagAngle = 10.0;
 }
 
 public static final class ArmConstants {
