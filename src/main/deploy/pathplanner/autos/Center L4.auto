@@ -29,18 +29,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Elbow Down"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake/Place"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Center Alignment"
