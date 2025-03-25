@@ -36,7 +36,7 @@ public class DriveToNearestReefSideCommand extends Command {
   private PathPlannerPath m_pathtofront;
   private SwerveSubsystem drive;
   private boolean isLeftSide = false;
-  public static final Time kAlignmentAdjustmentTimeout = Seconds.of(0.075);
+  public static final Time kAlignmentAdjustmentTimeout = Seconds.of(5.0); // was 0.075
 
 
   /** Creates a new DriveToNearestReefSideCommand. */
@@ -78,7 +78,7 @@ public class DriveToNearestReefSideCommand extends Command {
           PathPlannerPath.waypointsFromPoses(
             rotatedStandoffAprilTagPose,
             endPose),
-          new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
+          new PathConstraints(1.0, 1.0, 2 * Math.PI, 4 * Math.PI),
           null, goal);
       m_pathtofront.preventFlipping = true;
       fullPath = pathfindPath.andThen(AutoBuilder.followPath(m_pathtofront));
@@ -86,12 +86,12 @@ public class DriveToNearestReefSideCommand extends Command {
        pathfindPath = AutoBuilder.pathfindToPose(
       endPose,
         new PathConstraints(
-            3.0, 4.0,
+            1.0, 0.5,
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
- pathfindPath.schedule();
+ //pathfindPath.schedule();
 // if simple findpath to the tag isn't close enough, then do:
-//fullPath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
-//fullPath.schedule();
+fullPath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
+fullPath.schedule();
     } catch (Exception e) {
       DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
     }
@@ -149,7 +149,7 @@ public class DriveToNearestReefSideCommand extends Command {
   
     System.out.println(" Selected April tag: "+aprilTagNum);
     Pose2d inFrontOfAprilTag = translateCoord(closestPose, closestPose.getRotation().getDegrees(),
-        -Units.inchesToMeters(23.773));
+        -Units.inchesToMeters(7.0));
 
     Pose2d leftOrRightOfAprilTag;
     if (isLeftSide) {  // translate distance from tag center to pole center

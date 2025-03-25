@@ -37,7 +37,7 @@ public class FinalAlignCommand extends Command {
 
 
     public static final Time kEndTriggerDebounce = Seconds.of(0.04);
-    public static final Distance kPositionTolerance = Inches.of(0.4);
+    public static final Distance kPositionTolerance = Inches.of(2.0);
     public static final Rotation2d kRotationTolerance = Rotation2d.fromDegrees(2.0);
 
     private FinalAlignCommand(SwerveSubsystem mSwerve, Pose2d goalPose) {
