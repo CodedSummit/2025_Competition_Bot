@@ -13,7 +13,8 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
 /*
- * A strategy that discards tags "too far" from the existing pose
+ * A strategy that discards tags facing us from the existing pose and far away
+ * (so we use close tags that are viewed straight-on)
  */
 public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
 
@@ -26,6 +27,7 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
       PhotonPipelineResult photonResult) {
 
     double targetAngle = 0.0;
+    double targetRange = 0.0;
     if (!estimatedPose.targetsUsed.isEmpty()) {
       for (PhotonTrackedTarget target : estimatedPose.targetsUsed) {
 
@@ -33,15 +35,21 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
         if (targetPose.isPresent())
 
           targetAngle = calculateAngle(targetPose.get());
+          targetRange = getTagRange(targetPose.get());
       }
     }
-    if (Math.abs(180.0-targetAngle) >= Constants.VisionConstants.kMaxTagAngle) {
-      System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Rejecting Tag angle:"+targetAngle);
+    if ((Math.abs(180.0-targetAngle) <= Constants.VisionConstants.kMaxTagAngle) &&
+        (targetRange > Constants.VisionConstants.kMaxTagRangeM)) {
+      System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Rejecting Tag angle:"+targetAngle +"at range: "+targetRange);
       return false;
     }
     return true;
   }
 
+  // return range in meters
+  private double getTagRange(Pose3d target) {
+    return target.getX();
+  }
   private double calculateAngle(Pose3d target) {
     double result = 0.0;
     Pose2d p2d = target.toPose2d();
