@@ -27,6 +27,18 @@
           "data": {
             "name": "Intake/Place Coral"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Alignment"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StationPickup"
+          }
         }
       ]
     }
