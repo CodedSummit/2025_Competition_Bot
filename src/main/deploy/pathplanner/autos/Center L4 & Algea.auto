@@ -29,15 +29,39 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Algea 1"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Center Alignment"
+            "pathName": "Center Blue"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "StationPickup"
+            "name": "Algea Intake/Place"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Center Barge"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Barge"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algea Intake/Place"
           }
         }
       ]

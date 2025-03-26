@@ -312,7 +312,7 @@ public static final class HandConstants{
 public static final class WinchConstants{
   public static final double kWinchEncoderOffset = 116.7;
   public static final double kWinchMax = 179; 
-  public static final double kWinchMin = 68.4; 
+  public static final double kWinchMin = 73; 
 }
 
 }

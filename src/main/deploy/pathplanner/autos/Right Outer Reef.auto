@@ -11,9 +11,21 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "04 Reefside Blue"
+            "name": "Right Reef Tag Align"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake/Place Coral"
           }
         }
       ]

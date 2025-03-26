@@ -137,6 +137,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+    m_robotContainer.swerveSubsystem.zeroHeadingWithVision(m_robotContainer.isRedAlliance());
   }
 
   /** This function is called periodically during autonomous. */
@@ -155,6 +156,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.loadPreferences();
     m_robotContainer.runStartupCalibration();
+    m_robotContainer.swerveSubsystem.zeroHeadingWithVision(m_robotContainer.isRedAlliance());
   }
 
   /** This function is called periodically during operator control. */
