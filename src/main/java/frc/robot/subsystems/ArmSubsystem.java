@@ -117,7 +117,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
     public boolean goingUp(){
-      return m_elbow.get() > Constants.ArmConstants.kElbowHoldSpeed;
+      return m_elbow.get() > 0;
     }  
 
     public boolean goingDown(){
