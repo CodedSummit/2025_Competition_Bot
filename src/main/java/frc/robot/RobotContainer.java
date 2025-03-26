@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.WinchConstants;
 import frc.robot.commands.ChaseTagCommand;
 import frc.robot.commands.DriveToNearestReefSideCommand;
 import frc.robot.commands.NothingCommand;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.HandSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionPoseEstimationSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.WinchSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -81,6 +83,7 @@ public class RobotContainer {
 
   private SwerveJoystickCmd swerveJoystickCmd;
   private final VisionSubsystem m_visionSubsystem = new VisionSubsystem();
+  private final WinchSubsystem winchSubsystem = new WinchSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driveXboxController = 
@@ -238,8 +241,10 @@ public class RobotContainer {
     m_driveXboxController.povUp().whileTrue(handSubsystem.manualIntakeAlgea());
     m_driveXboxController.povDown().whileTrue(handSubsystem.manualReleaseAlgea());  
     
-    m_driveXboxController.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeadingWithVision(isRedAlliance())));
-    
+//;    m_driveXboxController.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeadingWithVision(isRedAlliance())));
+
+    m_driveXboxController.povRight().whileTrue(winchSubsystem.retractWinch());
+    m_driveXboxController.povLeft().whileTrue(winchSubsystem.extendWinch());
     //testing
     //m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
     //m_driveXboxController.povRight().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.ALGEA_POSITION));

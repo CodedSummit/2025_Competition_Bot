@@ -182,9 +182,10 @@ public static final class VisionConstants {
   public static final int kRAmpTagID = 5;
   public static final int kRStageTagID = 11;
   public static final int kRSpeakerTagID = 4;
+
   public static long kLogInterval = 5; // logging interval, ms.  Set to 0 to disable logging
 public static double kMaxTagRangeM = feetToMeters(8.0);
-
+public static final double kMaxTagAngle = 10.0;
 }
 
 public static final class ArmConstants {
@@ -306,6 +307,12 @@ public static final class HandConstants{
   public static final double kCoralReleaseSpeed = 0.4;
   public static final double kAlgeaIntakeSpeed = 1.0;
   public static final double kAlgeaReleaseSpeed = 1.0;
+}
+
+public static final class WinchConstants{
+  public static final double kWinchEncoderOffset = 116.7;
+  public static final double kWinchMax = 179; 
+  public static final double kWinchMin = 68.4; 
 }
 
 }
