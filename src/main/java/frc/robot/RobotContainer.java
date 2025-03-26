@@ -130,8 +130,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Calibrate", elevatorSubsystem.elevatorCalibrate());
     NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 6)));
     NamedCommands.registerCommand("Calibrate Gyro", swerveSubsystem.zeroHeadingCommand());
-    NamedCommands.registerCommand("Left Reef Tag Align", DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, true));
-    NamedCommands.registerCommand("Right Reef Tag Align",  DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, false));
+    NamedCommands.registerCommand("Left Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, true));
+    NamedCommands.registerCommand("Right Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, false));
 
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);

@@ -100,12 +100,12 @@ public class DriveToNearestReefSideCommand extends Command {
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
  //pathfindPath.schedule();
 // if simple findpath to the tag isn't close enough, then do:
-fullPath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
+ Command thePath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
 // fullPath.schedule();
  //   } catch (Exception e) {
    //   DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
    // }
-   return fullPath;
+   return thePath;
   }
   
   // Called every time the scheduler runs while the command is scheduled.
