@@ -130,9 +130,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Calibrate", elevatorSubsystem.elevatorCalibrate());
     NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 6)));
     NamedCommands.registerCommand("Calibrate Gyro", swerveSubsystem.zeroHeadingCommand());
-    NamedCommands.registerCommand("Left Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, true));
-    NamedCommands.registerCommand("Right Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, false));
-
+    NamedCommands.registerCommand("Left Reef Tag Align", DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, true));
+    NamedCommands.registerCommand("Right Reef Tag Align",  DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, false));
 
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
@@ -297,8 +296,8 @@ public class RobotContainer {
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, true));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, false));
 //    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false)); 
 
