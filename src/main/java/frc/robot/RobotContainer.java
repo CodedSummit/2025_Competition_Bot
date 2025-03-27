@@ -291,7 +291,7 @@ public class RobotContainer {
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 8 + " on Reef Buttons pressed")));
   m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand);
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue(handSubsystem.manualIntakeCoral());
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(elevatorSubsystem.elevatorCalibrate());
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(handSubsystem.manualReleaseCoral());
   m_reefButtons.button(Constants.ButtonboardConstants.kReefCoinbuttonID).whileTrue(handSubsystem.manualReleaseAlgea());
      
 
@@ -301,8 +301,8 @@ public class RobotContainer {
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).whileTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).whileTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.PROCESSOR)));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.BARGE))); 
 
@@ -335,14 +335,14 @@ public class RobotContainer {
 
   public Command smartIntakeAlgea(){
     return new ConditionalCommand(
-      new SequentialCommandGroup( //if has coral
+      new SequentialCommandGroup( //if has algea
         //elevatorSubsystem.cmdElevatorToHeight(() -> elevatorSubsystem.getHeight() -12),
         //.onlyIf(() ->wristSubsystem.isPieceVertical()),
         new InstantCommand(() -> handSubsystem.setHandSpeed(handSubsystem.getAlgeaReleaseSpeed())),
         new WaitCommand(1),
         new InstantCommand(() -> handSubsystem.setHandSpeed(0))
       ),
-     new SequentialCommandGroup( //if no coral
+     new SequentialCommandGroup( //if no algea
         new InstantCommand(() -> handSubsystem.setHandSpeed(handSubsystem.getAlgeaIntakeSpeed())),
         new WaitUntilCommand(() -> handSubsystem.hasAlgea()).withTimeout(10),
         new WaitCommand(0),
@@ -401,7 +401,7 @@ public class RobotContainer {
             Map.entry(Arrangement.STATION_PICKUP, ArrangementStationPickup()),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
               Map.entry(Arrangement.BARGE, ArrangementBarge()),
-//              Map.entry(Arrangement.CLIMB, ArrangementClimb()),
+              Map.entry(Arrangement.CLIMB, ArrangementClimb()),
               Map.entry(Arrangement.PROCESSOR, ArrangementProcessor()),
               Map.entry(Arrangement.ALGEA_1, ArrangementAlgea1()),
               Map.entry(Arrangement.ALGEA_2, ArrangementAlgea2()),
@@ -455,10 +455,9 @@ public class RobotContainer {
     swerveSubsystem.loadPreferences();
   }
   //IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please. 
-  //IMPORTANT! We need to find the values for the elevator and arm before we run these!
 
   public Command ArrangementL4(){
-    return PositionCommand(148, 180);
+    return PositionCommand(151, 196.5);
   }
 
   public Command ArrangementL3(){
@@ -477,9 +476,9 @@ public class RobotContainer {
     return PositionCommand(21.7, 12.5);
   }
 
-//  public Command ArrangementClimb(){
-//    return PositionCommandWinch(0,256.3,182.1);
-//  }
+  public Command ArrangementClimb(){
+    return PositionCommand(0,256.3);
+  }
 
   public Command ArrangementBarge(){
     return PositionCommand(150, 180);
