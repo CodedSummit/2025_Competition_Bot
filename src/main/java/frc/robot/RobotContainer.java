@@ -109,6 +109,7 @@ public class RobotContainer {
     BARGE,
     ALGEA_1,
     ALGEA_2,
+    PROCESSOR,
     NONE
   }
 
@@ -241,13 +242,13 @@ public class RobotContainer {
 //    m_driveXboxController.povUp().whileTrue(floorIntakeSubsystem.ManualArmIn());
 //    m_driveXboxController.povDown().whileTrue(floorIntakeSubsystem.ManualArmOut());
 
-    m_driveXboxController.povUp().whileTrue(handSubsystem.manualIntakeAlgea());
-    m_driveXboxController.povDown().whileTrue(handSubsystem.manualReleaseAlgea());  
+    m_driveXboxController.povRight().whileTrue(handSubsystem.manualIntakeAlgea());
+    m_driveXboxController.povLeft().whileTrue(handSubsystem.manualReleaseAlgea());  
     
 //;    m_driveXboxController.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeadingWithVision(isRedAlliance())));
 
-    m_driveXboxController.povRight().whileTrue(winchSubsystem.retractWinch());
-    m_driveXboxController.povLeft().whileTrue(winchSubsystem.extendWinch());
+    m_driveXboxController.povDown().whileTrue(winchSubsystem.retractWinch());
+    m_driveXboxController.povUp().whileTrue(winchSubsystem.extendWinch());
     //testing
     //m_driveXboxController.povLeft().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.UP_POSITION));
     //m_driveXboxController.povRight().whileTrue(floorIntakeSubsystem.moveArmToPosition(FloorIntake.ALGEA_POSITION));
@@ -280,18 +281,18 @@ public class RobotContainer {
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
   
 
-    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new SwerveTestA(swerveSubsystem));
-    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new SwerveTestB(swerveSubsystem));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new SwerveTestA(swerveSubsystem));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new SwerveTestB(swerveSubsystem));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Reef Buttons pressed")));
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_1)));
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_1)));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueRbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 7 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 8 + " on Reef Buttons pressed")));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand); Re-add this when time to get the arrangements
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue(handSubsystem.manualIntakeCoral());
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(elevatorSubsystem.elevatorCalibrate());
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefCoinbuttonID).whileTrue(handSubsystem.manualReleaseCoral());
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand);
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue(handSubsystem.manualIntakeCoral());
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(elevatorSubsystem.elevatorCalibrate());
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefCoinbuttonID).whileTrue(handSubsystem.manualReleaseAlgea());
      
 
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Outer Buttons pressed")));
@@ -300,10 +301,10 @@ public class RobotContainer {
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Outer Buttons pressed")));
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, true));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, false));
-//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false)); 
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.PROCESSOR)));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.BARGE))); 
 
   }
 
@@ -368,6 +369,14 @@ public class RobotContainer {
     ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
   }
 
+  public Command PositionCommandWinch(double elevator_position, double arm_angle, double winch_position){
+    return Commands.parallel( //each of these commands must finish in order to run another PositionCommand.
+      elevatorSubsystem.cmdElevatorToHeight(() -> elevator_position).beforeStarting(new WaitUntilCommand(()-> armSubsystem.isSafeForElevator())),
+      armSubsystem.cmdArmPositionThatFinishes(arm_angle),
+      winchSubsystem.cmdWinchToPositionThatFinishes(winch_position)
+    ).withInterruptBehavior(InterruptionBehavior.kCancelSelf);
+  }
+
   private void setAutoArrangeCommand(Arrangement a){
     System.out.println("setting arrange to " + a);
     selectedAutoArrange = a;
@@ -392,7 +401,8 @@ public class RobotContainer {
             Map.entry(Arrangement.STATION_PICKUP, ArrangementStationPickup()),
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
               Map.entry(Arrangement.BARGE, ArrangementBarge()),
-              Map.entry(Arrangement.CLIMB, ArrangementClimb()),
+//              Map.entry(Arrangement.CLIMB, ArrangementClimb()),
+              Map.entry(Arrangement.PROCESSOR, ArrangementProcessor()),
               Map.entry(Arrangement.ALGEA_1, ArrangementAlgea1()),
               Map.entry(Arrangement.ALGEA_2, ArrangementAlgea2()),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
@@ -464,23 +474,27 @@ public class RobotContainer {
   }
 
   public Command ArrangementStationPickup(){
-    return PositionCommand(21.7, 10.55);
+    return PositionCommand(21.7, 12.5);
   }
 
-  public Command ArrangementClimb(){
-    return PositionCommand(63,85);
-  }
+//  public Command ArrangementClimb(){
+//    return PositionCommandWinch(0,256.3,182.1);
+//  }
 
   public Command ArrangementBarge(){
     return PositionCommand(150, 180);
   }
 
   public Command ArrangementAlgea1(){
-    return PositionCommand(0, 275);
+    return PositionCommand(0, 270);
   }
 
   public Command ArrangementAlgea2(){
-    return PositionCommand(253.5, 5);
+    return PositionCommand(55.8, 270);
+  }
+
+  public Command ArrangementProcessor(){
+    return PositionCommand(0, 46.6);
   }
 
   //Commands that are going to Pathplanner should stay above this line.
