@@ -4,9 +4,10 @@
   "holonomicMode": true,
   "pathFolders": [
     "Left Side",
+    "Barge",
     "Reef Alignment",
-    "Right Side",
-    "Return & Leave"
+    "Return & Leave",
+    "Right Side"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,

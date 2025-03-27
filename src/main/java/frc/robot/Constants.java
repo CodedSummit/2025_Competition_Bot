@@ -216,9 +216,9 @@ public static final class ArmConstants {
   public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = 338.2; // In Degrees
-  public static final double kMaxElbowAngle = 275; // Placeholder value:Change later
-  public static final double kMinElbowAngle = 0.2; // Placeholder value:Change later
+  public static final double kElbowOffset = 157.2;//338.2; // In Degrees
+  public static final double kMaxElbowAngle = 275; 
+  public static final double kMinElbowAngle = 4;  //This is so we do not drive into the winch
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
   public static final double kElbowDownSpeed = 0.1;
@@ -312,7 +312,7 @@ public static final class HandConstants{
 public static final class WinchConstants{
   public static final double kWinchEncoderOffset = 116.7;
   public static final double kWinchMax = 179; 
-  public static final double kWinchMin = 68.4; 
+  public static final double kWinchMin = 73; 
 }
 
 }

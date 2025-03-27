@@ -107,6 +107,8 @@ public class RobotContainer {
     GROUND_PICKUP,
     CLIMB,
     BARGE,
+    ALGEA_1,
+    ALGEA_2,
     NONE
   }
 
@@ -132,7 +134,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("Calibrate Gyro", swerveSubsystem.zeroHeadingCommand());
     NamedCommands.registerCommand("Left Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, true));
     NamedCommands.registerCommand("Right Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, false));
-
+    NamedCommands.registerCommand("Algea 1", ArrangementAlgea1());
+    NamedCommands.registerCommand("Algea 2", ArrangementAlgea2());
+    
     /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
     riocam_intake.setFPS(5);
     riocam_intake.setResolution(160, 120);
@@ -280,8 +284,8 @@ public class RobotContainer {
     m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new SwerveTestB(swerveSubsystem));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Reef Buttons pressed")));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Reef Buttons pressed")));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Reef Buttons pressed")));
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_1)));
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueRbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 7 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 8 + " on Reef Buttons pressed")));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand); Re-add this when time to get the arrangements
@@ -298,7 +302,7 @@ public class RobotContainer {
 //  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, true));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).onTrue(DriveToNearestReefSideCommand.makeCommand(swerveSubsystem, false));
-//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> floorIntakeSubsystem.Intake()));
+//    m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false)); 
 
   }
@@ -389,6 +393,8 @@ public class RobotContainer {
               Map.entry(Arrangement.GROUND_PICKUP, new InstantCommand(()-> System.out.println("Ground Pickup!"))),
               Map.entry(Arrangement.BARGE, ArrangementBarge()),
               Map.entry(Arrangement.CLIMB, ArrangementClimb()),
+              Map.entry(Arrangement.ALGEA_1, ArrangementAlgea1()),
+              Map.entry(Arrangement.ALGEA_2, ArrangementAlgea2()),
               Map.entry(Arrangement.NONE, new PrintCommand("Arrangement None Requested"))
           ),
           () -> getAutoArrangeCommand());
@@ -467,6 +473,14 @@ public class RobotContainer {
 
   public Command ArrangementBarge(){
     return PositionCommand(150, 180);
+  }
+
+  public Command ArrangementAlgea1(){
+    return PositionCommand(0, 275);
+  }
+
+  public Command ArrangementAlgea2(){
+    return PositionCommand(253.5, 5);
   }
 
   //Commands that are going to Pathplanner should stay above this line.
