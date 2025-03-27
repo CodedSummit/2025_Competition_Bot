@@ -198,16 +198,21 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
       pose = getRCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
-        m_rightcamPub.set(pose2d);
-        poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+
+        if (m_visionFilter.useVisionPose(poseEstimator.getEstimatedPosition(), pose2d, pose.get(),null)) {
+          m_rightcamPub.set(pose2d);
+          poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        }
  //       System.out.println(" Updated pose with right cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
         received_vision_update = true;
       }
       pose = getBCEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
       if (pose.isPresent()) {
         var pose2d = pose.get().estimatedPose.toPose2d();
-        m_backcamPub.set(pose2d);
-        poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        if (m_visionFilter.useVisionPose(poseEstimator.getEstimatedPosition(), pose2d, pose.get(),null)) {
+          m_backcamPub.set(pose2d);
+          poseEstimator.addVisionMeasurement(pose2d, pose.get().timestampSeconds);
+        }
   //      System.out.println(" Updated pose with back cam vision.  x:" + pose2d.getX() + "   y: " + pose2d.getY());
         received_vision_update = true;
       }

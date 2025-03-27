@@ -9,7 +9,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.geometry.Transform2d;
 import frc.robot.Constants;
 
 /*
@@ -26,7 +26,13 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
   public boolean useVisionPose(Pose2d oldPose, Pose2d newVisionPose, EstimatedRobotPose estimatedPose,
       PhotonPipelineResult photonResult) {
 
-    double targetAngle = 0.0;
+    if (oldPose.getX() < 1.0 && oldPose.getY() < 1.0 ){
+      return true;   // we have no pose yet so use what we get
+    }  
+    if ((oldPose == null) || (newVisionPose == null) || (estimatedPose == null)) {
+      return false;  // avoid catastrophic failures
+    }  
+    double targetToBotAngle = 0.0;
     double targetRange = 0.0;
     if (!estimatedPose.targetsUsed.isEmpty()) {
       for (PhotonTrackedTarget target : estimatedPose.targetsUsed) {
@@ -34,26 +40,35 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
         Optional<Pose3d> targetPose = m_fieldLayout.getTagPose(target.fiducialId);
         if (targetPose.isPresent())
 
-          targetAngle = calculateAngle(targetPose.get());
-          targetRange = getTagRange(targetPose.get());
+          targetToBotAngle = getTagRange(oldPose, newVisionPose);
+          targetRange = getTagRange(oldPose, targetPose.get().toPose2d());
       }
     }
-    if ((Math.abs(180.0-targetAngle) <= Constants.VisionConstants.kMaxTagAngle) &&
+    if ((Math.abs(targetToBotAngle - Math.abs(180-newVisionPose.getRotation().getDegrees())) <= Constants.VisionConstants.kMaxTagAngle) &&
         (targetRange > Constants.VisionConstants.kMaxTagRangeM)) {
-      System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Rejecting Tag angle:"+targetAngle +"at range: "+targetRange);
+      System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Rejecting Tag angle:"+targetToBotAngle +"at range: "+targetRange);
       return false;
     }
     return true;
   }
 
-  // return range in meters
-  private double getTagRange(Pose3d target) {
-    return target.getX();
+  private double getTagRange(Pose2d me, Pose2d tag) {
+    double range =0.0;
+    Pose2d diff = me.relativeTo(tag);
+    range = Math.sqrt(diff.getX()*diff.getX() + diff.getY()*diff.getY());
+    return range;
   }
-  private double calculateAngle(Pose3d target) {
+  
+  /* return angle, in 0-180 range
+   * 
+   */
+  private double getTagToBotAngle (Pose2d bot, Pose2d tag){
+    Transform2d xform = bot.minus(tag);
+    return calculateAngle(xform.getX(), xform.getY());
+  }
+  private double calculateAngle(double x, double y) {
     double result = 0.0;
-    Pose2d p2d = target.toPose2d();
-    result = p2d.getRotation().getDegrees();
+    result = Math.atan(y/x);
     return result;
   }
 }
