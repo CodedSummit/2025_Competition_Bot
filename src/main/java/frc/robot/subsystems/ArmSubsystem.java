@@ -314,7 +314,7 @@ private void elbowHold(){
       double elbowUpSpeed = nt_elbowUPSpeed.getDouble(Constants.ArmConstants.kElbowUpSpeed);
     //  Preferences.setDouble(Constants.ArmConstants.kElbowUpSpeedPrefKey, m_elbowUpSpeed);
     //}
-    if (getArmAngle() <= 190 && getArmAngle() >= 170){
+    if (getArmAngle() <= 200 && getArmAngle() >= 160){
       elbowUpSpeed /= 2;
     }
     return elbowUpSpeed;
@@ -326,7 +326,7 @@ private void elbowHold(){
       double elbowDownSpeed = nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed);
    //   Preferences.setDouble(Constants.ArmConstants.kElbowDownSpeedPrefKey, m_elbowDownSpeed);
    // }
-   if (getArmAngle() <= 190 && getArmAngle() >= 170){
+   if (getArmAngle() <= 200 && getArmAngle() >= 160){
     elbowDownSpeed /= 2;
   }
     return -1.0*elbowDownSpeed;

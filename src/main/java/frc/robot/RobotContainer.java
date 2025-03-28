@@ -457,7 +457,7 @@ public class RobotContainer {
   //IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please. 
 
   public Command ArrangementL4(){
-    return PositionCommand(151, 196.5);
+    return PositionCommand(152, 196.5);
   }
 
   public Command ArrangementL3(){
@@ -485,11 +485,11 @@ public class RobotContainer {
   }
 
   public Command ArrangementAlgea1(){
-    return PositionCommand(0, 270);
+    return PositionCommand(0, 268);
   }
 
   public Command ArrangementAlgea2(){
-    return PositionCommand(55.8, 270);
+    return PositionCommand(55.8, 268);
   }
 
   public Command ArrangementProcessor(){
