@@ -11,6 +11,7 @@ import java.util.Map;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -29,6 +31,9 @@ public class WinchSubsystem extends SubsystemBase {
   private DutyCycleEncoder winchEncoder = new DutyCycleEncoder(input, 360, Constants.WinchConstants.kWinchEncoderOffset);
   public GenericEntry nt_winchUpSpeed;
   public GenericEntry nt_winchDownSpeed;
+
+  private double winchDesiredAngle;
+
   /** Creates a new WinchSubsystem. */
   public WinchSubsystem() {
     setupShuffleboard();
@@ -101,6 +106,51 @@ public class WinchSubsystem extends SubsystemBase {
     return winchEncoder.get();
   }
 
+  public void setWinchAngle(double desiredAngle){
+    winchDesiredAngle = desiredAngle;
+  }
+
+  protected boolean winchAtDesiredAngle() {
+    // see if we're "close enough" to the target desired angle
+    if (Math.abs(getWinchAngle() - winchDesiredAngle) <= Constants.WinchConstants.kWinchTolerance) {
+      return true;
+    }
+    return false;
+  }
+
+  public void moveWinchToDesiredAngle() {
+
+    if (winchAtDesiredAngle()) {
+      // we've reached the goal angle, hold now
+      setWinchSpeed(0);
+    }
+    else if (getWinchAngle() < winchDesiredAngle) {
+      // need to move up to desired angle
+      setWinchSpeed(getWinchUpSpeed());
+    }
+    else if (getWinchAngle() > winchDesiredAngle) {
+      // move down to desired angle
+      setWinchSpeed(getWinchDownSpeed());
+    }
+    
+  }
+
+    public Command cmdWinchToPositionThatFinishes(double angle) {
+      winchDesiredAngle = angle;
+    return new FunctionalCommand(
+      // command start
+      () -> setWinchAngle(winchDesiredAngle),
+      // called repeatedly
+      () -> moveWinchToDesiredAngle(),
+      // Stop driving at the end of the command
+      interrupted -> m_winch.set(0),
+      // End the command when the robot's driven distance exceeds the desired value
+      () -> winchAtDesiredAngle(),
+      // Require the drive subsystem
+      this
+    );
+  } 
+  
   public double getWinchUpSpeed() {
         double elbowUpSpeed = nt_winchUpSpeed.getDouble(Constants.ArmConstants.kElbowUpSpeed);
       return elbowUpSpeed;

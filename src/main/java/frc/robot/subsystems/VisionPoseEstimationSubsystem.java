@@ -92,7 +92,7 @@ public class VisionPoseEstimationSubsystem extends SubsystemBase {
     m_backLog = new IntegerLogEntry(log, "BackCamTargets");
     m_targetIds = new IntegerLogEntry(log, "TargetIDs");
 
-    m_visionFilter = new VisionFilteringTagAngleStrategy(m_CompetitionAprilTagFieldLayout);
+    m_visionFilter = new VisionFilteringStrategy(m_CompetitionAprilTagFieldLayout);
     initialize();
   }
     
