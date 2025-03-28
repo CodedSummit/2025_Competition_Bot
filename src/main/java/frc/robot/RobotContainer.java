@@ -281,9 +281,9 @@ public class RobotContainer {
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
   
 
-//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(selectThenAutoArrange(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L3))));
-//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(selectThenAutoArrange(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.STATION_PICKUP))));
-//    m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(selectThenAutoArrange(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L4))));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L3)).andThen(AutoArrangeCommand));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.STATION_PICKUP)).andThen(AutoArrangeCommand));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L4)).andThen(AutoArrangeCommand));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue();
   m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
   m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_1)));
