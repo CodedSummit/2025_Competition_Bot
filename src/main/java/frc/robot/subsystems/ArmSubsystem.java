@@ -326,7 +326,7 @@ private void elbowHold(){
       double elbowDownSpeed = nt_elbowDOWNSpeed.getDouble(Constants.ArmConstants.kElbowDownSpeed);
    //   Preferences.setDouble(Constants.ArmConstants.kElbowDownSpeedPrefKey, m_elbowDownSpeed);
    // }
-   if (getArmAngle() <= 200 && getArmAngle() >= 160){
+   if ((getArmAngle() <= 200 && getArmAngle() >= 160) || getArmAngle() < 35){
     elbowDownSpeed /= 2;
   }
     return -1.0*elbowDownSpeed;
