@@ -34,17 +34,19 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
     }  
     double targetToBotAngle = 0.0;
     double targetRange = 0.0;
+    Pose2d targetPose2d = null;
     if (!estimatedPose.targetsUsed.isEmpty()) {
       for (PhotonTrackedTarget target : estimatedPose.targetsUsed) {
 
         Optional<Pose3d> targetPose = m_fieldLayout.getTagPose(target.fiducialId);
         if (targetPose.isPresent())
-
-          targetToBotAngle = getTagRange(oldPose, newVisionPose);
+          targetPose2d = targetPose.get().toPose2d();
+          targetToBotAngle = getTagToBotAngle(oldPose, targetPose2d);
           targetRange = getTagRange(oldPose, targetPose.get().toPose2d());
       }
     }
-    if ((Math.abs(targetToBotAngle - Math.abs(180-newVisionPose.getRotation().getDegrees())) <= Constants.VisionConstants.kMaxTagAngle) &&
+    System.out.println("     Target to bot angle:"+targetToBotAngle+"  range:"+targetRange + "  Target rot:"+targetPose2d.getRotation().getDegrees());
+    if ((Math.abs(targetToBotAngle - Math.abs(180-targetPose2d.getRotation().getDegrees())) <= Constants.VisionConstants.kMaxTagAngle) &&
         (targetRange > Constants.VisionConstants.kMaxTagRangeM)) {
       System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Rejecting Tag angle:"+targetToBotAngle +"at range: "+targetRange);
       return false;
@@ -52,6 +54,9 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
     return true;
   }
 
+  /*
+   * return range in meters
+   */
   private double getTagRange(Pose2d me, Pose2d tag) {
     double range =0.0;
     Pose2d diff = me.relativeTo(tag);
@@ -68,7 +73,7 @@ public class VisionFilteringTagAngleStrategy extends VisionFilteringStrategy {
   }
   private double calculateAngle(double x, double y) {
     double result = 0.0;
-    result = Math.atan(y/x);
+    result = Math.toDegrees(Math.atan(y/x));
     return result;
   }
 }
