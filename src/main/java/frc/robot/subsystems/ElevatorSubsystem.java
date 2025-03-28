@@ -138,7 +138,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command elevatorUp(){
       return this.startEnd(
         () -> setSpeed(-1 * getSpeed()),
-        () -> m_elevator.stopMotor()
+        () -> stopElevator()
       );
   
     }
@@ -146,7 +146,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command elevatorDown(){
       return this.startEnd(
         () -> setSpeed(getSpeed()),
-        () -> m_elevator.stopMotor()
+        () -> stopElevator()
       );
     }
   
@@ -267,7 +267,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
 
   public void stopElevator(){
-    m_elevator.set(0);
+    m_elevator.set(-Constants.ElevatorConstants.kElevatorHoldSpeed);
   }
 
 }

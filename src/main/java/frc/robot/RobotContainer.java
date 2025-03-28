@@ -281,28 +281,28 @@ public class RobotContainer {
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
   
 
-//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new SwerveTestA(swerveSubsystem));
-//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new SwerveTestB(swerveSubsystem));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Reef Buttons pressed")));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Reef Buttons pressed")));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(selectThenAutoArrange(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L3))));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(selectThenAutoArrange(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.STATION_PICKUP))));
+//    m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(selectThenAutoArrange(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.L4))));
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue();
   m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
   m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_1)));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueRbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 7 + " on Reef Buttons pressed")));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 8 + " on Reef Buttons pressed")));
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueRbuttonID).onTrue();
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue();
   m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand);
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue(handSubsystem.manualIntakeCoral());
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue();
   m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(handSubsystem.manualReleaseCoral());
   m_reefButtons.button(Constants.ButtonboardConstants.kReefCoinbuttonID).whileTrue(handSubsystem.manualReleaseAlgea());
      
 
-//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 1 + " on Outer Buttons pressed")));
-//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 2 + " on Outer Buttons pressed")));
-//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLowerMidbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Outer Buttons pressed")));
-//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 4 + " on Outer Buttons pressed")));
-//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 5 + " on Outer Buttons pressed")));
-//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 6 + " on Outer Buttons pressed")));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).whileTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
-    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).whileTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
+//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMaxbuttonID).onTrue();
+//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterUpperMidbuttonID).onTrue();
+//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLowerMidbuttonID).onTrue();
+//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterMinbuttonID).onTrue();
+//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue();
+//  m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue();
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRLIntakebuttonID).whileTrue(new DriveToNearestReefSideCommand(swerveSubsystem, false));
+    m_outerButtons.button(Constants.ButtonboardConstants.kOuterRRIntakebuttonID).whileTrue(new DriveToNearestReefSideCommand(swerveSubsystem, true));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterProcessorbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.PROCESSOR)));
     m_outerButtons.button(Constants.ButtonboardConstants.kOuterBargebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.BARGE))); 
 
@@ -454,10 +454,10 @@ public class RobotContainer {
   public void loadPreferences(){
     swerveSubsystem.loadPreferences();
   }
-  //IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please. 
+  //---------------------IF YOU WANT TO ADD A COMMAND TO PATHPLANNER: Add it here, please.-------------------------------
 
   public Command ArrangementL4(){
-    return PositionCommand(152, 196.5);
+    return PositionCommand(128, 185);
   }
 
   public Command ArrangementL3(){
@@ -496,7 +496,12 @@ public class RobotContainer {
     return PositionCommand(0, 46.6);
   }
 
-  //Commands that are going to Pathplanner should stay above this line.
+  //-------------------Commands that are going to Pathplanner should stay above this line.-------------------------------
+
+  //EXPERIMENTAL OR UNTESTED
+//  public Command selectThenAutoArrange(Command command){
+//    return new SequentialCommandGroup(command, AutoArrangeCommand);
+//  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
