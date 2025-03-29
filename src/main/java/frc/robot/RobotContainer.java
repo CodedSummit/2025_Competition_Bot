@@ -138,10 +138,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("Algea 1", ArrangementAlgea1());
     NamedCommands.registerCommand("Algea 2", ArrangementAlgea2());
     
-    /*    UsbCamera riocam_intake = CameraServer.startAutomaticCapture();
-    riocam_intake.setFPS(5);
-    riocam_intake.setResolution(160, 120);
-    
+        UsbCamera riocam_climb = CameraServer.startAutomaticCapture();
+    riocam_climb.setFPS(5);
+    riocam_climb.setResolution(160, 120);
+   /* 
     UsbCamera riocam_shooter = CameraServer.startAutomaticCapture();
     riocam_shooter.setFPS(5);
     riocam_shooter.setResolution(160, 120);
