@@ -29,6 +29,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Center Alignment"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Algea 1"
@@ -49,25 +55,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Barge"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Barge"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Algea Intake/Place"
+            "pathName": "Center Alignment"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Center",
   "choreoAuto": false
 }

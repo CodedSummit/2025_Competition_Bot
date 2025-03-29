@@ -27,6 +27,36 @@
           "data": {
             "name": "Intake/Place Coral"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Inner Reposition"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algea 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Inner Algea"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Algea Intake/Place"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right Inner Reposition"
+          }
         }
       ]
     }

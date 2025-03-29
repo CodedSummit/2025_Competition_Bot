@@ -9,7 +9,11 @@
     "Reposition",
     "Right Side"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Left",
+    "Center",
+    "Right"
+  ],
   "defaultMaxVel": 2.0,
   "defaultMaxAccel": 0.5,
   "defaultMaxAngVel": 540.0,
