@@ -128,7 +128,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("StationPickup", ArrangementStationPickup());
     NamedCommands.registerCommand("Barge", ArrangementBarge());
     NamedCommands.registerCommand("Intake/Place Coral", smartIntakeCoral());
-    NamedCommands.registerCommand("Algea Intake/Place", smartIntakeCoral());
+    NamedCommands.registerCommand("Algea Intake/Place", smartIntakeAlgea());
     NamedCommands.registerCommand("Print", new InstantCommand(()-> System.out.println("Autonomous Print Achieved!")));
     NamedCommands.registerCommand("Calibrate", elevatorSubsystem.elevatorCalibrate());
     NamedCommands.registerCommand("Elbow Down", new InstantCommand(()-> armSubsystem.cmdArmPositionThatFinishes(armSubsystem.getArmAngle() - 6)));
@@ -137,6 +137,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Right Reef Tag Align", new DriveToNearestReefSideCommand(swerveSubsystem, false));
     NamedCommands.registerCommand("Algea 1", ArrangementAlgea1());
     NamedCommands.registerCommand("Algea 2", ArrangementAlgea2());
+    
     
         UsbCamera riocam_climb = CameraServer.startAutomaticCapture();
     riocam_climb.setFPS(5);
