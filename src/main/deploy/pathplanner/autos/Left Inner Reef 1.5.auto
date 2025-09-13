@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Blue"
+            "pathName": "Left Inner Reef Blue Q"
           }
         },
         {
@@ -31,44 +31,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Alignment"
+            "pathName": "Left Inner Reposition"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Algea 1"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center Algea"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Algea Intake/Place"
-                }
-              }
-            ]
+            "name": "StationPickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Center Reverse"
+            "pathName": "Left L Coral Blue"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake/Place Coral"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center",
+  "folder": "Left",
   "choreoAuto": false
 }

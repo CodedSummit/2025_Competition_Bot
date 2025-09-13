@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Blue"
+            "pathName": "Right Inner Reef Blue"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Alignment"
+            "pathName": "Right Inner Reposition"
           }
         },
         {
@@ -47,7 +47,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Center Algea"
+                  "pathName": "Right Inner Algea"
                 }
               },
               {
@@ -62,13 +62,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Center Reverse"
+            "pathName": "Right Inner Reposition"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center",
+  "folder": "Right",
   "choreoAuto": false
 }
