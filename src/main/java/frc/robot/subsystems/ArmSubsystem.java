@@ -291,6 +291,10 @@ private void elbowHold(){
     m_elbowPIDController.setSetpoint(desiredAngle);
   }
 
+  public boolean armEncoderConnected(){
+    return absEncoder.isConnected();
+  }
+
   /*
    * set to the requested speed, but only if it won't violate soft limits
    * Else make no change to the motor speed

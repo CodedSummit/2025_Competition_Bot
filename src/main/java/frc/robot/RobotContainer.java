@@ -281,16 +281,15 @@ public class RobotContainer {
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLLIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.STATION_PICKUP)));
       m_outerButtons.button(Constants.ButtonboardConstants.kOuterLRIntakebuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.CLIMB)));
   
-// BEFORE RUNNING DEMO MODE: Make sure that Elbow Speed and Elevator Speed are low, and that "Demo Mode" is the chosen auto.
 //    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedLbuttonID).onTrue(new SwerveTestA(swerveSubsystem));
 //    m_reefButtons.button(Constants.ButtonboardConstants.kReefRedRbuttonID).onTrue(new SwerveTestB(swerveSubsystem));
-//  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenTbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Reef Buttons pressed")));
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue(new InstantCommand(()-> runDemoMode()));
+//  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue(new InstantCommand(()-> System.out.println("Button " + 3 + " on Reef Buttons pressed")));
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(runDemoMode());
   m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteTbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_2)));
   m_reefButtons.button(Constants.ButtonboardConstants.kReefWhiteBbuttonID).onTrue(new InstantCommand(()-> setAutoArrangeCommand(Arrangement.ALGEA_1)));
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueRbuttonID).onTrue();
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefBlueLbuttonID).onTrue();
-  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowBbuttonID).onTrue(AutoArrangeCommand);
+  m_reefButtons.button(Constants.ButtonboardConstants.kReefGreenBbuttonID).onTrue(AutoArrangeCommand);
 //  m_reefButtons.button(Constants.ButtonboardConstants.kReefYellowTbuttonID).onTrue();
   m_reefButtons.button(Constants.ButtonboardConstants.kReefPersonbuttonID).onTrue(handSubsystem.manualReleaseCoral());
   m_reefButtons.button(Constants.ButtonboardConstants.kReefCoinbuttonID).whileTrue(handSubsystem.manualReleaseAlgea());
@@ -516,8 +515,18 @@ public class RobotContainer {
     //return new NothingCommand();
   }
 
-  public void runDemoMode(){
-    Command x = getAutonomousCommand();
-    x.schedule();
+  public Command runDemoMode(){
+    Command x = new SequentialCommandGroup(
+      ArrangementL4(),
+//      ArrangementAlgea1(),
+      ArrangementL2(),
+      ArrangementL3(),
+      ArrangementBarge(),
+      ArrangementL1(),
+      ArrangementClimb(),
+      ArrangementStationPickup()
+      //    ArrangementAlgea2()
+      );
+    return x;
   }
 }

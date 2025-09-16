@@ -279,14 +279,14 @@ public static final class ButtonboardConstants {
   //L is Left, R is Right, T is Top, B is Bottom
 public static final int kReefRedLbuttonID = 1;  
 public static final int kReefRedRbuttonID = 2;
-public static final int kReefGreenTbuttonID = 3;
-public static final int kReefGreenBbuttonID = 4;
+public static final int kReefYellowTbuttonID = 3;
+public static final int kReefYellowBbuttonID = 4;
 public static final int kReefWhiteTbuttonID = 5;
 public static final int kReefWhiteBbuttonID = 6;
 public static final int kReefBlueLbuttonID = 7;
 public static final int kReefBlueRbuttonID = 8;
-public static final int kReefYellowBbuttonID = 9;
-public static final int kReefYellowTbuttonID = 10;
+public static final int kReefGreenBbuttonID = 9;
+public static final int kReefGreenTbuttonID = 10;
 public static final int kReefCoinbuttonID = 11;
 public static final int kReefPersonbuttonID = 12;
 
