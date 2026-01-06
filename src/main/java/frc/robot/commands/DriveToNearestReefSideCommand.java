@@ -46,11 +46,21 @@ public class DriveToNearestReefSideCommand extends Command {
     this.isLeftSide = isLeftSide;
 
     addRequirements(drive);
+    // buildTheCommand();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    fullPath = this.buildTheCommand();
+    fullPath.initialize();
+  }
+
+  public static Command makeCommand(SwerveSubsystem drive, boolean isLeftSide) {
+    DriveToNearestReefSideCommand cmd = new DriveToNearestReefSideCommand(drive, isLeftSide);
+    return cmd.buildTheCommand();
+  }
+  public Command buildTheCommand() {
     Pose2d closestAprilTagPose = getClosestReefAprilTagPose();
     ArrayList<Pose2d> poses = new ArrayList<>();
     poses.add(closestAprilTagPose);
@@ -69,7 +79,7 @@ public class DriveToNearestReefSideCommand extends Command {
             3.0, 4.0,
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
 
-    try {
+  //  try {
       // Path from the standoff point, to the final position (left or right of tag, as selected)
       Rotation2d backinRot = closestAprilTagPose.getRotation().rotateBy(Rotation2d.k180deg);
       GoalEndState goal = new GoalEndState(0.0, backinRot);
@@ -81,7 +91,7 @@ public class DriveToNearestReefSideCommand extends Command {
           new PathConstraints(1.0, 1.0, 2 * Math.PI, 4 * Math.PI),
           null, goal);
       m_pathtofront.preventFlipping = true;
-      fullPath = pathfindPath.andThen(AutoBuilder.followPath(m_pathtofront));
+//      fullPath = pathfindPath.andThen(AutoBuilder.followPath(m_pathtofront));
 
        pathfindPath = AutoBuilder.pathfindToPose(
       endPose,
@@ -90,31 +100,39 @@ public class DriveToNearestReefSideCommand extends Command {
             Units.degreesToRadians(540), Units.degreesToRadians(720)));
  //pathfindPath.schedule();
 // if simple findpath to the tag isn't close enough, then do:
-fullPath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
-fullPath.schedule();
-    } catch (Exception e) {
-      DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-    }
+ Command thePath = pathfindPath.andThen( FinalAlignCommand.generateCommand(drive, endPose, kAlignmentAdjustmentTimeout));
+// fullPath.schedule();
+ //   } catch (Exception e) {
+   //   DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
+   // }
+   return thePath;
   }
-
   
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    fullPath.execute();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    /*
     if (fullPath != null) {
       fullPath.cancel();
     }
+      */
+      fullPath.end(interrupted);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (fullPath.isFinished()){
+      
+      System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>DriveToNearest finished");
+    }
+    return fullPath.isFinished();
   }
 
   private Pose2d getClosestReefAprilTagPose() {

@@ -182,6 +182,7 @@ public static final class VisionConstants {
   public static final int kRAmpTagID = 5;
   public static final int kRStageTagID = 11;
   public static final int kRSpeakerTagID = 4;
+
   public static long kLogInterval = 5; // logging interval, ms.  Set to 0 to disable logging
   public static double kMaxTagRangeM = feetToMeters(8.0);
   public static double kMaxTagAngle = 10.0; // Max angle off 180 (facing  straight-on)
@@ -216,9 +217,9 @@ public static final class ArmConstants {
   public static final int kArmMotorCANbusID = 9; // TODO - USE REAL ID
   public static final int kArmHandlerMotorCANbusID = 5; // TODO - USE REAL ID
 
-  public static final double kElbowOffset = 338.2; // In Degrees
-  public static final double kMaxElbowAngle = 275; // Placeholder value:Change later
-  public static final double kMinElbowAngle = 0.2; // Placeholder value:Change later
+  public static final double kElbowOffset = 215.6; //157.2; // In Degrees
+  public static final double kMaxElbowAngle = 270; 
+  public static final double kMinElbowAngle = 4;  //This is so we do not drive into the winch
   public static final double kElbowSpeed = 0.2;
   public static final double kElbowUpSpeed = 0.5;
   public static final double kElbowDownSpeed = 0.1;
@@ -307,6 +308,13 @@ public static final class HandConstants{
   public static final double kCoralReleaseSpeed = 0.4;
   public static final double kAlgeaIntakeSpeed = 1.0;
   public static final double kAlgeaReleaseSpeed = 1.0;
+}
+
+public static final class WinchConstants{
+  public static final double kWinchEncoderOffset = 116.7;
+  public static final double kWinchMax = 179; 
+  public static final double kWinchMin = 73; 
+  public static final double kWinchTolerance = 2;
 }
 
 }
